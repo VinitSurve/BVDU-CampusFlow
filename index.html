@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BVDU CampusFlow - OD Forms Management System">
+  <title>Login | BVDU CampusFlow</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+  
+  <!-- Load environment variables (development only) -->
+  <script src="js/env-loader.js"></script>
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="auth-layout">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <div class="auth-logo">📋</div>
+          <h1 class="auth-title">Welcome Back</h1>
+          <p class="auth-subtitle">Sign in to BVDU CampusFlow</p>
+        </div>
+        
+        <div class="auth-body">
+          <!-- Alert for errors -->
+          <div id="alert-container"></div>
+          
+          <form id="login-form" novalidate>
+            <div class="form-group">
+              <label for="email" class="form-label required">Email Address</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                class="form-control form-control-lg" 
+                placeholder="Enter your email"
+                autocomplete="email"
+                required
+              >
+              <span class="form-error" id="email-error"></span>
+            </div>
+            
+            <div class="form-group">
+              <label for="password" class="form-label required">Password</label>
+              <div class="input-group">
+                <input 
+                  type="password" 
+                  id="password" 
+                  name="password" 
+                  class="form-control form-control-lg" 
+                  placeholder="Enter your password"
+                  autocomplete="current-password"
+                  required
+                >
+              </div>
+              <span class="form-error" id="password-error"></span>
+            </div>
+            
+            <div class="flex justify-between items-center mb-6">
+              <label class="form-check">
+                <input type="checkbox" id="remember" class="form-check-input">
+                <span class="form-check-label">Remember me</span>
+              </label>
+              <a href="forgot-password.html" class="btn-link text-sm">Forgot Password?</a>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-lg w-full" id="login-btn">
+              <span class="btn-text">Sign In</span>
+              <span class="btn-loading hidden">
+                <span class="spinner spinner-sm"></span>
+                Signing in...
+              </span>
+            </button>
+          </form>
+          
+          <!-- Demo credentials info -->
+          <div class="alert alert-info mt-6">
+            <div class="alert-icon">ℹ️</div>
+            <div class="alert-content">
+              <div class="alert-title">Demo Credentials</div>
+              <div class="text-xs mt-2">
+                <strong>Student:</strong> student1@bvdu.in / Test@123<br>
+                <strong>Event Leader:</strong> leader1@bvdu.in / Test@123<br>
+                <strong>Faculty:</strong> faculty1@bvdu.in / Test@123<br>
+                <strong>HOD:</strong> hod1@bvdu.in / Test@123
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="auth-footer">
+          <p class="auth-footer-text">
+            New student? <a href="register.html">Register here</a>
+          </p>
+          <p class="text-xs text-muted mt-2">
+            <strong>Note:</strong> All users (Students, Event Leaders, Faculty, HOD) login here.<br>
+            Only students can self-register. Other accounts are created by administrators.
+          </p>
+        </div>
+      </div>
+      
+      <p class="text-center text-xs text-muted mt-4">
+        © 2026 BVDU CampusFlow. All rights reserved.
+      </p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { login, checkIfLoggedIn } from './js/auth.js';
+    import { showToast, showError } from './js/notifications.js';
+    import { isFirebaseConfigured } from './js/firebase-config.js';
+    
+    // Check if already logged in
+    document.addEventListener('DOMContentLoaded', () => {
+      checkIfLoggedIn();
+      
+      // Check Firebase configuration
+      if (!isFirebaseConfigured()) {
+        showFirebaseWarning();
+      }
+    });
+    
+    // Show Firebase configuration warning
+    function showFirebaseWarning() {
+      const alertContainer = document.getElementById('alert-container');
+      alertContainer.innerHTML = `
+        <div class="alert alert-warning mb-4">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-content">
+            <div class="alert-title">Firebase Not Configured</div>
+            <p class="text-xs mb-0">Please update <code>js/firebase-config.js</code> with your Firebase credentials.</p>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Form submission handler
+    const loginForm = document.getElementById('login-form');
+    const loginBtn = document.getElementById('login-btn');
+    
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Clear previous errors
+      clearErrors();
+      
+      // Get form values
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      
+      // Validate
+      let hasError = false;
+      
+      if (!email) {
+        showFieldError('email', 'Email is required');
+        hasError = true;
+      } else if (!isValidEmail(email)) {
+        showFieldError('email', 'Please enter a valid email');
+        hasError = true;
+      }
+      
+      if (!password) {
+        showFieldError('password', 'Password is required');
+        hasError = true;
+      } else if (password.length < 6) {
+        showFieldError('password', 'Password must be at least 6 characters');
+        hasError = true;
+      }
+      
+      if (hasError) return;
+      
+      // Show loading state
+      setLoading(true);
+      
+      try {
+        const result = await login(email, password);
+        
+        if (result.success) {
+          showToast('Login successful! Redirecting...', 'success');
+          
+          // Redirect after short delay
+          setTimeout(() => {
+            window.location.href = result.redirectUrl;
+          }, 500);
+        }
+      } catch (error) {
+        showError(error.message);
+        setLoading(false);
+      }
+    });
+    
+    // Helper functions
+    function isValidEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+    
+    function showFieldError(fieldId, message) {
+      const input = document.getElementById(fieldId);
+      const error = document.getElementById(`${fieldId}-error`);
+      
+      input.classList.add('is-invalid');
+      if (error) error.textContent = message;
+    }
+    
+    function clearErrors() {
+      const inputs = loginForm.querySelectorAll('.form-control');
+      const errors = loginForm.querySelectorAll('.form-error');
+      
+      inputs.forEach(input => input.classList.remove('is-invalid'));
+      errors.forEach(error => error.textContent = '');
+    }
+    
+    function setLoading(loading) {
+      const btnText = loginBtn.querySelector('.btn-text');
+      const btnLoading = loginBtn.querySelector('.btn-loading');
+      
+      loginBtn.disabled = loading;
+      
+      if (loading) {
+        btnText.classList.add('hidden');
+        btnLoading.classList.remove('hidden');
+      } else {
+        btnText.classList.remove('hidden');
+        btnLoading.classList.add('hidden');
+      }
+    }
+    
+    // Fill demo credentials on click
+    const alertInfo = document.querySelector('.alert-info');
+    if (alertInfo) {
+      alertInfo.style.cursor = 'pointer';
+      alertInfo.title = 'Click to fill student credentials';
+      alertInfo.addEventListener('click', () => {
+        document.getElementById('email').value = 'student1@bvdu.in';
+        document.getElementById('password').value = 'Test@123';
+        showToast('Demo credentials filled', 'info');
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Register for BVDU CampusFlow - OD Forms Management System">
+  <title>Register | BVDU CampusFlow</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'></svg>">
+  
+  <!-- Load environment variables (development only) -->
+  <script src="js/env-loader.js"></script>
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="auth-layout">
+    <div class="auth-container" style="max-width: 600px;">
+      <div class="auth-card">
+        <div class="auth-header">
+          <div class="auth-logo">📋</div>
+          <h1 class="auth-title">Student Registration</h1>
+          <p class="auth-subtitle">Create your student account for BVDU CampusFlow</p>
+        </div>
+        
+        <div class="auth-body">
+          <!-- Alert for messages -->
+          <div id="alert-container"></div>
+          
+          <form id="register-form" novalidate>
+            <!-- Profile Photo Upload -->
+            <div class="form-group text-center mb-6">
+              <div style="display: inline-block; position: relative;">
+                <label for="profile_photo" style="cursor: pointer;">
+                  <div id="photo-preview" style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 3px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    <svg width="48" height="48" fill="rgba(255,255,255,0.8)" viewBox="0 0 24 24">
+                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                  </div>
+                </label>
+                <input type="file" id="profile_photo" accept="image/*" style="display: none;" required>
+                <label for="profile_photo" class="btn btn-primary btn-sm" style="margin-top: 12px; cursor: pointer; display: inline-block;">
+                  📷 Upload Photo
+                </label>
+              </div>
+              <p class="text-xs text-muted mt-2">Profile photo is required • Please upload less than 5MB</p>
+              <span class="form-error" id="profile_photo-error"></span>
+            </div>
+            
+            <!-- Personal Information -->
+            <div class="form-row form-row-3">
+              <div class="form-group">
+                <label for="first_name" class="form-label required">First Name</label>
+                <input 
+                  type="text" 
+                  id="first_name" 
+                  name="first_name" 
+                  class="form-control" 
+                  placeholder="Enter first name"
+                  required
+                >
+                <span class="form-error" id="first_name-error"></span>
+              </div>
+              
+              <div class="form-group">
+                <label for="middle_name" class="form-label required">Middle Name</label>
+                <input 
+                  type="text" 
+                  id="middle_name" 
+                  name="middle_name" 
+                  class="form-control" 
+                  placeholder="Enter middle name"
+                  required
+                >
+                <span class="form-error" id="middle_name-error"></span>
+              </div>
+              
+              <div class="form-group">
+                <label for="surname" class="form-label required">Surname</label>
+                <input 
+                  type="text" 
+                  id="surname" 
+                  name="surname" 
+                  class="form-control" 
+                  placeholder="Enter surname"
+                  required
+                >
+                <span class="form-error" id="surname-error"></span>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="prn" class="form-label required">PRN (Permanent Registration Number)</label>
+              <input 
+                type="text" 
+                id="prn" 
+                name="prn" 
+                class="form-control" 
+                placeholder="Enter PRN (e.g., 23477002326)"
+                maxlength="12"
+                required
+              >
+              <small class="text-xs text-muted">Format: 12-digit PRN (e.g., 23477002326)</small>
+              <span class="form-error" id="prn-error"></span>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="email" class="form-label required">Email Address</label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  name="email" 
+                  class="form-control" 
+                  placeholder="your.email@bvdu.edu.in"
+                  autocomplete="email"
+                  required
+                >
+                <small class="text-xs text-muted">Use your institutional email</small>
+                <span class="form-error" id="email-error"></span>
+              </div>
+              
+              <div class="form-group">
+                <label for="phone" class="form-label required">Phone Number</label>
+                <input 
+                  type="tel" 
+                  id="phone" 
+                  name="phone" 
+                  class="form-control" 
+                  placeholder="Enter 10-digit phone number"
+                  maxlength="10"
+                  required
+                >
+                <span class="form-error" id="phone-error"></span>
+              </div>
+            </div>
+            
+            <!-- Academic Information -->
+            <div class="form-row form-row-3">
+              <div class="form-group">
+                <label for="course" class="form-label required">Course</label>
+                <select id="course" name="course" class="form-control" required>
+                  <option value="">Select Course</option>
+                  <option value="BCA - Bachelor of Computer Applications">BCA - Bachelor of Computer Applications</option>
+                  <option value="BBA - Bachelor of Business Administration">BBA - Bachelor of Business Administration</option>
+                  <option value="BAF - Bachelor of Accounting and Finance">BAF - Bachelor of Accounting and Finance</option>
+                  <option value="MBA - Master of Business Administration">MBA - Master of Business Administration</option>
+                  <option value="MCA - Master of Computer Applications">MCA - Master of Computer Applications</option>
+                </select>
+                <span class="form-error" id="course-error"></span>
+              </div>
+              
+              <div class="form-group">
+                <label for="year" class="form-label required">Year</label>
+                <select id="year" name="year" class="form-control" required>
+                  <option value="">Select Year</option>
+                  <option value="1" selected>I - First Year</option>
+                  <option value="2">II - Second Year</option>
+                  <option value="3">III - Third Year</option>
+                </select>
+                <span class="form-error" id="year-error"></span>
+              </div>
+              
+              <div class="form-group">
+                <label for="division" class="form-label required">Division</label>
+                <select id="division" name="division" class="form-control" required>
+                  <option value="">Select Division</option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                </select>
+                <span class="form-error" id="division-error"></span>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="roll_number" class="form-label required">Roll Number</label>
+                <input 
+                  type="text" 
+                  id="roll_number" 
+                  name="roll_number" 
+                  class="form-control" 
+                  placeholder="Enter roll number (e.g., 001, 025)"
+                  required
+                >
+                <small class="text-xs text-muted">Your roll number within the division</small>
+                <span class="form-error" id="roll_number-error"></span>
+              </div>
+              
+              <div class="form-group">
+                <label for="semester" class="form-label">Semester (Auto-calculated)</label>
+                <input 
+                  type="text" 
+                  id="semester" 
+                  name="semester" 
+                  class="form-control" 
+                  readonly
+                  style="background-color: #f5f5f5;"
+                >
+                <small class="text-xs text-muted" id="semester-info"></small>
+              </div>
+            </div>
+            
+            <!-- Password -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="password" class="form-label required">Password</label>
+                <input 
+                  type="password" 
+                  id="password" 
+                  name="password" 
+                  class="form-control" 
+                  placeholder="Create a strong password"
+                  autocomplete="new-password"
+                  required
+                >
+                <span class="form-error" id="password-error"></span>
+              </div>
+              
+              <div class="form-group">
+                <label for="confirm_password" class="form-label required">Confirm Password</label>
+                <input 
+                  type="password" 
+                  id="confirm_password" 
+                  name="confirm_password" 
+                  class="form-control" 
+                  placeholder="Re-enter your password"
+                  required
+                >
+                <span class="form-error" id="confirm_password-error"></span>
+              </div>
+            </div>
+            
+            <div class="form-check mb-6">
+              <input type="checkbox" id="terms" class="form-check-input" required>
+              <label for="terms" class="form-check-label">
+                I agree to the <a href="#" class="text-primary">Terms of Service</a> and 
+                <a href="#" class="text-primary">Privacy Policy</a>
+              </label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-lg w-full" id="register-btn">
+              <span class="btn-text">Create Account</span>
+              <span class="btn-loading hidden">
+                <span class="spinner spinner-sm"></span>
+                Creating account...
+              </span>
+            </button>
+          </form>
+        </div>
+        
+        <div class="auth-footer">
+          <p class="auth-footer-text">
+            Already have an account? <a href="index.html">Sign in</a>
+          </p>
+          <p class="text-xs text-muted mt-2">
+            <strong>Note:</strong> Only students can register here. Event Leaders are created by Faculty, and Faculty accounts are created by HOD.
+          </p>
+        </div>
+      </div>
+      
+      <p class="text-center text-xs text-muted mt-4">
+        © 2026 BVDU CampusFlow. All rights reserved.
+      </p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { register, checkIfLoggedIn } from './js/auth.js';
+    import { showToast, showSuccess, showError } from './js/notifications.js';
+    import { isFirebaseConfigured } from './js/firebase-config.js';
+    import { uploadProfilePhoto } from './js/storage.js';
+    
+    // Check if already logged in
+    document.addEventListener('DOMContentLoaded', () => {
+      checkIfLoggedIn();
+      
+      if (!isFirebaseConfigured()) {
+        showFirebaseWarning();
+      }
+      
+      // Auto-calculate and set semester based on current date
+      calculateAndSetSemester();
+      
+      // Recalculate semester when year changes
+      document.getElementById('year').addEventListener('change', calculateAndSetSemester);
+      
+      // Profile photo preview
+      const photoInput = document.getElementById('profile_photo');
+      const photoPreview = document.getElementById('photo-preview');
+      
+      photoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        console.log('File selected:', file); // Debug log
+        
+        if (file) {
+          // Validate file size
+          if (file.size > 5 * 1024 * 1024) {
+            showError('Photo size must be less than 5MB');
+            photoInput.value = '';
+            return;
+          }
+          
+          // Validate file type
+          if (!file.type.startsWith('image/')) {
+            showError('Please upload an image file');
+            photoInput.value = '';
+            return;
+          }
+          
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            console.log('Image loaded'); // Debug log
+            // Replace the entire preview div content with the image
+            photoPreview.style.background = 'none';
+            photoPreview.innerHTML = `<img src="${event.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;" alt="Profile Preview">`;
+          };
+          reader.onerror = function(error) {
+            console.error('Error reading file:', error);
+            showError('Failed to read image file');
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    });
+    
+    /**
+     * Calculate current semester based on date
+     * Odd Semesters (1, 3, 5): July 15 - December 31
+     * Even Semesters (2, 4, 6): January 1 - June 30
+     */
+    function calculateAndSetSemester() {
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1; // 1-12
+      const yearSelect = document.getElementById('year');
+      const semesterInput = document.getElementById('semester');
+      const semesterInfo = document.getElementById('semester-info');
+      
+      const selectedYear = parseInt(yearSelect.value) || 1;
+      
+      // Determine if odd or even semester based on month
+      const isOddSemester = currentMonth >= 7; // July-December = Odd semester
+      
+      // Calculate semester number
+      let semester;
+      if (selectedYear === 1) {
+        semester = isOddSemester ? 1 : 2;
+      } else if (selectedYear === 2) {
+        semester = isOddSemester ? 3 : 4;
+      } else if (selectedYear === 3) {
+        semester = isOddSemester ? 5 : 6;
+      }
+      
+      // Set semester value
+      semesterInput.value = semester;
+      
+      // Set info text
+      const semesterType = isOddSemester ? 'Odd Semester' : 'Even Semester';
+      const monthRange = isOddSemester ? 'July-December' : 'January-June';
+      semesterInfo.textContent = `${semesterType} (${monthRange})`;
+      sesemester: document.getElementById('semester').value,
+        admission_month: new Date().getMonth() + 1, // Store admission month for future calculations
+        admission_year: new Date().getFullYear(),
+        mesterInfo.style.color = isOddSemester ? '#667eea' : '#48bb78';
+    }
+    
+    function showFirebaseWarning() {
+      const alertContainer = document.getElementById('alert-container');
+      alertContainer.innerHTML = `
+        <div class="alert alert-warning mb-4">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-content">
+            <div class="alert-title">Firebase Not Configured</div>
+            <p class="text-xs mb-0">Please update <code>js/firebase-config.js</code> with your Firebase credentials.</p>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Form submission
+    const registerForm = document.getElementById('register-form');
+    const registerBtn = document.getElementById('register-btn');
+    
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      clearErrors();
+      
+      // Get form values
+      const firstName = document.getElementById('first_name').value.trim();
+      const middleName = document.getElementById('middle_name').value.trim();
+      const surname = document.getElementById('surname').value.trim();
+      const fullName = `${firstName} ${middleName} ${surname}`;
+      
+      const formData = {
+        full_name: fullName,
+        first_name: firstName,
+        middle_name: middleName,
+        surname: surname,
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        prn: document.getElementById('prn').value.trim(),
+        roll_number: document.getElementById('roll_number').value.trim(),
+        course: document.getElementById('course').value,
+        year: document.getElementById('year').value,
+        division: document.getElementById('division').value,
+        password: document.getElementById('password').value,
+        role: 'student' // Only students can register via this form
+      };
+      
+      const confirmPassword = document.getElementById('confirm_password').value;
+      const termsChecked = document.getElementById('terms').checked;
+      const photoFile = document.getElementById('profile_photo').files[0];
+      
+      // Validate
+      let hasError = false;
+      
+      if (!photoFile) {
+        showFieldError('profile_photo', 'Profile photo is required');
+        hasError = true;
+      } else if (photoFile.size > 5 * 1024 * 1024) {
+        showFieldError('profile_photo', 'Photo must be less than 5MB');
+        hasError = true;
+      }
+      
+      if (!firstName) {
+        showFieldError('first_name', 'First name is required');
+        hasError = true;
+      }
+      
+      if (!middleName) {
+        showFieldError('middle_name', 'Middle name is required');
+        hasError = true;
+      }
+      
+      if (!surname) {
+        showFieldError('surname', 'Surname is required');
+        hasError = true;
+      }
+      
+      if (!formData.prn) {
+        showFieldError('prn', 'PRN is required');
+        hasError = true;
+      } else if (!/^\d{11,12}$/.test(formData.prn)) {
+        showFieldError('prn', 'PRN must be 11-12 digits');
+        hasError = true;
+      }
+      
+      if (!formData.email) {
+        showFieldError('email', 'Email is required');
+        hasError = true;
+      } else if (!isValidEmail(formData.email)) {
+        showFieldError('email', 'Please enter a valid email');
+        hasError = true;
+      }
+      
+      if (!formData.phone) {
+        showFieldError('phone', 'Phone number is required');
+        hasError = true;
+      } else if (!isValidPhone(formData.phone)) {
+        showFieldError('phone', 'Please enter a valid 10-digit phone number');
+        hasError = true;
+      }
+      
+      if (!formData.course) {
+        showFieldError('course', 'Please select a course');
+        hasError = true;
+      }
+      
+      if (!formData.year) {
+        showFieldError('year', 'Please select year');
+        hasError = true;
+      }
+      
+      if (!formData.division) {
+        showFieldError('division', 'Please select division');
+        hasError = true;
+      }
+      
+      if (!formData.roll_number) {
+        showFieldError('roll_number', 'Roll number is required');
+        hasError = true;
+      }
+      
+      if (!formData.password) {
+        showFieldError('password', 'Password is required');
+        hasError = true;
+      } else if (formData.password.length < 6) {
+        showFieldError('password', 'Password must be at least 6 characters');
+        hasError = true;
+      }
+      
+      if (formData.password !== confirmPassword) {
+        showFieldError('confirm_password', 'Passwords do not match');
+        hasError = true;
+      }
+      
+      if (!termsChecked) {
+        showError('Please agree to the Terms of Service');
+        hasError = true;
+      }
+      
+      if (hasError) return;
+      
+      // Show loading
+      setLoading(true);
+      
+      try {
+        const result = await register(formData);
+        
+        if (result.success) {
+          // Upload profile photo if provided
+          if (photoFile) {
+            try {
+              await uploadProfilePhoto(result.userId, photoFile);
+            } catch (error) {
+              console.error('Photo upload failed:', error);
+              // Don't fail registration if photo upload fails
+            }
+          }
+          
+          showSuccess(result.message || 'Registration successful! Redirecting to login...');
+          
+          // Redirect to login after delay
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 2000);
+        }
+      } catch (error) {
+        showError(error.message);
+        setLoading(false);
+      }
+    });
+    
+    // Helper functions
+    function isValidEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+    
+    function isValidPhone(phone) {
+      const re = /^[6-9]\d{9}$/;
+      return re.test(phone);
+    }
+    
+    function showFieldError(fieldId, message) {
+      const input = document.getElementById(fieldId);
+      const error = document.getElementById(`${fieldId}-error`);
+      
+      if (input) input.classList.add('is-invalid');
+      if (error) error.textContent = message;
+    }
+    
+    function clearErrors() {
+      const inputs = registerForm.querySelectorAll('.form-control');
+      const errors = registerForm.querySelectorAll('.form-error');
+      
+      inputs.forEach(input => input.classList.remove('is-invalid'));
+      errors.forEach(error => error.textContent = '');
+    }
+    
+    function setLoading(loading) {
+      const btnText = registerBtn.querySelector('.btn-text');
+      const btnLoading = registerBtn.querySelector('.btn-loading');
+      
+      registerBtn.disabled = loading;
+      
+      if (loading) {
+        btnText.classList.add('hidden');
+        btnLoading.classList.remove('hidden');
+      } else {
+        btnText.classList.remove('hidden');
+        btnLoading.classList.add('hidden');
+      }
+    }
+  </script>
+</body>
+</html>

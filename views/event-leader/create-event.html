@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Event | BVDU CampusFlow</title>
+  
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-wrapper">
+      <header class="header" id="header"></header>
+
+      <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="page-header-content">
+            <h1 class="page-title">Create Event</h1>
+            <p class="page-subtitle">Create a new event for students to participate in</p>
+          </div>
+          <div class="page-header-actions">
+            <a href="/views/event-leader/my-events.html" class="btn btn-outline">
+              ← Back to My Events
+            </a>
+          </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="card">
+          <div class="card-body">
+            <form id="event-form" class="form-layout">
+              <!-- Basic Information -->
+              <div class="form-section">
+                <h3 class="form-section-title">Basic Information</h3>
+                
+                <div class="form-row">
+                  <div class="form-group full-width">
+                    <label class="form-label required">Event Name</label>
+                    <input type="text" class="form-input" id="event-name" required 
+                      placeholder="Enter event name">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label required">Event Type</label>
+                    <select class="form-select" id="event-type" required>
+                      <option value="">Select type</option>
+                      <option value="workshop">Workshop</option>
+                      <option value="seminar">Seminar</option>
+                      <option value="hackathon">Hackathon</option>
+                      <option value="competition">Competition</option>
+                      <option value="cultural">Cultural</option>
+                      <option value="sports">Sports</option>
+                      <option value="conference">Conference</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Club/Organization</label>
+                    <select class="form-select" id="club-id">
+                      <option value="">College Event (No Club)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label required">Description</label>
+                  <textarea class="form-textarea" id="description" rows="4" required
+                    placeholder="Describe the event, its objectives, and what participants will learn or do"></textarea>
+                </div>
+              </div>
+
+              <!-- Date & Time -->
+              <div class="form-section">
+                <h3 class="form-section-title">Date & Time</h3>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label required">Start Date</label>
+                    <input type="date" class="form-input" id="start-date" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label required">End Date</label>
+                    <input type="date" class="form-input" id="end-date" required>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Start Time</label>
+                    <input type="time" class="form-input" id="start-time">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">End Time</label>
+                    <input type="time" class="form-input" id="end-time">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Location -->
+              <div class="form-section">
+                <h3 class="form-section-title">Location</h3>
+                
+                <div class="form-group">
+                  <label class="form-label">Venue</label>
+                  <input type="text" class="form-input" id="venue" 
+                    placeholder="e.g., Auditorium, Conference Hall, Lab 101">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Event Mode</label>
+                  <div class="radio-group">
+                    <label class="radio-label">
+                      <input type="radio" name="mode" value="offline" checked>
+                      <span>Offline</span>
+                    </label>
+                    <label class="radio-label">
+                      <input type="radio" name="mode" value="online">
+                      <span>Online</span>
+                    </label>
+                    <label class="radio-label">
+                      <input type="radio" name="mode" value="hybrid">
+                      <span>Hybrid</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group" id="online-link-group" style="display: none;">
+                  <label class="form-label">Online Meeting Link</label>
+                  <input type="url" class="form-input" id="online-link" 
+                    placeholder="https://meet.google.com/...">
+                </div>
+              </div>
+
+              <!-- Registration -->
+              <div class="form-section">
+                <h3 class="form-section-title">Registration Settings</h3>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Maximum Participants</label>
+                    <input type="number" class="form-input" id="max-participants" min="1" 
+                      placeholder="Leave empty for unlimited">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Registration Deadline</label>
+                    <input type="date" class="form-input" id="registration-deadline">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="registration-open" checked>
+                    <span>Registration is open</span>
+                  </label>
+                </div>
+
+                <div class="form-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="od-eligible" checked>
+                    <span>This event is eligible for OD (On-Duty)</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Submit Actions -->
+              <div class="form-actions">
+                <button type="button" class="btn btn-outline" onclick="window.history.back()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="submit-btn">
+                  <span class="btn-text">Create Event</span>
+                  <span class="btn-loader" style="display: none;">Creating...</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initApp, setPageTitle } from '/js/app.js';
+    import { createEvent, getClubs } from '/js/db.js';
+    import { showToast, showLoadingOverlay } from '/js/notifications.js';
+
+    const user = initApp({ allowedRoles: ['event_leader'] });
+    
+    if (user) {
+      setPageTitle('Create Event');
+      loadClubs();
+      setupForm();
+    }
+
+    async function loadClubs() {
+      try {
+        const clubs = await getClubs();
+        const select = document.getElementById('club-id');
+        
+        clubs.forEach(club => {
+          const option = document.createElement('option');
+          option.value = club.id;
+          option.textContent = club.name;
+          select.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error loading clubs:', error);
+      }
+    }
+
+    function setupForm() {
+      // Toggle online link visibility
+      document.querySelectorAll('input[name="mode"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+          const onlineLinkGroup = document.getElementById('online-link-group');
+          if (radio.value === 'online' || radio.value === 'hybrid') {
+            onlineLinkGroup.style.display = 'block';
+          } else {
+            onlineLinkGroup.style.display = 'none';
+          }
+        });
+      });
+
+      // Set minimum date to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('start-date').min = today;
+      document.getElementById('end-date').min = today;
+      document.getElementById('registration-deadline').min = today;
+
+      // Handle form submission
+      document.getElementById('event-form').addEventListener('submit', handleSubmit);
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+
+      if (new Date(endDate) < new Date(startDate)) {
+        showToast('End date cannot be before start date', 'error');
+        return;
+      }
+
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.querySelector('.btn-text').style.display = 'none';
+      submitBtn.querySelector('.btn-loader').style.display = 'inline';
+
+      const hideLoading = showLoadingOverlay('Creating event...');
+
+      try {
+        const clubSelect = document.getElementById('club-id');
+        const mode = document.querySelector('input[name="mode"]:checked').value;
+
+        const eventData = {
+          event_name: document.getElementById('event-name').value.trim(),
+          event_type: document.getElementById('event-type').value,
+          description: document.getElementById('description').value.trim(),
+          start_date: startDate,
+          end_date: endDate,
+          start_time: document.getElementById('start-time').value || null,
+          end_time: document.getElementById('end-time').value || null,
+          venue: document.getElementById('venue').value.trim() || null,
+          mode: mode,
+          online_link: mode !== 'offline' ? document.getElementById('online-link').value.trim() : null,
+          club_id: clubSelect.value || null,
+          club_name: clubSelect.value ? clubSelect.selectedOptions[0].textContent : null,
+          max_participants: document.getElementById('max-participants').value 
+            ? parseInt(document.getElementById('max-participants').value) : null,
+          registration_deadline: document.getElementById('registration-deadline').value || null,
+          registration_open: document.getElementById('registration-open').checked,
+          od_eligible: document.getElementById('od-eligible').checked,
+          event_leader_id: user.id,
+          event_leader_name: user.full_name,
+          status: 'upcoming',
+          created_at: new Date().toISOString()
+        };
+
+        await createEvent(eventData);
+        
+        hideLoading();
+        showToast('Event created successfully!', 'success');
+        
+        setTimeout(() => {
+          window.location.href = '/views/event-leader/my-events.html';
+        }, 1500);
+
+      } catch (error) {
+        hideLoading();
+        console.error('Error creating event:', error);
+        showToast('Error creating event. Please try again.', 'error');
+        
+        submitBtn.disabled = false;
+        submitBtn.querySelector('.btn-text').style.display = 'inline';
+        submitBtn.querySelector('.btn-loader').style.display = 'none';
+      }
+    }
+  </script>
+
+  <style>
+    .form-layout {
+      max-width: 800px;
+    }
+
+    .form-section {
+      margin-bottom: var(--space-8);
+      padding-bottom: var(--space-8);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .form-section:last-of-type {
+      border-bottom: none;
+    }
+
+    .form-section-title {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      color: var(--gray-900);
+      margin: 0 0 var(--space-6) 0;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+
+    .form-row .full-width {
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 575px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .radio-group {
+      display: flex;
+      gap: var(--space-6);
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      cursor: pointer;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      cursor: pointer;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: var(--space-4);
+      justify-content: flex-end;
+      padding-top: var(--space-6);
+    }
+  </style>
+</body>
+</html>

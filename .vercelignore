@@ -1,0 +1,9 @@
+node_modules
+.git
+.vscode
+*.md
+!README.md
+firebase/
+supabase/
+.env.local
+.DS_Store

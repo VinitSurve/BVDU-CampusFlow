@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My OD Forms | BVDU CampusFlow</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-wrapper">
+      <header class="header" id="header"></header>
+
+      <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="page-header-content">
+            <h1 class="page-title">My OD Forms</h1>
+            <p class="page-subtitle">View and track all your submitted OD forms</p>
+          </div>
+          <div class="page-header-actions">
+            <a href="/views/student/submit-form.html" class="btn btn-primary">
+              <span>➕</span> Submit New Form
+            </a>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="card mb-6">
+          <div class="card-body">
+            <div class="filters-row">
+              <div class="form-group">
+                <label class="form-label">Status</label>
+                <select class="form-select" id="filter-status">
+                  <option value="">All Statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="partially_approved">Partially Approved</option>
+                  <option value="faculty_approved">Faculty Approved</option>
+                  <option value="hod_approved">HOD Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Date Range</label>
+                <select class="form-select" id="filter-date">
+                  <option value="">All Time</option>
+                  <option value="7">Last 7 Days</option>
+                  <option value="30">Last 30 Days</option>
+                  <option value="90">Last 3 Months</option>
+                </select>
+              </div>
+              <div class="form-group flex-grow">
+                <label class="form-label">Search</label>
+                <input type="text" class="form-input" id="filter-search" placeholder="Search by event name...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <button class="btn btn-outline" id="clear-filters">Clear Filters</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Forms Table -->
+        <div class="card">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table" id="forms-table">
+                <thead>
+                  <tr>
+                    <th>Event Name</th>
+                    <th>Event Dates</th>
+                    <th>Submitted On</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="forms-tbody">
+                  <tr>
+                    <td colspan="5" class="text-center py-8">
+                      <div class="loading-spinner mx-auto"></div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-wrapper" id="pagination-wrapper" style="display: none;">
+          <div class="pagination-info">
+            Showing <span id="showing-start">1</span> to <span id="showing-end">10</span> of <span id="total-count">0</span> forms
+          </div>
+          <div class="pagination" id="pagination">
+            <!-- Pagination buttons rendered by JS -->
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initApp, setPageTitle } from '/js/app.js';
+    import { getStudentODForms } from '/js/db.js';
+    import { formatDate, getStatusBadgeHTML, debounce } from '/js/utils.js';
+    import { showToast } from '/js/notifications.js';
+
+    const user = initApp({ allowedRoles: ['student'] });
+    
+    if (user) {
+      setPageTitle('My OD Forms');
+      loadForms();
+      setupFilters();
+    }
+
+    let allForms = [];
+    let filteredForms = [];
+    let currentPage = 1;
+    const perPage = 10;
+
+    async function loadForms() {
+      try {
+        allForms = await getStudentODForms(user.id);
+        applyFilters();
+      } catch (error) {
+        console.error('Error loading forms:', error);
+        showToast('Error loading OD forms', 'error');
+      }
+    }
+
+    function setupFilters() {
+      const statusFilter = document.getElementById('filter-status');
+      const dateFilter = document.getElementById('filter-date');
+      const searchFilter = document.getElementById('filter-search');
+      const clearBtn = document.getElementById('clear-filters');
+
+      statusFilter.addEventListener('change', applyFilters);
+      dateFilter.addEventListener('change', applyFilters);
+      searchFilter.addEventListener('input', debounce(applyFilters, 300));
+      
+      clearBtn.addEventListener('click', () => {
+        statusFilter.value = '';
+        dateFilter.value = '';
+        searchFilter.value = '';
+        applyFilters();
+      });
+    }
+
+    function applyFilters() {
+      const status = document.getElementById('filter-status').value;
+      const days = document.getElementById('filter-date').value;
+      const search = document.getElementById('filter-search').value.toLowerCase();
+
+      filteredForms = allForms.filter(form => {
+        // Status filter
+        if (status && form.status !== status) return false;
+
+        // Date filter
+        if (days) {
+          const submittedDate = new Date(form.submitted_at);
+          const cutoffDate = new Date();
+          cutoffDate.setDate(cutoffDate.getDate() - parseInt(days));
+          if (submittedDate < cutoffDate) return false;
+        }
+
+        // Search filter
+        if (search && !form.event_name.toLowerCase().includes(search)) return false;
+
+        return true;
+      });
+
+      currentPage = 1;
+      renderTable();
+      renderPagination();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('forms-tbody');
+      const start = (currentPage - 1) * perPage;
+      const end = start + perPage;
+      const pageForms = filteredForms.slice(start, end);
+
+      if (pageForms.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="text-center py-8">
+              <div class="empty-state">
+                <div class="empty-state-icon">📝</div>
+                <h4 class="empty-state-title">No OD Forms Found</h4>
+                <p class="empty-state-text">
+                  ${allForms.length === 0 
+                    ? "You haven't submitted any OD forms yet." 
+                    : "No forms match your current filters."}
+                </p>
+                ${allForms.length === 0 
+                  ? '<a href="/views/student/submit-form.html" class="btn btn-primary btn-sm">Submit Your First Form</a>' 
+                  : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = pageForms.map(form => `
+        <tr>
+          <td>
+            <div class="table-cell-main">${form.event_name}</div>
+            <div class="table-cell-sub">${form.club_name || 'College Event'}</div>
+          </td>
+          <td>
+            <div class="table-cell-main">${formatDate(form.event_start_date)}</div>
+            <div class="table-cell-sub">to ${formatDate(form.event_end_date)}</div>
+          </td>
+          <td>${formatDate(form.submitted_at)}</td>
+          <td>${getStatusBadgeHTML(form.status)}</td>
+          <td>
+            <div class="table-actions">
+              <a href="/views/student/form-details.html?id=${form.id}" class="btn btn-sm btn-outline">
+                View Details
+              </a>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderPagination() {
+      const wrapper = document.getElementById('pagination-wrapper');
+      const pagination = document.getElementById('pagination');
+      const totalPages = Math.ceil(filteredForms.length / perPage);
+
+      if (totalPages <= 1) {
+        wrapper.style.display = 'none';
+        return;
+      }
+
+      wrapper.style.display = 'flex';
+
+      // Update info
+      const start = (currentPage - 1) * perPage + 1;
+      const end = Math.min(currentPage * perPage, filteredForms.length);
+      document.getElementById('showing-start').textContent = start;
+      document.getElementById('showing-end').textContent = end;
+      document.getElementById('total-count').textContent = filteredForms.length;
+
+      // Generate buttons
+      let buttons = [];
+      
+      // Previous
+      buttons.push(`
+        <button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+                ${currentPage === 1 ? 'disabled' : ''} 
+                data-page="${currentPage - 1}">
+          ← Prev
+        </button>
+      `);
+
+      // Page numbers
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+          buttons.push(`
+            <button class="pagination-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">
+              ${i}
+            </button>
+          `);
+        } else if (i === currentPage - 2 || i === currentPage + 2) {
+          buttons.push('<span class="pagination-ellipsis">...</span>');
+        }
+      }
+
+      // Next
+      buttons.push(`
+        <button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+                ${currentPage === totalPages ? 'disabled' : ''} 
+                data-page="${currentPage + 1}">
+          Next →
+        </button>
+      `);
+
+      pagination.innerHTML = buttons.join('');
+
+      // Add click handlers
+      pagination.querySelectorAll('.pagination-btn:not(.disabled)').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentPage = parseInt(btn.dataset.page);
+          renderTable();
+          renderPagination();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+    }
+  </script>
+
+  <style>
+    .filters-row {
+      display: flex;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .filters-row .form-group {
+      min-width: 150px;
+      margin-bottom: 0;
+    }
+
+    .filters-row .flex-grow {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .table-cell-main {
+      font-weight: 500;
+      color: var(--gray-900);
+    }
+
+    .table-cell-sub {
+      font-size: var(--text-sm);
+      color: var(--gray-500);
+    }
+
+    .table-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .pagination-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: var(--space-6);
+      flex-wrap: wrap;
+      gap: var(--space-4);
+    }
+
+    .pagination-info {
+      color: var(--gray-600);
+      font-size: var(--text-sm);
+    }
+
+    .pagination {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .pagination-btn {
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--gray-300);
+      background: white;
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .pagination-btn:hover:not(.disabled):not(.active) {
+      background: var(--gray-50);
+      border-color: var(--gray-400);
+    }
+
+    .pagination-btn.active {
+      background: var(--primary-600);
+      border-color: var(--primary-600);
+      color: white;
+    }
+
+    .pagination-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pagination-ellipsis {
+      padding: var(--space-2);
+      color: var(--gray-500);
+    }
+
+    .empty-state {
+      padding: var(--space-8);
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: var(--space-4);
+    }
+
+    .empty-state-title {
+      font-weight: 600;
+      color: var(--gray-900);
+      margin: 0 0 var(--space-2) 0;
+    }
+
+    .empty-state-text {
+      color: var(--gray-500);
+      margin: 0 0 var(--space-4) 0;
+    }
+
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--primary-600);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 767px) {
+      .filters-row {
+        flex-direction: column;
+      }
+
+      .filters-row .form-group {
+        width: 100%;
+      }
+    }
+  </style>
+</body>
+</html>

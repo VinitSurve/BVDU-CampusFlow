@@ -1,0 +1,216 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Get user data from users collection
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    // Check user role
+    function hasRole(role) {
+      return isAuthenticated() && getUserData().role == role;
+    }
+    
+    // Check if user has any of the specified roles
+    function hasAnyRole(roles) {
+      return isAuthenticated() && getUserData().role in roles;
+    }
+    
+    // Check if user is the document owner
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Validate required fields exist
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+    
+    // ============================================
+    // USERS COLLECTION
+    // ============================================
+    match /users/{userId} {
+      // Users can read their own document
+      // HOD can read faculty in their department
+      // Faculty can read students in their division
+      allow read: if isOwner(userId) 
+        || (hasRole('hod') && resource.data.department == getUserData().department)
+        || (hasRole('faculty') && resource.data.role == 'student');
+      
+      // Users can create their own document during registration
+      allow create: if isOwner(userId) && hasRequiredFields(['email', 'full_name', 'role']);
+      
+      // Users can update their own profile (limited fields)
+      // HOD can update faculty status
+      allow update: if isOwner(userId) 
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'email'])
+        || (hasRole('hod') && resource.data.role == 'faculty');
+      
+      // Only admins can delete users (not implemented in client)
+      allow delete: if false;
+    }
+    
+    // ============================================
+    // EVENTS COLLECTION
+    // ============================================
+    match /events/{eventId} {
+      // Everyone can read approved events
+      allow read: if isAuthenticated();
+      
+      // Event leaders can create events
+      allow create: if hasAnyRole(['event_leader', 'hod']) 
+        && hasRequiredFields(['event_name', 'start_date', 'end_date', 'event_leader_id'])
+        && request.resource.data.event_leader_id == request.auth.uid;
+      
+      // Event leader who created can update their own events
+      // HOD can update any event in their department
+      allow update: if (hasRole('event_leader') && resource.data.event_leader_id == request.auth.uid)
+        || hasRole('hod');
+      
+      // Only HOD can delete events
+      allow delete: if hasRole('hod');
+    }
+    
+    // ============================================
+    // CLUBS COLLECTION
+    // ============================================
+    match /clubs/{clubId} {
+      // Everyone can read clubs
+      allow read: if isAuthenticated();
+      
+      // Only HOD can create/update/delete clubs
+      allow create, update, delete: if hasRole('hod');
+    }
+    
+    // ============================================
+    // OD_FORMS COLLECTION
+    // ============================================
+    match /od_forms/{formId} {
+      // Students can read their own forms
+      // Event leaders can read forms for their events
+      // Faculty can read forms with their subjects
+      // HOD can read all forms in their department
+      allow read: if isAuthenticated() && (
+        resource.data.student_id == request.auth.uid
+        || resource.data.event_leader_id == request.auth.uid
+        || hasRole('faculty')
+        || hasRole('hod')
+      );
+      
+      // Students can create OD forms
+      allow create: if hasRole('student') 
+        && hasRequiredFields(['student_id', 'event_id', 'event_name', 'od_start_date', 'od_end_date', 'reason'])
+        && request.resource.data.student_id == request.auth.uid
+        && request.resource.data.status == 'pending';
+      
+      // Event leaders can update (approve/reject) forms for their events
+      allow update: if isAuthenticated() && (
+        // Event leader approving
+        (resource.data.event_leader_id == request.auth.uid 
+          && resource.data.status == 'pending'
+          && request.resource.data.status in ['partially_approved', 'rejected'])
+        // HOD final approval
+        || (hasRole('hod') 
+          && resource.data.status == 'faculty_approved'
+          && request.resource.data.status in ['hod_approved', 'rejected'])
+      );
+      
+      // Students cannot delete forms; only admins
+      allow delete: if false;
+    }
+    
+    // ============================================
+    // OD_SUBJECT_APPROVALS COLLECTION
+    // ============================================
+    match /od_subject_approvals/{approvalId} {
+      // Read access for related parties
+      allow read: if isAuthenticated();
+      
+      // Created automatically when OD form is partially approved
+      allow create: if hasAnyRole(['event_leader', 'faculty', 'hod']);
+      
+      // Faculty can update their subject approvals
+      allow update: if hasRole('faculty') 
+        && resource.data.faculty_id == request.auth.uid
+        && resource.data.status == 'pending'
+        && request.resource.data.status in ['approved', 'rejected'];
+      
+      allow delete: if false;
+    }
+    
+    // ============================================
+    // PARTICIPANTS COLLECTION
+    // ============================================
+    match /participants/{participantId} {
+      // Event leaders can read participants for their events
+      // Students can see their own participation
+      allow read: if isAuthenticated();
+      
+      // Students can register for events
+      allow create: if hasRole('student') 
+        && request.resource.data.student_id == request.auth.uid;
+      
+      // Event leaders can update attendance
+      allow update: if hasAnyRole(['event_leader', 'faculty', 'hod']);
+      
+      // Event leaders can remove participants
+      allow delete: if hasAnyRole(['event_leader', 'hod']);
+    }
+    
+    // ============================================
+    // NOTIFICATIONS COLLECTION
+    // ============================================
+    match /notifications/{notificationId} {
+      // Users can read their own notifications
+      allow read: if isAuthenticated() && resource.data.user_id == request.auth.uid;
+      
+      // System creates notifications (via Cloud Functions in production)
+      // For client-side demo, allow authenticated users
+      allow create: if isAuthenticated();
+      
+      // Users can mark their notifications as read
+      allow update: if isAuthenticated() 
+        && resource.data.user_id == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['is_read']);
+      
+      // Users can delete their own notifications
+      allow delete: if isAuthenticated() && resource.data.user_id == request.auth.uid;
+    }
+    
+    // ============================================
+    // ACTIVITY_LOGS COLLECTION
+    // ============================================
+    match /activity_logs/{logId} {
+      // Users can read their own activity logs
+      // HOD can read all logs in their department
+      allow read: if isAuthenticated() && (
+        resource.data.user_id == request.auth.uid
+        || hasRole('hod')
+      );
+      
+      // System creates logs
+      allow create: if isAuthenticated();
+      
+      // Logs are immutable
+      allow update, delete: if false;
+    }
+    
+    // ============================================
+    // SUBJECTS COLLECTION (for faculty-subject mapping)
+    // ============================================
+    match /subjects/{subjectId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if hasRole('hod');
+    }
+  }
+}

@@ -1,0 +1,581 @@
+/* ========================================
+   Responsive Styles - OD Forms Management System
+   ======================================== */
+
+/* ========================================
+   Extra Large Screens (1400px and above)
+   ======================================== */
+
+@media (min-width: 1400px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .content-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+/* ========================================
+   Large Screens (1200px - 1399px)
+   ======================================== */
+
+@media (max-width: 1399px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+  }
+}
+
+/* ========================================
+   Medium-Large Screens (992px - 1199px)
+   ======================================== */
+
+@media (max-width: 1199px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .header-search {
+    width: 250px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-row-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================
+   Medium Screens (768px - 991px) - Tablets
+   ======================================== */
+
+@media (max-width: 991px) {
+  :root {
+    --sidebar-width: 240px;
+  }
+  
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .main-wrapper {
+    margin-left: 0;
+  }
+  
+  .sidebar.collapsed + .main-wrapper {
+    margin-left: 0;
+  }
+  
+  .header-toggle {
+    display: flex;
+  }
+  
+  .mobile-overlay.active {
+    display: block;
+  }
+  
+  .header-search {
+    display: none;
+  }
+  
+  .header-profile-info {
+    display: none;
+  }
+  
+  .notifications-dropdown {
+    width: 320px;
+    right: -60px;
+  }
+  
+  .filter-bar {
+    flex-wrap: wrap;
+  }
+  
+  .filter-bar .form-control {
+    min-width: calc(50% - var(--space-2));
+  }
+  
+  .filter-bar .search-box {
+    width: 100%;
+    max-width: none;
+    order: -1;
+  }
+  
+  .data-table {
+    display: block;
+    overflow-x: auto;
+  }
+  
+  .modal-lg,
+  .modal-xl {
+    max-width: calc(100% - var(--space-8));
+  }
+}
+
+/* ========================================
+   Small Screens (576px - 767px) - Large Phones
+   ======================================== */
+
+@media (max-width: 767px) {
+  .main-content {
+    padding: var(--space-4);
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+  
+  .page-header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  
+  .page-header-actions .btn {
+    flex: 1;
+    min-width: calc(50% - var(--space-2));
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  
+  .stat-card {
+    padding: var(--space-4);
+  }
+  
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .stat-value {
+    font-size: var(--text-xl);
+  }
+  
+  .card-header {
+    padding: var(--space-3) var(--space-4);
+  }
+  
+  .card-body {
+    padding: var(--space-4);
+  }
+  
+  .card-footer {
+    padding: var(--space-3) var(--space-4);
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  
+  .card-footer .btn {
+    flex: 1;
+    min-width: calc(50% - var(--space-1));
+  }
+  
+  .tabs {
+    overflow-x: auto;
+    margin-bottom: var(--space-4);
+  }
+  
+  .tab-item {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+  }
+  
+  .filter-bar {
+    padding: var(--space-3);
+    gap: var(--space-3);
+  }
+  
+  .filter-bar .form-control {
+    min-width: 100%;
+  }
+  
+  /* Table Responsive */
+  .table-container {
+    border-radius: var(--radius-lg);
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+  }
+  
+  .table-actions {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  
+  /* Modals */
+  .modal-overlay {
+    padding: var(--space-2);
+    align-items: flex-end;
+  }
+  
+  .modal {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+  
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: var(--space-4);
+  }
+  
+  .modal-footer {
+    flex-direction: column;
+  }
+  
+  .modal-footer .btn {
+    width: 100%;
+  }
+  
+  /* Auth Layout */
+  .auth-layout {
+    padding: var(--space-2);
+  }
+  
+  .auth-container {
+    max-width: 100%;
+  }
+  
+  .auth-card {
+    border-radius: var(--radius-xl);
+  }
+  
+  .auth-header {
+    padding: var(--space-6) var(--space-4) var(--space-4);
+  }
+  
+  .auth-body {
+    padding: 0 var(--space-4) var(--space-6);
+  }
+  
+  .auth-footer {
+    padding: var(--space-3) var(--space-4);
+  }
+  
+  .auth-logo {
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
+  }
+  
+  .auth-title {
+    font-size: var(--text-xl);
+  }
+  
+  /* Notifications Dropdown */
+  .notifications-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 70vh;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+  
+  /* Profile Dropdown */
+  .profile-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+  
+  /* File Upload */
+  .file-upload {
+    padding: var(--space-6);
+  }
+  
+  .file-upload-icon {
+    font-size: 36px;
+  }
+  
+  /* Pagination */
+  .pagination {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .pagination-item {
+    min-width: 32px;
+    height: 32px;
+    font-size: var(--text-xs);
+  }
+}
+
+/* ========================================
+   Extra Small Screens (below 576px) - Small Phones
+   ======================================== */
+
+@media (max-width: 575px) {
+  html {
+    font-size: 14px;
+  }
+  
+  .header {
+    padding: 0 var(--space-3);
+  }
+  
+  .header-left {
+    gap: var(--space-2);
+  }
+  
+  .header-right {
+    gap: var(--space-2);
+  }
+  
+  .header-notifications-btn,
+  .header-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  
+  .header-profile-avatar {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .main-content {
+    padding: var(--space-3);
+  }
+  
+  .page-title {
+    font-size: var(--text-xl);
+  }
+  
+  .page-subtitle {
+    font-size: var(--text-xs);
+  }
+  
+  .page-header-actions .btn {
+    min-width: 100%;
+    font-size: var(--text-xs);
+  }
+  
+  .btn {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+  }
+  
+  .btn-lg {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-sm);
+  }
+  
+  .badge {
+    padding: 2px var(--space-2);
+    font-size: 10px;
+  }
+  
+  .form-label {
+    font-size: var(--text-xs);
+  }
+  
+  .form-control {
+    padding: var(--space-2);
+    font-size: var(--text-sm);
+  }
+  
+  .form-error,
+  .form-text {
+    font-size: 10px;
+  }
+  
+  .sidebar-logo {
+    padding: var(--space-4) var(--space-3);
+  }
+  
+  .sidebar-logo-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  
+  .sidebar-logo-title {
+    font-size: var(--text-base);
+  }
+  
+  .sidebar-link {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+  }
+  
+  .sidebar-link-icon {
+    font-size: 18px;
+  }
+  
+  .alert {
+    padding: var(--space-3);
+    font-size: var(--text-xs);
+  }
+  
+  .empty-state {
+    padding: var(--space-8);
+  }
+  
+  .empty-state-icon {
+    font-size: 48px;
+  }
+  
+  .empty-state-title {
+    font-size: var(--text-base);
+  }
+  
+  .empty-state-text {
+    font-size: var(--text-xs);
+  }
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
+
+@media print {
+  .sidebar,
+  .header,
+  .no-print,
+  .page-header-actions,
+  .filter-bar,
+  .table-actions,
+  .pagination {
+    display: none !important;
+  }
+  
+  .main-wrapper {
+    margin-left: 0;
+  }
+  
+  .main-content {
+    padding: 0;
+  }
+  
+  body {
+    background: white;
+    font-size: 12pt;
+  }
+  
+  .card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
+  
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .badge {
+    border: 1px solid currentColor;
+  }
+}
+
+/* ========================================
+   Landscape Mode on Mobile
+   ======================================== */
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .auth-layout {
+    padding: var(--space-2);
+  }
+  
+  .auth-header {
+    padding: var(--space-4);
+  }
+  
+  .auth-logo {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+    margin-bottom: var(--space-2);
+  }
+  
+  .auth-title {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-1);
+  }
+  
+  .auth-body {
+    padding: 0 var(--space-4) var(--space-4);
+  }
+  
+  .form-group {
+    margin-bottom: var(--space-2);
+  }
+  
+  .modal-overlay {
+    align-items: center;
+  }
+  
+  .modal {
+    border-radius: var(--radius-xl);
+    max-height: 95vh;
+  }
+}
+
+/* ========================================
+   High DPI / Retina Displays
+   ======================================== */
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Sharper borders and shadows for retina displays */
+  .card,
+  .modal,
+  .dropdown-menu,
+  .form-control {
+    border-width: 0.5px;
+  }
+}
+
+/* ========================================
+   Reduced Motion
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ========================================
+   Dark Mode Support (Future)
+   ======================================== */
+
+@media (prefers-color-scheme: dark) {
+  /* Dark mode styles can be added here */
+}

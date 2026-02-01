@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | BVDU CampusFlow</title>
+  
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-wrapper">
+      <header class="header" id="header"></header>
+
+      <main class="main-content">
+        <!-- Welcome Section -->
+        <div class="page-header">
+          <div class="page-header-content">
+            <h1 class="page-title" id="welcome-title">Welcome back!</h1>
+            <p class="page-subtitle">Review OD forms from students in your subjects</p>
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-icon warning">📋</div>
+            <div class="stat-card-content">
+              <span class="stat-card-value" id="stat-pending">-</span>
+              <span class="stat-card-label">Pending Review</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon success">✅</div>
+            <div class="stat-card-content">
+              <span class="stat-card-value" id="stat-approved">-</span>
+              <span class="stat-card-label">Approved</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon danger">❌</div>
+            <div class="stat-card-content">
+              <span class="stat-card-value" id="stat-rejected">-</span>
+              <span class="stat-card-label">Rejected</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon primary">📚</div>
+            <div class="stat-card-content">
+              <span class="stat-card-value" id="stat-subjects">-</span>
+              <span class="stat-card-label">My Subjects</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending OD Forms -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Pending OD Forms for Review</h3>
+            <a href="/views/faculty/od-forms.html" class="btn btn-link btn-sm">View All →</a>
+          </div>
+          <div class="card-body" id="pending-forms">
+            <div class="loading-spinner mx-auto"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initApp, setPageTitle, updateSidebarBadge } from '/js/app.js';
+    import { getFacultyODForms, getFacultySubjects } from '/js/db.js';
+    import { formatDate, getStatusBadgeHTML, getRelativeTime } from '/js/utils.js';
+    import { showToast } from '/js/notifications.js';
+
+    const user = initApp({ allowedRoles: ['faculty'] });
+    
+    if (user) {
+      setPageTitle('Dashboard');
+      document.getElementById('welcome-title').textContent = `Welcome back, ${user.full_name.split(' ')[0]}!`;
+      loadDashboardData();
+    }
+
+    async function loadDashboardData() {
+      try {
+        const [forms, subjects] = await Promise.all([
+          getFacultyODForms(user.id),
+          getFacultySubjects(user.id)
+        ]);
+
+        // Calculate stats
+        const pendingForms = forms.filter(f => f.status === 'pending');
+        const approvedForms = forms.filter(f => f.status === 'approved');
+        const rejectedForms = forms.filter(f => f.status === 'rejected');
+
+        // Update stats
+        document.getElementById('stat-pending').textContent = pendingForms.length;
+        document.getElementById('stat-approved').textContent = approvedForms.length;
+        document.getElementById('stat-rejected').textContent = rejectedForms.length;
+        document.getElementById('stat-subjects').textContent = subjects.length;
+
+        // Update sidebar badge
+        if (pendingForms.length > 0) {
+          updateSidebarBadge('od-forms', pendingForms.length);
+        }
+
+        // Render pending forms
+        renderPendingForms(pendingForms.slice(0, 10));
+
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+        showToast('Error loading dashboard data', 'error');
+      }
+    }
+
+    function renderPendingForms(forms) {
+      const container = document.getElementById('pending-forms');
+      
+      if (forms.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">✅</div>
+            <h4 class="empty-state-title">All Caught Up!</h4>
+            <p class="empty-state-text">No pending OD forms to review.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Event</th>
+                <th>Subject</th>
+                <th>OD Period</th>
+                <th>Submitted</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${forms.map(form => `
+                <tr>
+                  <td>
+                    <div class="table-cell-main">${form.student_name}</div>
+                    <div class="table-cell-sub">${form.student_roll_number}</div>
+                  </td>
+                  <td>${form.event_name}</td>
+                  <td>${form.subject_name}</td>
+                  <td>
+                    <div class="table-cell-main">${formatDate(form.od_start_date)}</div>
+                    <div class="table-cell-sub">to ${formatDate(form.od_end_date)}</div>
+                  </td>
+                  <td>${getRelativeTime(form.submitted_at)}</td>
+                  <td>
+                    <a href="/views/faculty/review-form.html?id=${form.od_form_id}&subject=${form.subject_id}" 
+                       class="btn btn-sm btn-primary">Review</a>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+  </script>
+
+  <style>
+    .table-cell-main {
+      font-weight: 500;
+      color: var(--gray-900);
+    }
+
+    .table-cell-sub {
+      font-size: var(--text-sm);
+      color: var(--gray-500);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: var(--space-12);
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: var(--space-4);
+    }
+
+    .empty-state-title {
+      font-weight: 600;
+      margin: 0 0 var(--space-2) 0;
+    }
+
+    .empty-state-text {
+      color: var(--gray-500);
+      margin: 0;
+    }
+
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--primary-600);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: var(--space-8) auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</body>
+</html>

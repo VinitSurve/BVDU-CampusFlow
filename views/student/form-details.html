@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Details | BVDU CampusFlow</title>
+  
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-wrapper">
+      <header class="header" id="header"></header>
+
+      <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="page-header-content">
+            <h1 class="page-title" id="page-title">OD Form Details</h1>
+            <p class="page-subtitle" id="form-subtitle">Loading...</p>
+          </div>
+          <div class="page-header-actions">
+            <a href="/views/student/my-forms.html" class="btn btn-outline">
+              ← Back to My Forms
+            </a>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="card">
+          <div class="card-body text-center py-8">
+            <div class="loading-spinner mx-auto"></div>
+            <p class="text-muted mt-4">Loading form details...</p>
+          </div>
+        </div>
+
+        <!-- Form Details (shown after loading) -->
+        <div id="form-content" style="display: none;">
+          <!-- Status Banner -->
+          <div class="status-banner" id="status-banner">
+            <div class="status-banner-icon">⏳</div>
+            <div class="status-banner-content">
+              <h3 class="status-banner-title" id="status-title">Pending Approval</h3>
+              <p class="status-banner-text" id="status-text">Your OD form is awaiting approval.</p>
+            </div>
+          </div>
+
+          <!-- Two Column Layout -->
+          <div class="details-grid">
+            <!-- Left Column - Form Info -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Event Information</h3>
+              </div>
+              <div class="card-body">
+                <dl class="details-list">
+                  <div class="details-item">
+                    <dt>Event Name</dt>
+                    <dd id="event-name">-</dd>
+                  </div>
+                  <div class="details-item">
+                    <dt>Event Dates</dt>
+                    <dd id="event-dates">-</dd>
+                  </div>
+                  <div class="details-item">
+                    <dt>Organized By</dt>
+                    <dd id="event-organizer">-</dd>
+                  </div>
+                  <div class="details-item">
+                    <dt>Event Leader</dt>
+                    <dd id="event-leader">-</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+
+            <!-- Right Column - OD Details -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">OD Request Details</h3>
+              </div>
+              <div class="card-body">
+                <dl class="details-list">
+                  <div class="details-item">
+                    <dt>OD Period</dt>
+                    <dd id="od-dates">-</dd>
+                  </div>
+                  <div class="details-item">
+                    <dt>Submitted On</dt>
+                    <dd id="submitted-date">-</dd>
+                  </div>
+                  <div class="details-item">
+                    <dt>Current Status</dt>
+                    <dd id="current-status">-</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reason -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Reason for OD</h3>
+            </div>
+            <div class="card-body">
+              <p id="od-reason" class="reason-text">-</p>
+            </div>
+          </div>
+
+          <!-- Proof Document -->
+          <div class="card" id="proof-card" style="display: none;">
+            <div class="card-header">
+              <h3 class="card-title">Proof Document</h3>
+            </div>
+            <div class="card-body">
+              <a href="#" id="proof-link" target="_blank" class="proof-link">
+                <span class="proof-icon">📄</span>
+                <span class="proof-text">View Uploaded Document</span>
+                <span class="proof-action">↗</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Approval Timeline -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Approval Progress</h3>
+            </div>
+            <div class="card-body">
+              <div class="approval-timeline" id="approval-timeline">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Subject Approvals -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Subject-wise Approvals</h3>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table" id="subjects-table">
+                  <thead>
+                    <tr>
+                      <th>Subject</th>
+                      <th>Faculty</th>
+                      <th>Status</th>
+                      <th>Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody id="subjects-tbody">
+                    <tr>
+                      <td colspan="4" class="text-center py-4">Loading...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initApp, setPageTitle } from '/js/app.js';
+    import { getODFormById, getODFormSubjectApprovals } from '/js/db.js';
+    import { formatDate, formatDateTime, getStatusBadgeHTML } from '/js/utils.js';
+    import { showToast } from '/js/notifications.js';
+
+    const user = initApp({ allowedRoles: ['student'] });
+    
+    if (user) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const formId = urlParams.get('id');
+      
+      if (!formId) {
+        showToast('Invalid form ID', 'error');
+        window.location.href = '/views/student/my-forms.html';
+      } else {
+        loadFormDetails(formId);
+      }
+    }
+
+    async function loadFormDetails(formId) {
+      try {
+        const [form, subjectApprovals] = await Promise.all([
+          getODFormById(formId),
+          getODFormSubjectApprovals(formId)
+        ]);
+
+        if (!form) {
+          showToast('Form not found', 'error');
+          window.location.href = '/views/student/my-forms.html';
+          return;
+        }
+
+        // Verify ownership
+        if (form.student_id !== user.id) {
+          showToast('You do not have permission to view this form', 'error');
+          window.location.href = '/views/student/my-forms.html';
+          return;
+        }
+
+        setPageTitle(`OD Form - ${form.event_name}`);
+        renderFormDetails(form, subjectApprovals);
+        
+      } catch (error) {
+        console.error('Error loading form:', error);
+        showToast('Error loading form details', 'error');
+      }
+    }
+
+    function renderFormDetails(form, subjectApprovals) {
+      // Hide loading, show content
+      document.getElementById('loading-state').style.display = 'none';
+      document.getElementById('form-content').style.display = 'block';
+
+      // Update page subtitle
+      document.getElementById('form-subtitle').textContent = 
+        `Submitted on ${formatDateTime(form.submitted_at)}`;
+
+      // Update status banner
+      updateStatusBanner(form.status);
+
+      // Event information
+      document.getElementById('event-name').textContent = form.event_name;
+      document.getElementById('event-dates').textContent = 
+        `${formatDate(form.event_start_date)} to ${formatDate(form.event_end_date)}`;
+      document.getElementById('event-organizer').textContent = form.club_name || 'College Event';
+      document.getElementById('event-leader').textContent = form.event_leader_name || '-';
+
+      // OD Details
+      document.getElementById('od-dates').textContent = 
+        `${formatDate(form.od_start_date)} to ${formatDate(form.od_end_date)}`;
+      document.getElementById('submitted-date').textContent = formatDateTime(form.submitted_at);
+      document.getElementById('current-status').innerHTML = getStatusBadgeHTML(form.status);
+
+      // Reason
+      document.getElementById('od-reason').textContent = form.reason;
+
+      // Proof document
+      if (form.proof_document_url) {
+        document.getElementById('proof-card').style.display = 'block';
+        document.getElementById('proof-link').href = form.proof_document_url;
+      }
+
+      // Approval timeline
+      renderApprovalTimeline(form);
+
+      // Subject approvals
+      renderSubjectApprovals(subjectApprovals);
+    }
+
+    function updateStatusBanner(status) {
+      const banner = document.getElementById('status-banner');
+      const title = document.getElementById('status-title');
+      const text = document.getElementById('status-text');
+
+      const statusConfig = {
+        pending: {
+          class: 'warning',
+          icon: '⏳',
+          title: 'Pending Approval',
+          text: 'Your OD form is awaiting approval from the event leader.'
+        },
+        partially_approved: {
+          class: 'info',
+          icon: '📋',
+          title: 'In Progress',
+          text: 'Event leader approved. Awaiting faculty approvals.'
+        },
+        faculty_approved: {
+          class: 'info',
+          icon: '✓',
+          title: 'Faculty Approved',
+          text: 'All faculty members approved. Awaiting HOD approval.'
+        },
+        hod_approved: {
+          class: 'success',
+          icon: '✅',
+          title: 'Fully Approved',
+          text: 'Congratulations! Your OD has been approved by all authorities.'
+        },
+        rejected: {
+          class: 'danger',
+          icon: '❌',
+          title: 'Rejected',
+          text: 'Your OD form has been rejected. Check remarks for details.'
+        }
+      };
+
+      const config = statusConfig[status] || statusConfig.pending;
+      
+      banner.className = `status-banner ${config.class}`;
+      banner.querySelector('.status-banner-icon').textContent = config.icon;
+      title.textContent = config.title;
+      text.textContent = config.text;
+    }
+
+    function renderApprovalTimeline(form) {
+      const timeline = document.getElementById('approval-timeline');
+      
+      const steps = [
+        {
+          label: 'Submitted',
+          status: 'completed',
+          date: form.submitted_at,
+          description: 'Form submitted by you'
+        },
+        {
+          label: 'Event Leader',
+          status: form.event_leader_approval_status === 'approved' ? 'completed' : 
+                 form.event_leader_approval_status === 'rejected' ? 'rejected' : 'pending',
+          date: form.event_leader_approval_at,
+          description: form.event_leader_approval_status === 'approved' ? 'Approved by event leader' : 
+                      form.event_leader_approval_status === 'rejected' ? 'Rejected by event leader' : 'Awaiting approval'
+        },
+        {
+          label: 'Faculty',
+          status: form.status === 'faculty_approved' || form.status === 'hod_approved' ? 'completed' :
+                 form.status === 'rejected' ? 'rejected' :
+                 form.status === 'partially_approved' ? 'in-progress' : 'pending',
+          date: null,
+          description: form.status === 'faculty_approved' || form.status === 'hod_approved' ? 
+                      'All faculty approved' : 'Subject-wise approval in progress'
+        },
+        {
+          label: 'HOD',
+          status: form.status === 'hod_approved' ? 'completed' :
+                 form.status === 'rejected' && form.hod_remarks ? 'rejected' : 'pending',
+          date: form.hod_approval_at,
+          description: form.status === 'hod_approved' ? 'Final approval granted' : 'Awaiting HOD approval'
+        }
+      ];
+
+      timeline.innerHTML = steps.map((step, index) => `
+        <div class="timeline-step ${step.status}">
+          <div class="timeline-marker">
+            ${step.status === 'completed' ? '✓' : 
+              step.status === 'rejected' ? '✕' :
+              step.status === 'in-progress' ? '⋯' : (index + 1)}
+          </div>
+          <div class="timeline-content">
+            <h4 class="timeline-title">${step.label}</h4>
+            <p class="timeline-description">${step.description}</p>
+            ${step.date ? `<span class="timeline-date">${formatDateTime(step.date)}</span>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderSubjectApprovals(approvals) {
+      const tbody = document.getElementById('subjects-tbody');
+      
+      if (approvals.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="text-center py-4 text-muted">
+              Subject approvals will appear after event leader approval
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = approvals.map(approval => `
+        <tr>
+          <td>${approval.subject_name || '-'}</td>
+          <td>${approval.faculty_name || '-'}</td>
+          <td>${getStatusBadgeHTML(approval.status)}</td>
+          <td>${approval.remarks || '-'}</td>
+        </tr>
+      `).join('');
+    }
+  </script>
+
+  <style>
+    .status-banner {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-6);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-6);
+    }
+
+    .status-banner.warning {
+      background: var(--warning-50);
+      border: 1px solid var(--warning-200);
+    }
+
+    .status-banner.info {
+      background: var(--primary-50);
+      border: 1px solid var(--primary-200);
+    }
+
+    .status-banner.success {
+      background: var(--success-50);
+      border: 1px solid var(--success-200);
+    }
+
+    .status-banner.danger {
+      background: var(--danger-50);
+      border: 1px solid var(--danger-200);
+    }
+
+    .status-banner-icon {
+      font-size: 32px;
+    }
+
+    .status-banner-title {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      margin: 0 0 var(--space-1) 0;
+      color: var(--gray-900);
+    }
+
+    .status-banner-text {
+      margin: 0;
+      color: var(--gray-600);
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+
+    @media (max-width: 767px) {
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .details-list {
+      margin: 0;
+    }
+
+    .details-item {
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .details-item:last-child {
+      border-bottom: none;
+    }
+
+    .details-item dt {
+      font-size: var(--text-sm);
+      color: var(--gray-500);
+      margin-bottom: var(--space-1);
+    }
+
+    .details-item dd {
+      font-weight: 500;
+      color: var(--gray-900);
+      margin: 0;
+    }
+
+    .reason-text {
+      color: var(--gray-700);
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .proof-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.15s ease;
+    }
+
+    .proof-link:hover {
+      background: var(--primary-50);
+      border-color: var(--primary-200);
+    }
+
+    .proof-icon {
+      font-size: 24px;
+    }
+
+    .proof-text {
+      flex: 1;
+      font-weight: 500;
+    }
+
+    .proof-action {
+      color: var(--primary-600);
+    }
+
+    .approval-timeline {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    @media (max-width: 767px) {
+      .approval-timeline {
+        flex-direction: column;
+      }
+    }
+
+    .timeline-step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: var(--space-4);
+      position: relative;
+    }
+
+    .timeline-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 28px;
+      right: -50%;
+      width: 100%;
+      height: 2px;
+      background: var(--gray-200);
+      z-index: 0;
+    }
+
+    .timeline-step.completed:not(:last-child)::after {
+      background: var(--success-400);
+    }
+
+    .timeline-marker {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      margin-bottom: var(--space-3);
+      position: relative;
+      z-index: 1;
+      background: var(--gray-100);
+      color: var(--gray-500);
+      border: 2px solid var(--gray-200);
+    }
+
+    .timeline-step.completed .timeline-marker {
+      background: var(--success-500);
+      color: white;
+      border-color: var(--success-500);
+    }
+
+    .timeline-step.rejected .timeline-marker {
+      background: var(--danger-500);
+      color: white;
+      border-color: var(--danger-500);
+    }
+
+    .timeline-step.in-progress .timeline-marker {
+      background: var(--primary-500);
+      color: white;
+      border-color: var(--primary-500);
+    }
+
+    .timeline-title {
+      font-size: var(--text-sm);
+      font-weight: 600;
+      margin: 0 0 var(--space-1) 0;
+    }
+
+    .timeline-description {
+      font-size: var(--text-xs);
+      color: var(--gray-500);
+      margin: 0;
+    }
+
+    .timeline-date {
+      font-size: var(--text-xs);
+      color: var(--gray-400);
+      margin-top: var(--space-2);
+    }
+
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--primary-600);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</body>
+</html>

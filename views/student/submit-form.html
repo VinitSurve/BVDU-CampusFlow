@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit OD Form | BVDU CampusFlow</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-wrapper">
+      <header class="header" id="header"></header>
+
+      <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="page-header-content">
+            <h1 class="page-title">Submit OD Form</h1>
+            <p class="page-subtitle">Request On-Duty leave for an event</p>
+          </div>
+          <div class="page-header-actions">
+            <a href="/views/student/my-forms.html" class="btn btn-outline">
+              ← Back to My Forms
+            </a>
+          </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="card">
+          <div class="card-body">
+            <form id="od-form" class="form-layout">
+              <!-- Event Selection -->
+              <div class="form-section">
+                <h3 class="form-section-title">Event Selection</h3>
+                <p class="form-section-subtitle">Choose the event you're requesting OD for</p>
+                
+                <div class="form-row">
+                  <div class="form-group full-width">
+                    <label class="form-label required">Select Event</label>
+                    <select class="form-select" id="event-id" required>
+                      <option value="">-- Select an Event --</option>
+                    </select>
+                    <span class="form-hint">Only approved events with registration open are shown</span>
+                  </div>
+                </div>
+
+                <!-- Event Details (shown after selection) -->
+                <div id="event-details" class="event-details-card" style="display: none;">
+                  <div class="event-details-header">
+                    <h4 id="event-name">Event Name</h4>
+                    <span class="badge badge-primary" id="event-type">Workshop</span>
+                  </div>
+                  <div class="event-details-body">
+                    <div class="event-detail-item">
+                      <span class="event-detail-label">📅 Dates:</span>
+                      <span class="event-detail-value" id="event-dates">Jan 1 - Jan 2, 2024</span>
+                    </div>
+                    <div class="event-detail-item">
+                      <span class="event-detail-label">📍 Venue:</span>
+                      <span class="event-detail-value" id="event-venue">TBA</span>
+                    </div>
+                    <div class="event-detail-item">
+                      <span class="event-detail-label">🏢 Organized by:</span>
+                      <span class="event-detail-value" id="event-club">Club Name</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- OD Period -->
+              <div class="form-section">
+                <h3 class="form-section-title">OD Period</h3>
+                <p class="form-section-subtitle">Specify the dates you need OD for</p>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label required">OD Start Date</label>
+                    <input type="date" class="form-input" id="od-start-date" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label required">OD End Date</label>
+                    <input type="date" class="form-input" id="od-end-date" required>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label required">Reason for OD</label>
+                  <textarea class="form-textarea" id="reason" rows="4" required 
+                    placeholder="Explain why you need On-Duty leave for this event (e.g., participation, organizing, volunteering)"></textarea>
+                  <span class="form-hint">Minimum 20 characters required</span>
+                </div>
+              </div>
+
+              <!-- Subject Selection -->
+              <div class="form-section">
+                <h3 class="form-section-title">Subjects Affected</h3>
+                <p class="form-section-subtitle">Select the subjects whose classes you'll miss during the OD period</p>
+                
+                <div class="form-group">
+                  <div class="subjects-grid" id="subjects-grid">
+                    <div class="loading-spinner"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Proof Document -->
+              <div class="form-section">
+                <h3 class="form-section-title">Supporting Documents</h3>
+                <p class="form-section-subtitle">Upload proof of participation or registration (optional but recommended)</p>
+                
+                <div class="form-group">
+                  <label class="form-label">Proof Document</label>
+                  <div class="file-upload" id="file-upload-area">
+                    <input type="file" id="proof-file" accept=".pdf,.jpg,.jpeg,.png" hidden>
+                    <div class="file-upload-content">
+                      <span class="file-upload-icon">📎</span>
+                      <span class="file-upload-text">
+                        <strong>Click to upload</strong> or drag and drop
+                      </span>
+                      <span class="file-upload-hint">PDF, JPG, PNG (max 5MB)</span>
+                    </div>
+                  </div>
+                  <div class="file-preview" id="file-preview" style="display: none;">
+                    <div class="file-preview-icon">📄</div>
+                    <div class="file-preview-info">
+                      <span class="file-preview-name" id="file-name"></span>
+                      <span class="file-preview-size" id="file-size"></span>
+                    </div>
+                    <button type="button" class="file-preview-remove" id="remove-file">✕</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Actions -->
+              <div class="form-actions">
+                <button type="button" class="btn btn-outline" onclick="window.history.back()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="submit-btn">
+                  <span class="btn-text">Submit OD Form</span>
+                  <span class="btn-loader" style="display: none;">Submitting...</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initApp, setPageTitle } from '/js/app.js';
+    import { getUpcomingEvents, createODForm, getStudentSubjects, getEventById } from '/js/db.js';
+    import { uploadProofDocument } from '/js/storage.js';
+    import { formatDate, formatFileSize } from '/js/utils.js';
+    import { showToast, showLoadingOverlay } from '/js/notifications.js';
+
+    const user = initApp({ allowedRoles: ['student'] });
+    
+    if (user) {
+      setPageTitle('Submit OD Form');
+      loadEvents();
+      loadSubjects();
+      setupFileUpload();
+      setupFormValidation();
+    }
+
+    let selectedEvent = null;
+    let selectedSubjects = [];
+    let uploadedFile = null;
+
+    async function loadEvents() {
+      try {
+        const events = await getUpcomingEvents();
+        const select = document.getElementById('event-id');
+        
+        events.forEach(event => {
+          const option = document.createElement('option');
+          option.value = event.id;
+          option.textContent = `${event.event_name} (${formatDate(event.start_date)})`;
+          option.dataset.event = JSON.stringify(event);
+          select.appendChild(option);
+        });
+
+        select.addEventListener('change', handleEventChange);
+      } catch (error) {
+        console.error('Error loading events:', error);
+        showToast('Error loading events', 'error');
+      }
+    }
+
+    function handleEventChange(e) {
+      const select = e.target;
+      const option = select.selectedOptions[0];
+      const detailsCard = document.getElementById('event-details');
+
+      if (!option.value) {
+        selectedEvent = null;
+        detailsCard.style.display = 'none';
+        return;
+      }
+
+      selectedEvent = JSON.parse(option.dataset.event);
+      detailsCard.style.display = 'block';
+
+      // Populate event details
+      document.getElementById('event-name').textContent = selectedEvent.event_name;
+      document.getElementById('event-type').textContent = selectedEvent.event_type || 'Event';
+      document.getElementById('event-dates').textContent = 
+        `${formatDate(selectedEvent.start_date)} - ${formatDate(selectedEvent.end_date)}`;
+      document.getElementById('event-venue').textContent = selectedEvent.venue || 'TBA';
+      document.getElementById('event-club').textContent = selectedEvent.club_name || 'College';
+
+      // Set default OD dates based on event dates
+      document.getElementById('od-start-date').value = selectedEvent.start_date;
+      document.getElementById('od-end-date').value = selectedEvent.end_date;
+    }
+
+    async function loadSubjects() {
+      try {
+        const subjects = await getStudentSubjects(user.course, user.year, user.division);
+        const grid = document.getElementById('subjects-grid');
+        
+        if (subjects.length === 0) {
+          grid.innerHTML = `
+            <p class="text-muted">No subjects found for your course/year. Please contact admin.</p>
+          `;
+          return;
+        }
+
+        grid.innerHTML = subjects.map(subject => `
+          <label class="subject-checkbox">
+            <input type="checkbox" value="${subject.id}" data-faculty="${subject.faculty_id}">
+            <span class="subject-checkbox-content">
+              <span class="subject-name">${subject.name}</span>
+              <span class="subject-faculty">${subject.faculty_name}</span>
+            </span>
+          </label>
+        `).join('');
+
+        // Handle checkbox changes
+        grid.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+          checkbox.addEventListener('change', () => {
+            selectedSubjects = Array.from(grid.querySelectorAll('input:checked')).map(cb => ({
+              subject_id: cb.value,
+              faculty_id: cb.dataset.faculty
+            }));
+          });
+        });
+      } catch (error) {
+        console.error('Error loading subjects:', error);
+        document.getElementById('subjects-grid').innerHTML = `
+          <p class="text-danger">Error loading subjects. Please refresh the page.</p>
+        `;
+      }
+    }
+
+    function setupFileUpload() {
+      const uploadArea = document.getElementById('file-upload-area');
+      const fileInput = document.getElementById('proof-file');
+      const preview = document.getElementById('file-preview');
+      const removeBtn = document.getElementById('remove-file');
+
+      uploadArea.addEventListener('click', () => fileInput.click());
+      
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+      });
+
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) handleFile(file);
+      });
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files[0]) handleFile(fileInput.files[0]);
+      });
+
+      removeBtn.addEventListener('click', () => {
+        uploadedFile = null;
+        fileInput.value = '';
+        uploadArea.style.display = 'block';
+        preview.style.display = 'none';
+      });
+    }
+
+    function handleFile(file) {
+      // Validate file
+      const validTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      if (!validTypes.includes(file.type)) {
+        showToast('Invalid file type. Please upload PDF, JPG, or PNG.', 'error');
+        return;
+      }
+
+      if (file.size > maxSize) {
+        showToast('File too large. Maximum size is 5MB.', 'error');
+        return;
+      }
+
+      uploadedFile = file;
+
+      // Show preview
+      document.getElementById('file-upload-area').style.display = 'none';
+      document.getElementById('file-preview').style.display = 'flex';
+      document.getElementById('file-name').textContent = file.name;
+      document.getElementById('file-size').textContent = formatFileSize(file.size);
+    }
+
+    function setupFormValidation() {
+      const form = document.getElementById('od-form');
+      
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Validate
+        if (!selectedEvent) {
+          showToast('Please select an event', 'error');
+          return;
+        }
+
+        const reason = document.getElementById('reason').value.trim();
+        if (reason.length < 20) {
+          showToast('Reason must be at least 20 characters', 'error');
+          return;
+        }
+
+        if (selectedSubjects.length === 0) {
+          showToast('Please select at least one subject', 'error');
+          return;
+        }
+
+        const odStartDate = document.getElementById('od-start-date').value;
+        const odEndDate = document.getElementById('od-end-date').value;
+
+        if (!odStartDate || !odEndDate) {
+          showToast('Please select OD start and end dates', 'error');
+          return;
+        }
+
+        if (new Date(odEndDate) < new Date(odStartDate)) {
+          showToast('End date cannot be before start date', 'error');
+          return;
+        }
+
+        // Submit form
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.querySelector('.btn-text').style.display = 'none';
+        submitBtn.querySelector('.btn-loader').style.display = 'inline';
+
+        try {
+          const hideLoading = showLoadingOverlay('Submitting OD Form...');
+
+          // Upload proof document if exists
+          let proofUrl = null;
+          if (uploadedFile) {
+            const result = await uploadProofDocument(uploadedFile, user.id, selectedEvent.id);
+            proofUrl = result.downloadURL;
+          }
+
+          // Create OD form
+          const formData = {
+            student_id: user.id,
+            student_name: user.full_name,
+            student_roll_number: user.roll_number,
+            student_prn: user.prn,
+            student_course: user.course,
+            student_year: user.year,
+            student_division: user.division,
+            event_id: selectedEvent.id,
+            event_name: selectedEvent.event_name,
+            event_start_date: selectedEvent.start_date,
+            event_end_date: selectedEvent.end_date,
+            event_leader_id: selectedEvent.event_leader_id,
+            club_id: selectedEvent.club_id || null,
+            club_name: selectedEvent.club_name || null,
+            od_start_date: odStartDate,
+            od_end_date: odEndDate,
+            reason: reason,
+            proof_document_url: proofUrl,
+            subjects: selectedSubjects,
+            status: 'pending',
+            submitted_at: new Date().toISOString()
+          };
+
+          await createODForm(formData);
+          
+          hideLoading();
+          showToast('OD Form submitted successfully!', 'success');
+          
+          // Redirect to my forms
+          setTimeout(() => {
+            window.location.href = '/views/student/my-forms.html';
+          }, 1500);
+
+        } catch (error) {
+          console.error('Error submitting form:', error);
+          showToast('Error submitting form. Please try again.', 'error');
+          
+          submitBtn.disabled = false;
+          submitBtn.querySelector('.btn-text').style.display = 'inline';
+          submitBtn.querySelector('.btn-loader').style.display = 'none';
+        }
+      });
+    }
+  </script>
+
+  <style>
+    .form-layout {
+      max-width: 800px;
+    }
+
+    .form-section {
+      margin-bottom: var(--space-8);
+      padding-bottom: var(--space-8);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .form-section:last-of-type {
+      border-bottom: none;
+    }
+
+    .form-section-title {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      color: var(--gray-900);
+      margin: 0 0 var(--space-1) 0;
+    }
+
+    .form-section-subtitle {
+      font-size: var(--text-sm);
+      color: var(--gray-500);
+      margin: 0 0 var(--space-6) 0;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+
+    .form-row .full-width {
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 575px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .event-details-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin-top: var(--space-4);
+    }
+
+    .event-details-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-4);
+    }
+
+    .event-details-header h4 {
+      margin: 0;
+      font-size: var(--text-base);
+      font-weight: 600;
+    }
+
+    .event-details-body {
+      display: grid;
+      gap: var(--space-2);
+    }
+
+    .event-detail-item {
+      display: flex;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+    }
+
+    .event-detail-label {
+      color: var(--gray-500);
+    }
+
+    .event-detail-value {
+      color: var(--gray-900);
+    }
+
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: var(--space-3);
+    }
+
+    .subject-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .subject-checkbox:hover {
+      border-color: var(--primary-300);
+      background: var(--primary-50);
+    }
+
+    .subject-checkbox input:checked + .subject-checkbox-content {
+      color: var(--primary-700);
+    }
+
+    .subject-checkbox input:checked ~ .subject-checkbox-content,
+    .subject-checkbox:has(input:checked) {
+      border-color: var(--primary-500);
+      background: var(--primary-50);
+    }
+
+    .subject-checkbox-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .subject-name {
+      font-weight: 500;
+      color: var(--gray-900);
+    }
+
+    .subject-faculty {
+      font-size: var(--text-sm);
+      color: var(--gray-500);
+    }
+
+    .file-upload {
+      border: 2px dashed var(--gray-300);
+      border-radius: var(--radius-lg);
+      padding: var(--space-8);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .file-upload:hover,
+    .file-upload.dragover {
+      border-color: var(--primary-400);
+      background: var(--primary-50);
+    }
+
+    .file-upload-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .file-upload-icon {
+      font-size: 32px;
+    }
+
+    .file-upload-text {
+      color: var(--gray-600);
+    }
+
+    .file-upload-hint {
+      font-size: var(--text-xs);
+      color: var(--gray-500);
+    }
+
+    .file-preview {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+    }
+
+    .file-preview-icon {
+      font-size: 24px;
+    }
+
+    .file-preview-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .file-preview-name {
+      font-weight: 500;
+      color: var(--gray-900);
+    }
+
+    .file-preview-size {
+      font-size: var(--text-sm);
+      color: var(--gray-500);
+    }
+
+    .file-preview-remove {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--danger-50);
+      color: var(--danger-600);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .file-preview-remove:hover {
+      background: var(--danger-100);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: var(--space-4);
+      justify-content: flex-end;
+      padding-top: var(--space-6);
+    }
+
+    .btn-loader {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .loading-spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--gray-200);
+      border-top-color: var(--primary-600);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</body>
+</html>

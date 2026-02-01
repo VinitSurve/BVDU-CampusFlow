@@ -1,0 +1,76 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isValidFileType() {
+      return request.resource.contentType.matches('image/.*') 
+        || request.resource.contentType == 'application/pdf';
+    }
+    
+    function isValidFileSize() {
+      // Max 5MB
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+    
+    // ============================================
+    // PROOF DOCUMENTS
+    // ============================================
+    match /proof_documents/{userId}/{eventId}/{fileName} {
+      // Students can upload their own proof documents
+      allow write: if isAuthenticated() 
+        && request.auth.uid == userId
+        && isValidFileType()
+        && isValidFileSize();
+      
+      // Authenticated users can read (for review)
+      allow read: if isAuthenticated();
+    }
+    
+    // ============================================
+    // EVENT IMAGES
+    // ============================================
+    match /event_images/{eventId}/{fileName} {
+      // Event leaders can upload event images
+      allow write: if isAuthenticated() 
+        && isValidFileType()
+        && isValidFileSize();
+      
+      // Anyone can read event images
+      allow read: if isAuthenticated();
+    }
+    
+    // ============================================
+    // PROFILE PICTURES
+    // ============================================
+    match /profile_pictures/{userId}/{fileName} {
+      // Users can upload their own profile picture
+      allow write: if isAuthenticated() 
+        && request.auth.uid == userId
+        && request.resource.contentType.matches('image/.*')
+        && isValidFileSize();
+      
+      // Anyone can read profile pictures
+      allow read: if isAuthenticated();
+    }
+    
+    // ============================================
+    // CLUB LOGOS
+    // ============================================
+    match /club_logos/{clubId}/{fileName} {
+      // Only HOD can upload club logos
+      allow write: if isAuthenticated() 
+        && request.resource.contentType.matches('image/.*')
+        && isValidFileSize();
+      
+      allow read: if isAuthenticated();
+    }
+  }
+}

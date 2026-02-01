@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review OD Form | BVDU CampusFlow</title>
+  
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-wrapper">
+      <header class="header" id="header"></header>
+
+      <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="page-header-content">
+            <h1 class="page-title">Review OD Form</h1>
+            <p class="page-subtitle" id="page-subtitle">Loading...</p>
+          </div>
+          <div class="page-header-actions">
+            <a href="/views/event-leader/od-forms.html" class="btn btn-outline">
+              ← Back to OD Forms
+            </a>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="card">
+          <div class="card-body text-center py-8">
+            <div class="loading-spinner mx-auto"></div>
+            <p class="text-muted mt-4">Loading form details...</p>
+          </div>
+        </div>
+
+        <!-- Form Content -->
+        <div id="form-content" style="display: none;">
+          <!-- Student Information -->
+          <div class="card mb-6">
+            <div class="card-header">
+              <h3 class="card-title">Student Information</h3>
+            </div>
+            <div class="card-body">
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">Name</span>
+                  <span class="info-value" id="student-name">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Roll Number</span>
+                  <span class="info-value" id="student-roll">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">PRN</span>
+                  <span class="info-value" id="student-prn">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Course</span>
+                  <span class="info-value" id="student-course">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Year</span>
+                  <span class="info-value" id="student-year">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Division</span>
+                  <span class="info-value" id="student-division">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- OD Request Details -->
+          <div class="card mb-6">
+            <div class="card-header">
+              <h3 class="card-title">OD Request Details</h3>
+            </div>
+            <div class="card-body">
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">Event</span>
+                  <span class="info-value" id="event-name">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Event Dates</span>
+                  <span class="info-value" id="event-dates">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">OD Period</span>
+                  <span class="info-value" id="od-dates">-</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Submitted On</span>
+                  <span class="info-value" id="submitted-date">-</span>
+                </div>
+              </div>
+
+              <div class="mt-6">
+                <span class="info-label">Reason for OD</span>
+                <p class="reason-text" id="od-reason">-</p>
+              </div>
+
+              <!-- Proof Document -->
+              <div class="mt-6" id="proof-section" style="display: none;">
+                <span class="info-label">Proof Document</span>
+                <a href="#" id="proof-link" target="_blank" class="proof-link">
+                  <span class="proof-icon">📄</span>
+                  <span class="proof-text">View Uploaded Document</span>
+                  <span class="proof-action">↗</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subjects -->
+          <div class="card mb-6">
+            <div class="card-header">
+              <h3 class="card-title">Subjects Affected</h3>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Subject</th>
+                      <th>Faculty</th>
+                    </tr>
+                  </thead>
+                  <tbody id="subjects-tbody">
+                    <tr>
+                      <td colspan="2" class="text-center py-4">Loading...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Section (for pending forms) -->
+          <div class="card" id="action-section">
+            <div class="card-header">
+              <h3 class="card-title">Your Decision</h3>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label">Remarks (Optional)</label>
+                <textarea class="form-textarea" id="remarks" rows="3" 
+                  placeholder="Add any remarks or comments about this OD request..."></textarea>
+              </div>
+              
+              <div class="action-buttons">
+                <button class="btn btn-success btn-lg" id="approve-btn">
+                  ✓ Approve OD Form
+                </button>
+                <button class="btn btn-danger btn-lg" id="reject-btn">
+                  ✕ Reject OD Form
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Already Reviewed (for processed forms) -->
+          <div class="card" id="reviewed-section" style="display: none;">
+            <div class="card-body">
+              <div class="reviewed-banner" id="reviewed-banner">
+                <div class="reviewed-icon">✓</div>
+                <div class="reviewed-content">
+                  <h3 class="reviewed-title">Already Reviewed</h3>
+                  <p class="reviewed-text" id="reviewed-text">You have approved this OD form.</p>
+                  <p class="reviewed-remarks" id="reviewed-remarks" style="display: none;"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initApp, setPageTitle } from '/js/app.js';
+    import { getODFormById, updateODForm, getODFormSubjectApprovals } from '/js/db.js';
+    import { formatDate, formatDateTime, getStatusBadgeHTML } from '/js/utils.js';
+    import { showToast, showConfirm, showLoadingOverlay } from '/js/notifications.js';
+
+    const user = initApp({ allowedRoles: ['event_leader'] });
+    
+    if (user) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const formId = urlParams.get('id');
+      
+      if (!formId) {
+        showToast('Invalid form ID', 'error');
+        window.location.href = '/views/event-leader/od-forms.html';
+      } else {
+        loadFormDetails(formId);
+      }
+    }
+
+    let currentForm = null;
+
+    async function loadFormDetails(formId) {
+      try {
+        const [form, subjects] = await Promise.all([
+          getODFormById(formId),
+          getODFormSubjectApprovals(formId)
+        ]);
+
+        if (!form) {
+          showToast('Form not found', 'error');
+          window.location.href = '/views/event-leader/od-forms.html';
+          return;
+        }
+
+        // Verify ownership
+        if (form.event_leader_id !== user.id) {
+          showToast('You do not have permission to review this form', 'error');
+          window.location.href = '/views/event-leader/od-forms.html';
+          return;
+        }
+
+        currentForm = form;
+        setPageTitle(`Review - ${form.student_name}`);
+        renderFormDetails(form, subjects);
+        
+      } catch (error) {
+        console.error('Error loading form:', error);
+        showToast('Error loading form details', 'error');
+      }
+    }
+
+    function renderFormDetails(form, subjects) {
+      // Hide loading, show content
+      document.getElementById('loading-state').style.display = 'none';
+      document.getElementById('form-content').style.display = 'block';
+
+      // Page subtitle
+      document.getElementById('page-subtitle').textContent = 
+        `OD form from ${form.student_name} for ${form.event_name}`;
+
+      // Student information
+      document.getElementById('student-name').textContent = form.student_name;
+      document.getElementById('student-roll').textContent = form.student_roll_number;
+      document.getElementById('student-prn').textContent = form.student_prn;
+      document.getElementById('student-course').textContent = form.student_course;
+      document.getElementById('student-year').textContent = form.student_year;
+      document.getElementById('student-division').textContent = form.student_division;
+
+      // OD request details
+      document.getElementById('event-name').textContent = form.event_name;
+      document.getElementById('event-dates').textContent = 
+        `${formatDate(form.event_start_date)} to ${formatDate(form.event_end_date)}`;
+      document.getElementById('od-dates').textContent = 
+        `${formatDate(form.od_start_date)} to ${formatDate(form.od_end_date)}`;
+      document.getElementById('submitted-date').textContent = formatDateTime(form.submitted_at);
+      document.getElementById('od-reason').textContent = form.reason;
+
+      // Proof document
+      if (form.proof_document_url) {
+        document.getElementById('proof-section').style.display = 'block';
+        document.getElementById('proof-link').href = form.proof_document_url;
+      }
+
+      // Subjects
+      renderSubjects(subjects.length > 0 ? subjects : form.subjects);
+
+      // Show appropriate action section
+      if (form.event_leader_approval_status && form.event_leader_approval_status !== 'pending') {
+        document.getElementById('action-section').style.display = 'none';
+        document.getElementById('reviewed-section').style.display = 'block';
+        
+        const banner = document.getElementById('reviewed-banner');
+        const isApproved = form.event_leader_approval_status === 'approved';
+        
+        banner.className = `reviewed-banner ${isApproved ? 'success' : 'danger'}`;
+        banner.querySelector('.reviewed-icon').textContent = isApproved ? '✓' : '✕';
+        document.getElementById('reviewed-title').textContent = 
+          isApproved ? 'Form Approved' : 'Form Rejected';
+        document.getElementById('reviewed-text').textContent = 
+          isApproved ? 'You approved this OD form.' : 'You rejected this OD form.';
+        
+        if (form.event_leader_remarks) {
+          const remarksEl = document.getElementById('reviewed-remarks');
+          remarksEl.textContent = `Remarks: ${form.event_leader_remarks}`;
+          remarksEl.style.display = 'block';
+        }
+      } else {
+        setupActionButtons();
+      }
+    }
+
+    function renderSubjects(subjects) {
+      const tbody = document.getElementById('subjects-tbody');
+      
+      if (!subjects || subjects.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="2" class="text-center py-4 text-muted">No subjects listed</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = subjects.map(subject => `
+        <tr>
+          <td>${subject.subject_name || subject.name || 'Subject'}</td>
+          <td>${subject.faculty_name || '-'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function setupActionButtons() {
+      const approveBtn = document.getElementById('approve-btn');
+      const rejectBtn = document.getElementById('reject-btn');
+
+      approveBtn.addEventListener('click', async () => {
+        const confirmed = await showConfirm({
+          title: 'Approve OD Form',
+          message: `Are you sure you want to approve the OD form from ${currentForm.student_name}?`,
+          confirmText: 'Approve',
+          cancelText: 'Cancel'
+        });
+
+        if (confirmed) {
+          await processForm('approved');
+        }
+      });
+
+      rejectBtn.addEventListener('click', async () => {
+        const remarks = document.getElementById('remarks').value;
+        
+        if (!remarks.trim()) {
+          showToast('Please provide a reason for rejection', 'warning');
+          document.getElementById('remarks').focus();
+          return;
+        }
+
+        const confirmed = await showConfirm({
+          title: 'Reject OD Form',
+          message: `Are you sure you want to reject the OD form from ${currentForm.student_name}?`,
+          confirmText: 'Reject',
+          cancelText: 'Cancel',
+          type: 'danger'
+        });
+
+        if (confirmed) {
+          await processForm('rejected');
+        }
+      });
+    }
+
+    async function processForm(decision) {
+      const remarks = document.getElementById('remarks').value;
+      const hideLoading = showLoadingOverlay(
+        decision === 'approved' ? 'Approving OD Form...' : 'Rejecting OD Form...'
+      );
+
+      try {
+        await updateODForm(currentForm.id, {
+          event_leader_approval_status: decision,
+          event_leader_remarks: remarks || null,
+          event_leader_approval_at: new Date().toISOString(),
+          status: decision === 'approved' ? 'partially_approved' : 'rejected'
+        });
+
+        hideLoading();
+        showToast(
+          decision === 'approved' 
+            ? 'OD Form approved successfully!' 
+            : 'OD Form rejected.',
+          decision === 'approved' ? 'success' : 'info'
+        );
+
+        // Redirect back to list
+        setTimeout(() => {
+          window.location.href = '/views/event-leader/od-forms.html';
+        }, 1500);
+
+      } catch (error) {
+        hideLoading();
+        console.error('Error processing form:', error);
+        showToast('Error processing form. Please try again.', 'error');
+      }
+    }
+  </script>
+
+  <style>
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .info-label {
+      font-size: var(--text-sm);
+      color: var(--gray-500);
+    }
+
+    .info-value {
+      font-weight: 500;
+      color: var(--gray-900);
+    }
+
+    .reason-text {
+      color: var(--gray-700);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      margin-top: var(--space-2);
+      padding: var(--space-4);
+      background: var(--gray-50);
+      border-radius: var(--radius-lg);
+    }
+
+    .proof-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.15s ease;
+      margin-top: var(--space-2);
+    }
+
+    .proof-link:hover {
+      background: var(--primary-50);
+      border-color: var(--primary-200);
+    }
+
+    .proof-icon {
+      font-size: 24px;
+    }
+
+    .proof-text {
+      flex: 1;
+      font-weight: 500;
+    }
+
+    .proof-action {
+      color: var(--primary-600);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: var(--space-4);
+      margin-top: var(--space-4);
+    }
+
+    .action-buttons .btn {
+      flex: 1;
+    }
+
+    .reviewed-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-4);
+      padding: var(--space-6);
+      border-radius: var(--radius-lg);
+    }
+
+    .reviewed-banner.success {
+      background: var(--success-50);
+      border: 1px solid var(--success-200);
+    }
+
+    .reviewed-banner.danger {
+      background: var(--danger-50);
+      border: 1px solid var(--danger-200);
+    }
+
+    .reviewed-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .reviewed-banner.success .reviewed-icon {
+      background: var(--success-100);
+      color: var(--success-600);
+    }
+
+    .reviewed-banner.danger .reviewed-icon {
+      background: var(--danger-100);
+      color: var(--danger-600);
+    }
+
+    .reviewed-title {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      margin: 0 0 var(--space-1) 0;
+    }
+
+    .reviewed-text {
+      color: var(--gray-600);
+      margin: 0;
+    }
+
+    .reviewed-remarks {
+      margin-top: var(--space-2);
+      font-style: italic;
+      color: var(--gray-500);
+    }
+
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--primary-600);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 575px) {
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</body>
+</html>

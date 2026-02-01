@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | BVDU CampusFlow</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <!-- Populated by JS -->
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <!-- Header -->
+      <header class="header" id="header">
+        <!-- Populated by JS -->
+      </header>
+
+      <!-- Page Content -->
+      <main class="main-content">
+        <!-- Welcome Section -->
+        <div class="page-header">
+          <div class="page-header-content">
+            <h1 class="page-title" id="welcome-title">Welcome back!</h1>
+            <p class="page-subtitle">Here's an overview of your OD form activities</p>
+          </div>
+          <div class="page-header-actions">
+            <a href="/views/student/submit-form.html" class="btn btn-primary">
+              <span>➕</span> Submit OD Form
+            </a>
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-icon primary">📝</div>
+            <div class="stat-card-content">
+              <span class="stat-card-value" id="stat-total">-</span>
+              <span class="stat-card-label">Total OD Forms</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon warning">⏳</div>
+            <div class="stat-card-content">
+              <span class="stat-card-value" id="stat-pending">-</span>
+              <span class="stat-card-label">Pending Approval</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon success">✅</div>
+            <div class="stat-card-content">
+              <span class="stat-card-value" id="stat-approved">-</span>
+              <span class="stat-card-label">Approved</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-icon danger">❌</div>
+            <div class="stat-card-content">
+              <span class="stat-card-value" id="stat-rejected">-</span>
+              <span class="stat-card-label">Rejected</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="dashboard-grid">
+          <!-- Recent OD Forms -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Recent OD Forms</h3>
+              <a href="/views/student/my-forms.html" class="btn btn-link btn-sm">View All →</a>
+            </div>
+            <div class="card-body" id="recent-forms">
+              <div class="loading-spinner"></div>
+            </div>
+          </div>
+
+          <!-- Upcoming Events -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Upcoming Events</h3>
+              <a href="/views/student/all-events.html" class="btn btn-link btn-sm">View All →</a>
+            </div>
+            <div class="card-body" id="upcoming-events">
+              <div class="loading-spinner"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Recent Activity</h3>
+          </div>
+          <div class="card-body" id="recent-activity">
+            <div class="loading-spinner"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module">
+    import { initApp, setPageTitle } from '/js/app.js';
+    import { getStudentODForms, getUpcomingEvents, getUserActivityLogs } from '/js/db.js';
+    import { formatDate, getStatusBadgeHTML, getRelativeTime } from '/js/utils.js';
+    import { showToast } from '/js/notifications.js';
+
+    // Initialize App
+    const user = initApp({ allowedRoles: ['student'] });
+    
+    if (user) {
+      setPageTitle('Dashboard');
+      document.getElementById('welcome-title').textContent = `Welcome back, ${user.full_name.split(' ')[0]}!`;
+      
+      // Load dashboard data
+      loadDashboardData();
+    }
+
+    async function loadDashboardData() {
+      try {
+        // Load all data in parallel
+        const [forms, events, activities] = await Promise.all([
+          getStudentODForms(user.id),
+          getUpcomingEvents(5),
+          getUserActivityLogs(user.id, 10)
+        ]);
+
+        // Update stats
+        updateStats(forms);
+        
+        // Update recent forms
+        updateRecentForms(forms.slice(0, 5));
+        
+        // Update upcoming events
+        updateUpcomingEvents(events);
+        
+        // Update recent activity
+        updateRecentActivity(activities);
+        
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+        showToast('Error loading dashboard data', 'error');
+      }
+    }
+
+    function updateStats(forms) {
+      const total = forms.length;
+      const pending = forms.filter(f => 
+        ['pending', 'partially_approved', 'faculty_approved'].includes(f.status)
+      ).length;
+      const approved = forms.filter(f => f.status === 'hod_approved').length;
+      const rejected = forms.filter(f => f.status === 'rejected').length;
+
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-pending').textContent = pending;
+      document.getElementById('stat-approved').textContent = approved;
+      document.getElementById('stat-rejected').textContent = rejected;
+    }
+
+    function updateRecentForms(forms) {
+      const container = document.getElementById('recent-forms');
+      
+      if (forms.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <h4 class="empty-state-title">No OD Forms Yet</h4>
+            <p class="empty-state-text">You haven't submitted any OD forms yet.</p>
+            <a href="/views/student/submit-form.html" class="btn btn-primary btn-sm">Submit First Form</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="list-group">
+          ${forms.map(form => `
+            <a href="/views/student/form-details.html?id=${form.id}" class="list-group-item">
+              <div class="list-group-item-content">
+                <div class="list-group-item-title">${form.event_name}</div>
+                <div class="list-group-item-subtitle">
+                  ${formatDate(form.event_start_date)} - ${formatDate(form.event_end_date)}
+                </div>
+              </div>
+              <div class="list-group-item-action">
+                ${getStatusBadgeHTML(form.status)}
+              </div>
+            </a>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function updateUpcomingEvents(events) {
+      const container = document.getElementById('upcoming-events');
+      
+      if (events.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📅</div>
+            <h4 class="empty-state-title">No Upcoming Events</h4>
+            <p class="empty-state-text">There are no upcoming events at the moment.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="list-group">
+          ${events.map(event => `
+            <a href="/views/student/event-details.html?id=${event.id}" class="list-group-item">
+              <div class="list-group-item-icon">
+                <span class="event-date-badge">
+                  <span class="event-date-day">${new Date(event.start_date).getDate()}</span>
+                  <span class="event-date-month">${new Date(event.start_date).toLocaleDateString('en-US', { month: 'short' })}</span>
+                </span>
+              </div>
+              <div class="list-group-item-content">
+                <div class="list-group-item-title">${event.event_name}</div>
+                <div class="list-group-item-subtitle">${event.venue || 'Venue TBA'}</div>
+              </div>
+            </a>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function updateRecentActivity(activities) {
+      const container = document.getElementById('recent-activity');
+      
+      if (activities.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <h4 class="empty-state-title">No Recent Activity</h4>
+            <p class="empty-state-text">Your activity will appear here.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="activity-timeline">
+          ${activities.map(activity => `
+            <div class="activity-item">
+              <div class="activity-icon ${getActivityIconClass(activity.action_type)}">
+                ${getActivityIcon(activity.action_type)}
+              </div>
+              <div class="activity-content">
+                <p class="activity-text">${activity.action_description}</p>
+                <span class="activity-time">${getRelativeTime(activity.created_at)}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function getActivityIcon(type) {
+      const icons = {
+        od_form_submitted: '📝',
+        od_form_approved: '✅',
+        od_form_rejected: '❌',
+        event_registered: '📅',
+        attendance_marked: '✓'
+      };
+      return icons[type] || '📋';
+    }
+
+    function getActivityIconClass(type) {
+      if (type.includes('approved') || type.includes('registered')) return 'success';
+      if (type.includes('rejected')) return 'danger';
+      if (type.includes('submitted')) return 'info';
+      return 'default';
+    }
+  </script>
+
+  <style>
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+
+    @media (max-width: 991px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .list-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .list-group-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--gray-100);
+      text-decoration: none;
+      color: inherit;
+      transition: background-color 0.15s ease;
+    }
+
+    .list-group-item:last-child {
+      border-bottom: none;
+    }
+
+    .list-group-item:hover {
+      background-color: var(--gray-50);
+    }
+
+    .list-group-item-icon {
+      flex-shrink: 0;
+    }
+
+    .list-group-item-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .list-group-item-title {
+      font-weight: 500;
+      color: var(--gray-900);
+      margin-bottom: 2px;
+    }
+
+    .list-group-item-subtitle {
+      font-size: var(--text-sm);
+      color: var(--gray-500);
+    }
+
+    .list-group-item-action {
+      flex-shrink: 0;
+    }
+
+    .event-date-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background: var(--primary-50);
+      border-radius: var(--radius-lg);
+      color: var(--primary-600);
+    }
+
+    .event-date-day {
+      font-size: var(--text-lg);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .event-date-month {
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .activity-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .activity-item {
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    .activity-icon {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--gray-100);
+      font-size: 16px;
+    }
+
+    .activity-icon.success {
+      background: var(--success-50);
+    }
+
+    .activity-icon.danger {
+      background: var(--danger-50);
+    }
+
+    .activity-icon.info {
+      background: var(--primary-50);
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-text {
+      color: var(--gray-700);
+      margin: 0 0 2px 0;
+    }
+
+    .activity-time {
+      font-size: var(--text-xs);
+      color: var(--gray-500);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: var(--space-8);
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: var(--space-4);
+    }
+
+    .empty-state-title {
+      font-weight: 600;
+      color: var(--gray-900);
+      margin: 0 0 var(--space-2) 0;
+    }
+
+    .empty-state-text {
+      color: var(--gray-500);
+      margin: 0 0 var(--space-4) 0;
+    }
+
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--primary-600);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: var(--space-8) auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</body>
+</html>

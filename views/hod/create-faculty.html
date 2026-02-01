@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Faculty | BVDU CampusFlow</title>
+  
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="main-wrapper">
+      <header class="header" id="header"></header>
+
+      <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div class="page-header-content">
+            <h1 class="page-title">Add Faculty Member</h1>
+            <p class="page-subtitle">Create a new faculty account for your department</p>
+          </div>
+          <div class="page-header-actions">
+            <a href="/views/hod/dashboard.html" class="btn btn-outline">
+              ← Back to Dashboard
+            </a>
+          </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="card">
+          <div class="card-body">
+            <form id="faculty-form" class="form-layout">
+              <!-- Personal Information -->
+              <div class="form-section">
+                <h3 class="form-section-title">Personal Information</h3>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label required">Full Name</label>
+                    <input type="text" class="form-input" id="full-name" required 
+                      placeholder="Dr. John Smith">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label required">Email Address</label>
+                    <input type="email" class="form-input" id="email" required 
+                      placeholder="john.smith@bvdu.edu">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-input" id="phone" 
+                      placeholder="+91 9876543210">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Employee ID</label>
+                    <input type="text" class="form-input" id="employee-id" 
+                      placeholder="FAC2024001">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Academic Information -->
+              <div class="form-section">
+                <h3 class="form-section-title">Academic Information</h3>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label required">Department</label>
+                    <input type="text" class="form-input" id="department" required readonly>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Designation</label>
+                    <select class="form-select" id="designation">
+                      <option value="assistant_professor">Assistant Professor</option>
+                      <option value="associate_professor">Associate Professor</option>
+                      <option value="professor">Professor</option>
+                      <option value="lecturer">Lecturer</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Subjects (Optional)</label>
+                  <textarea class="form-textarea" id="subjects" rows="3" 
+                    placeholder="Enter subjects separated by commas (e.g., Data Structures, Algorithms, Database Management)"></textarea>
+                  <span class="form-hint">You can assign subjects later from the admin panel</span>
+                </div>
+              </div>
+
+              <!-- Account Credentials -->
+              <div class="form-section">
+                <h3 class="form-section-title">Account Credentials</h3>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label required">Temporary Password</label>
+                    <div class="input-with-button">
+                      <input type="text" class="form-input" id="password" required minlength="6">
+                      <button type="button" class="btn btn-outline btn-sm" id="generate-password">
+                        Generate
+                      </button>
+                    </div>
+                    <span class="form-hint">Faculty member should change this after first login</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="send-email" checked>
+                    <span>Send welcome email with login credentials</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Submit Actions -->
+              <div class="form-actions">
+                <button type="button" class="btn btn-outline" onclick="window.history.back()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="submit-btn">
+                  <span class="btn-text">Create Faculty Account</span>
+                  <span class="btn-loader" style="display: none;">Creating...</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initApp, setPageTitle } from '/js/app.js';
+    import { createUser } from '/js/db.js';
+    import { showToast, showLoadingOverlay } from '/js/notifications.js';
+
+    const user = initApp({ allowedRoles: ['hod'] });
+    
+    if (user) {
+      setPageTitle('Add Faculty');
+      document.getElementById('department').value = user.department || 'Computer Science';
+      setupForm();
+    }
+
+    function setupForm() {
+      // Generate password button
+      document.getElementById('generate-password').addEventListener('click', () => {
+        const password = generatePassword();
+        document.getElementById('password').value = password;
+      });
+
+      // Form submission
+      document.getElementById('faculty-form').addEventListener('submit', handleSubmit);
+    }
+
+    function generatePassword() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+      let password = '';
+      for (let i = 0; i < 8; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return password;
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.querySelector('.btn-text').style.display = 'none';
+      submitBtn.querySelector('.btn-loader').style.display = 'inline';
+
+      const hideLoading = showLoadingOverlay('Creating faculty account...');
+
+      try {
+        const facultyData = {
+          full_name: document.getElementById('full-name').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          phone: document.getElementById('phone').value.trim() || null,
+          employee_id: document.getElementById('employee-id').value.trim() || null,
+          department: document.getElementById('department').value,
+          designation: document.getElementById('designation').value,
+          role: 'faculty',
+          created_by: user.id,
+          created_at: new Date().toISOString(),
+          is_active: true
+        };
+
+        const password = document.getElementById('password').value;
+
+        // In production, this would call Firebase Admin SDK to create user
+        // For now, we'll create the user document
+        await createUser(facultyData, password);
+
+        hideLoading();
+        showToast('Faculty account created successfully!', 'success');
+
+        // Optionally send welcome email
+        if (document.getElementById('send-email').checked) {
+          // Email sending would be handled by Cloud Functions
+          console.log('Welcome email would be sent to:', facultyData.email);
+        }
+
+        setTimeout(() => {
+          window.location.href = '/views/hod/dashboard.html';
+        }, 1500);
+
+      } catch (error) {
+        hideLoading();
+        console.error('Error creating faculty:', error);
+        showToast(error.message || 'Error creating faculty account', 'error');
+        
+        submitBtn.disabled = false;
+        submitBtn.querySelector('.btn-text').style.display = 'inline';
+        submitBtn.querySelector('.btn-loader').style.display = 'none';
+      }
+    }
+  </script>
+
+  <style>
+    .form-layout {
+      max-width: 700px;
+    }
+
+    .form-section {
+      margin-bottom: var(--space-8);
+      padding-bottom: var(--space-8);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .form-section:last-of-type {
+      border-bottom: none;
+    }
+
+    .form-section-title {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      color: var(--gray-900);
+      margin: 0 0 var(--space-6) 0;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+
+    @media (max-width: 575px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .input-with-button {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .input-with-button .form-input {
+      flex: 1;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      cursor: pointer;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: var(--space-4);
+      justify-content: flex-end;
+      padding-top: var(--space-6);
+    }
+  </style>
+</body>
+</html>
