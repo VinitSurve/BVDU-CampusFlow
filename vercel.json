@@ -1,13 +1,10 @@
 {
   "buildCommand": "npm run build",
+  "outputDirectory": "od-forms-bvdu-dms",
   "rewrites": [
     {
       "source": "/",
-      "destination": "/od-forms-bvdu-dms/index.html"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/od-forms-bvdu-dms/:path*"
+      "destination": "/index.html"
     }
   ]
 }
