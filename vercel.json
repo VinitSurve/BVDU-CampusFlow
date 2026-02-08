@@ -3,6 +3,10 @@
     {
       "source": "/",
       "destination": "/od-forms-bvdu-dms/index.html"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/od-forms-bvdu-dms/:path*"
     }
   ]
 }
