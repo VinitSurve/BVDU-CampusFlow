@@ -1,67 +1,8 @@
 {
-  "version": 2,
-  "name": "bvdu-od-forms",
-  "builds": [
+  "rewrites": [
     {
-      "src": "od-forms-bvdu-dms/**",
-      "use": "@vercel/static"
+      "source": "/",
+      "destination": "/od-forms-bvdu-dms/index.html"
     }
-  ],
-  "routes": [
-    {
-      "src": "/od-forms-bvdu-dms/(.*)",
-      "dest": "/od-forms-bvdu-dms/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/od-forms-bvdu-dms/$1"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        }
-      ]
-    },
-    {
-      "source": "/od-forms-bvdu-dms/js/(.*).js",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript; charset=utf-8"
-        }
-      ]
-    },
-    {
-      "source": "/od-forms-bvdu-dms/css/(.*).css",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/css; charset=utf-8"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    }
-  ],
-  "cleanUrls": true,
-  "trailingSlash": false
+  ]
 }
