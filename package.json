@@ -1,0 +1,14 @@
+{
+  "name": "bvdu-campus-flow",
+  "version": "1.0.0",
+  "description": "BVDU Campus Flow - OD Form Digital Management System",
+  "scripts": {
+    "build": "node scripts/generate-config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VinitSurve/BVDU-CampusFlow.git"
+  },
+  "author": "Vinit Surve",
+  "license": "MIT"
+}
