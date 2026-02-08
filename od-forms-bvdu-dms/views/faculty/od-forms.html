@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OD Forms - Faculty - BVDU CampusFlow</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../js/config.js"></script>
+
+ <script src="../../js/particles.js" defer></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0E27;
+      color: #E2E8F0;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.08), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(52, 168, 83, 0.08), transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Animated Particles */
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      25% { transform: translateY(-20px) translateX(10px); }
+      50% { transform: translateY(-10px) translateX(-10px); }
+      75% { transform: translateY(-30px) translateX(5px); }
+    }
+
+    .particle {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background: rgba(66, 133, 244, 0.6);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+      animation: float 15s infinite;
+      box-shadow: 0 0 10px rgba(66, 133, 244, 0.4);
+    }
+
+    .particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { top: 40%; left: 30%; animation-delay: 2s; background: rgba(52, 168, 83, 0.6); box-shadow: 0 0 10px rgba(52, 168, 83, 0.4); }
+    .particle:nth-child(3) { top: 60%; left: 50%; animation-delay: 4s; }
+    .particle:nth-child(4) { top: 80%; left: 70%; animation-delay: 6s; background: rgba(251, 188, 4, 0.6); box-shadow: 0 0 10px rgba(251, 188, 4, 0.4); }
+    .particle:nth-child(5) { top: 30%; left: 80%; animation-delay: 8s; }
+    .particle:nth-child(6) { top: 70%; left: 20%; animation-delay: 10s; background: rgba(52, 168, 83, 0.6); box-shadow: 0 0 10px rgba(52, 168, 83, 0.4); }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: #94A3B8;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .nav-link:hover {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .nav-link.active {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.15);
+    }
+
+    .page-header {
+      margin: 2rem 0;
+    }
+
+    .page-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: #64748B;
+      font-size: 1.1rem;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .faculty-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: rgba(52, 168, 83, 0.15);
+      border: 1px solid rgba(52, 168, 83, 0.3);
+      border-radius: 2rem;
+      color: #34A853;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(66, 133, 244, 0.3);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+    }
+
+    .stat-label {
+      color: #64748B;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      line-height: 1;
+    }
+
+    .stat-trend {
+      font-size: 0.75rem;
+      color: #34A853;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Tabs */
+    .tabs-container {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1rem;
+      margin: 2rem 0;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .tab-btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      background: transparent;
+      border: none;
+      color: #94A3B8;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tab-btn:hover {
+      background: rgba(66, 133, 244, 0.1);
+      color: #4285F4;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      color: white;
+    }
+
+    .tab-badge {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.25rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    /* Filter and View Buttons */
+    .filter-btn, .view-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(26, 31, 58, 0.8);
+      color: #94A3B8;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .filter-btn:hover, .view-btn:hover {
+      background: rgba(66, 133, 244, 0.1);
+      border-color: #4285F4;
+      color: #4285F4;
+      transform: translateY(-1px);
+    }
+
+    .filter-btn.active, .view-btn.active {
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      border-color: transparent;
+      color: white;
+    }
+
+    /* Grid View */
+    .forms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* Calendar View */
+    .calendar-view {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 2rem;
+    }
+
+    .calendar-header {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .calendar-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .calendar-date {
+      font-weight: 700;
+      color: #4285F4;
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid rgba(66, 133, 244, 0.3);
+    }
+
+    .calendar-forms {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* Old tabs style - keep for compatibility */
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .tab {
+      padding: 1rem 1.5rem;
+      background: transparent;
+      border: none;
+      color: #64748B;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      font-size: 1rem;
+    }
+
+    .tab:hover {
+      color: #4285F4;
+    }
+
+    .tab.active {
+      color: #4285F4;
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #4285F4;
+    }
+
+    .tab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 0.5rem;
+      background: rgba(66, 133, 244, 0.2);
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #4285F4;
+      margin-left: 0.5rem;
+    }
+
+    /* Forms List */
+    .forms-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .form-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-card:hover {
+      border-color: rgba(66, 133, 244, 0.3);
+      box-shadow: 0 8px 32px rgba(66, 133, 244, 0.15);
+    }
+
+    .form-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .form-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-meta {
+      display: flex;
+      gap: 1rem;
+      color: #64748B;
+      font-size: 0.875rem;
+    }
+
+    .status-badge {
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .status-pending {
+      background: rgba(251, 188, 4, 0.15);
+      color: #FBBC04;
+      border: 1px solid rgba(251, 188, 4, 0.3);
+      animation: pulse-yellow 2s infinite;
+    }
+
+    @keyframes pulse-yellow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(251, 188, 4, 0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(251, 188, 4, 0); }
+    }
+
+    .student-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .info-label {
+      color: #64748B;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .info-value {
+      color: #E2E8F0;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .approval-history {
+      margin: 1rem 0;
+      padding: 1rem;
+      background: rgba(66, 133, 244, 0.1);
+      border-left: 3px solid #4285F4;
+      border-radius: 0.375rem;
+    }
+
+    .history-title {
+      font-weight: 600;
+      color: #4285F4;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .history-item {
+      color: #94A3B8;
+      font-size: 0.875rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      justify-content: flex-start;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: center;
+      text-decoration: none;
+      width: fit-content;
+      min-width: 140px;
+      max-width: 200px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(66, 133, 244, 0.4);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-description {
+      color: #64748B;
+    }
+
+    /* Old form-grid styles - keep for compatibility */
+    .forms-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .form-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(66, 133, 244, 0.3);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .form-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-id {
+      color: #64748B;
+      font-size: 0.875rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .badge {
+      padding: 0.375rem 0.75rem;
+      border-radius: 2rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-pending {
+      background: rgba(251, 188, 4, 0.15);
+      color: #FBBC04;
+      border: 1px solid rgba(251, 188, 4, 0.3);
+    }
+
+    .badge-approved {
+      background: rgba(52, 168, 83, 0.15);
+      color: #34A853;
+      border: 1px solid rgba(52, 168, 83, 0.3);
+    }
+
+    .badge-rejected {
+      background: rgba(234, 67, 53, 0.15);
+      color: #EA4335;
+      border: 1px solid rgba(234, 67, 53, 0.3);
+    }
+
+    .form-meta {
+      display: flex;
+      gap: 1rem;
+      color: #64748B;
+      font-size: 0.875rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .leader-decision {
+      background: rgba(66, 133, 244, 0.1);
+      border: 1px solid rgba(66, 133, 244, 0.2);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .leader-decision-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      color: #E2E8F0;
+      font-weight: 600;
+    }
+
+    .leader-reason {
+      color: #94A3B8;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+
+    .btn-primary {
+      background: #34A853;
+      color: white;
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      background: #2E9549;
+      box-shadow: 0 4px 15px rgba(52, 168, 83, 0.4);
+    }
+
+    .btn-danger {
+      background: #EA4335;
+      color: white;
+      flex: 1;
+    }
+
+    .btn-danger:hover {
+      background: #D33828;
+      box-shadow: 0 4px 15px rgba(234, 67, 53, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #64748B;
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      color: #E2E8F0;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .form-textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 1rem;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      color: #E2E8F0;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      resize: vertical;
+      transition: all 0.3s ease;
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: rgba(66, 133, 244, 0.5);
+      box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Particles -->
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <a href="../../index.html" class="navbar-brand flex items-center gap-3">
+          <span class="text-3xl">🎓</span>
+          <span>BVDU CampusFlow</span>
+        </a>
+        <ul class="flex items-center gap-2">
+          <li><a href="dashboard.html" class="nav-link flex items-center gap-2">
+            <span>🎯</span> Events
+          </a></li>
+          <li><a href="od-forms.html" class="nav-link active flex items-center gap-2">
+            <span>📋</span> OD Forms
+          </a></li>
+          <li><a href="clubs.html" class="nav-link flex items-center gap-2">
+            <span>🎪</span> Clubs
+          </a></li>
+          <li><a href="create-event-leader.html" class="nav-link flex items-center gap-2">
+            <span>👥</span> Create Event Leader
+          </a></li>
+          <li><a href="profile.html" class="nav-link flex items-center gap-2">
+            <span>👤</span> Profile
+          </a></li>
+          <li><a href="#" class="nav-link flex items-center gap-2" id="logoutBtn">
+            <span>🚪</span> Logout
+          </a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container mx-auto px-6 py-8">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">📋 OD Forms Management</h1>
+        <p class="page-subtitle">Review and approve OD form submissions (after Event Leader approval)</p>
+      </div>
+      <div class="faculty-badge">
+        <span>👨‍🏫</span>
+        <span id="facultyName">Faculty</span>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">🎓</div>
+        </div>
+        <div class="stat-label">Participant ODs Pending</div>
+        <div class="stat-value" id="participantPendingCount">0</div>
+        <div class="stat-trend">
+          <span>⏳</span> Awaiting your review
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">🤝</div>
+        </div>
+        <div class="stat-label">Volunteer ODs Pending</div>
+        <div class="stat-value" style="color: #FBBC04;" id="volunteerPendingCount">0</div>
+        <div class="stat-trend">
+          <span>⏳</span> Awaiting your review
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">✅</div>
+        </div>
+        <div class="stat-label">Approved This Week</div>
+        <div class="stat-value" style="color: #34A853;" id="approvedCount">0</div>
+        <div class="stat-trend">
+          <span>📈</span> All OD forms
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">⚡</div>
+        </div>
+        <div class="stat-label">Total Reviewed</div>
+        <div class="stat-value" id="totalReviewed">0</div>
+        <div class="stat-trend">
+          <span>📊</span> This month
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('participant')">
+        <span>🎓</span>
+        Participant OD Forms
+        <span class="tab-badge" id="participantBadge">0</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('volunteer')">
+        <span>🤝</span>
+        Volunteer OD Forms
+        <span class="tab-badge" id="volunteerBadge">0</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('all')">
+        <span>📋</span>
+        All OD Forms
+        <span class="tab-badge" id="allBadge">0</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('approved')">
+        <span>✅</span>
+        Approved
+        <span class="tab-badge" id="approvedBadge">0</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('rejected')">
+        <span>❌</span>
+        Rejected
+        <span class="tab-badge" id="rejectedBadge">0</span>
+      </button>
+    </div>
+
+    <!-- View Options for Participant/Volunteer Tabs -->
+    <div id="simpleViewControls" style="display: none; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; padding: 1.5rem; margin-bottom: 2rem;">
+      <div style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem;">
+        <span style="color: #94A3B8; font-weight: 600; font-size: 0.875rem;">View:</span>
+        <button class="view-btn active" onclick="changeView('list')" id="simpleViewList" title="List View">
+          📄 List
+        </button>
+        <button class="view-btn" onclick="changeView('grid')" id="simpleViewGrid" title="Grid View">
+          🔲 Grid
+        </button>
+        <button class="view-btn" onclick="changeView('calendar')" id="simpleViewCalendar" title="Calendar View">
+          📅 Calendar
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters and View Options for All/Approved/Rejected Tabs -->
+    <div id="filterControls" style="display: none; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; padding: 1.5rem; margin-bottom: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <!-- Role Filter -->
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <span style="color: #94A3B8; font-weight: 600; font-size: 0.875rem;">Filter by Role:</span>
+          <button class="filter-btn active" onclick="filterByRole('all')" id="filterAll">
+            📋 All
+          </button>
+          <button class="filter-btn" onclick="filterByRole('participant')" id="filterParticipant">
+            🎓 Participant
+          </button>
+          <button class="filter-btn" onclick="filterByRole('volunteer')" id="filterVolunteer">
+            🤝 Volunteer
+          </button>
+        </div>
+        
+        <!-- View Layout Options -->
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <span style="color: #94A3B8; font-weight: 600; font-size: 0.875rem;">View:</span>
+          <button class="view-btn active" onclick="changeView('list')" id="viewList" title="List View">
+            📄 List
+          </button>
+          <button class="view-btn" onclick="changeView('grid')" id="viewGrid" title="Grid View">
+            🔲 Grid
+          </button>
+          <button class="view-btn" onclick="changeView('calendar')" id="viewCalendar" title="Calendar View">
+            📅 Calendar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Forms List -->
+    <div id="formsContainer">
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h3 class="empty-title">Loading forms...</h3>
+        <p class="empty-description">Please wait while we fetch the submissions.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Supabase Client
+    const supabaseClient = window.supabase.createClient(
+      'https://uhvtmwoihzaaqawimdhm.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVodnRtd29paHphYXFhd2ltZGhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4MzI2NTgsImV4cCI6MjA4NDQwODY1OH0.-bvdcoPnpT0k8po4gLF-UOXaNTLSb666i1ReGoTAj0Y'
+    );
+    console.log('✅ Supabase client initialized');
+
+    let currentUser = null;
+    let allForms = [];
+    let currentTab = 'participant';
+    let currentRoleFilter = 'all';
+    
+    // Store view preference per tab
+    let tabViews = {
+      'participant': 'list',
+      'volunteer': 'list',
+      'all': 'list',
+      'approved': 'list',
+      'rejected': 'list'
+    };
+
+    // Check Authentication
+    async function checkAuth() {
+      try {
+        console.log('========== OD FORMS PAGE AUTH CHECK ==========');
+        console.log('Checking authentication for OD forms page...');
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        
+        if (error || !session) {
+          console.log('No session found, redirecting to login');
+          window.location.href = '../../login.html';
+          return null;
+        }
+
+        console.log('Session found:', session.user.email);
+
+        const { data: user, error: userError } = await supabaseClient
+          .from('users')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        console.log('User data from database:', user);
+        console.log('User role:', user?.role);
+
+        if (userError || !user) {
+          console.error('Error fetching user:', userError);
+          window.location.href = '../../login.html';
+          return null;
+        }
+
+        // Allow faculty, HOD, admin, and event leaders to access this page
+        const allowedRoles = ['faculty', 'hod', 'admin', 'event_leader', 'event-leader'];
+        if (!allowedRoles.includes(user.role)) {
+          console.log('Access denied. User role:', user.role, 'Required:', allowedRoles);
+          alert(`Access denied. This page is for faculty/HOD/admin/event leaders only.\n\nYour role: ${user.role}`);
+          window.location.href = './dashboard.html'; // Redirect to their own dashboard
+          return null;
+        }
+
+        console.log('✅ Access granted for role:', user.role);
+        currentUser = user;
+        console.log('About to load OD forms...');
+        await loadForms();
+        console.log('✅ OD forms loaded successfully');
+        return currentUser;
+      } catch (error) {
+        console.error('❌ Auth check failed:', error);
+        console.error('Error stack:', error.stack);
+        alert(`Authentication error: ${error.message}\n\nCheck console (F12) for details.`);
+        // Don't redirect on error, let user see what went wrong
+        return null;
+      }
+    }
+
+    // Load OD Forms from Supabase
+    async function loadForms() {
+      try {
+        console.log('========== LOADING OD FORMS FOR FACULTY ==========');
+        
+        // Get current user
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        console.log('Current user from auth:', user);
+        
+        // Get user details
+        const { data: userData } = await supabaseClient
+          .from('users')
+          .select('*')
+          .eq('email', user.email)
+          .single();
+        console.log('User details from users table:', userData);
+        console.log('User role:', userData?.role);
+        
+        // First, let's check what forms exist in the database (with RLS applied)
+        const { data: allODForms, error: allError } = await supabaseClient
+          .from('od_forms')
+          .select('*');
+        
+        console.log('All OD forms visible to this user (RLS applied):', allODForms);
+        console.log('Total forms accessible:', allODForms ? allODForms.length : 0);
+        if (allError) {
+          console.error('Error fetching all forms:', allError);
+          console.error('Error code:', allError.code);
+          console.error('Error message:', allError.message);
+        }
+        
+        // Show breakdown by approval status
+        if (allODForms && allODForms.length > 0) {
+          console.log('Breakdown by status:');
+          const breakdown = allODForms.reduce((acc, form) => {
+            acc[form.status] = (acc[form.status] || 0) + 1;
+            return acc;
+          }, {});
+          console.table(breakdown);
+          
+          console.log('Breakdown by event leader approval:');
+          const leaderApproval = allODForms.reduce((acc, form) => {
+            const key = form.approved_by_event_leader ? 'Approved by Leader' : 'Not Approved by Leader';
+            acc[key] = (acc[key] || 0) + 1;
+            return acc;
+          }, {});
+          console.table(leaderApproval);
+        }
+        
+        // Fetch OD forms that have event leader approval (full or partial) but not faculty approval yet
+        console.log('Filtering for: (approved_by_event_leader=true OR status=partially_approved_by_leader) AND approved_by_faculty=false');
+        const { data, error } = await supabaseClient
+          .from('od_forms')
+          .select('*')
+          .or('approved_by_event_leader.eq.true,status.eq.partially_approved_by_leader,status.eq.approved_by_leader')
+          .eq('approved_by_faculty', false)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error loading filtered OD forms:', error);
+          console.error('Error code:', error.code);
+          console.error('Error message:', error.message);
+          throw error;
+        }
+
+        console.log('OD forms needing faculty approval (filtered):', data);
+        console.log('Number of forms needing faculty approval:', data ? data.length : 0);
+
+        // Get student and event details separately to avoid RLS issues
+        if (data && data.length > 0) {
+          const studentIds = [...new Set(data.map(f => f.student_id))];
+          const eventIds = [...new Set(data.map(f => f.event_id))];
+          
+          console.log('Fetching details for', studentIds.length, 'students and', eventIds.length, 'events');
+          
+          const { data: students } = await supabaseClient
+            .from('users')
+            .select('id, full_name, roll_number, email, course, year, division, department')
+            .in('id', studentIds);
+          
+          const { data: events } = await supabaseClient
+            .from('events')
+            .select('event_id, event_name, event_type, event_date')
+            .in('event_id', eventIds);
+          
+          console.log('Students data:', students);
+          console.log('Events data:', events);
+          
+          // Create lookup maps
+          const studentMap = {};
+          const eventMap = {};
+          
+          if (students) {
+            students.forEach(s => studentMap[s.id] = s);
+          }
+          if (events) {
+            events.forEach(e => eventMap[e.event_id] = e);
+          }
+          
+          // Attach student and event data to forms
+          data.forEach(form => {
+            form.student = studentMap[form.student_id] || null;
+            form.event = eventMap[form.event_id] || null;
+          });
+        }
+
+        allForms = data || [];
+        console.log('Final processed forms:', allForms);
+        console.log('Total forms to display:', allForms.length);
+        console.log('========================================');
+        
+        updateStats();
+        renderForms();
+        
+        console.log('✅ OD forms loaded and rendered successfully');
+      } catch (error) {
+        console.error('❌ Error loading OD forms:', error);
+        console.error('Error details:', error.message);
+        console.error('Error stack:', error.stack);
+        
+        // Don't throw - show empty list instead
+        allForms = [];
+        updateStats();
+        renderForms();
+        
+        // Show user-friendly error
+        const container = document.getElementById('formsContainer');
+        if (container) {
+          container.innerHTML = `
+            <div style="padding: 2rem; text-align: center; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px;">
+              <p style="color: #EF4444; margin-bottom: 0.5rem;">⚠️ Error loading OD forms</p>
+              <p style="color: #94A3B8; font-size: 0.875rem;">${error.message}</p>
+              <p style="color: #64748B; font-size: 0.75rem; margin-top: 1rem;">Check console (F12) for details</p>
+            </div>
+          `;
+        }
+      }
+    }
+
+    // Update Stats
+    function updateStats() {
+      // Since loadForms() already filters to approved_by_event_leader=true and approved_by_faculty=false,
+      // allForms contains only pending forms that need faculty review
+      
+      const participantPending = allForms.filter(f => f.form_type === 'participant').length;
+      const volunteerPending = allForms.filter(f => f.form_type === 'volunteer').length;
+      
+      document.getElementById('participantPendingCount').textContent = participantPending;
+      document.getElementById('volunteerPendingCount').textContent = volunteerPending;
+      
+      // For stats that need historical data, we'd need a separate query
+      // For now, show 0 since we're only loading pending forms
+      document.getElementById('approvedCount').textContent = 0;
+      document.getElementById('totalReviewed').textContent = 0;
+      
+      // Update tab badges
+      document.getElementById('participantBadge').textContent = participantPending;
+      document.getElementById('volunteerBadge').textContent = volunteerPending;
+      document.getElementById('allBadge').textContent = allForms.length;
+      
+      // Approved and rejected badges are 0 since we only load pending forms
+      document.getElementById('approvedBadge').textContent = 0;
+      document.getElementById('rejectedBadge').textContent = 0;
+    }
+
+    // Switch Tab
+    function switchTab(tab) {
+      currentTab = tab;
+      currentRoleFilter = 'all'; // Reset filter when switching tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.closest('.tab-btn').classList.add('active');
+      
+      // Show/hide controls based on tab
+      const filterControls = document.getElementById('filterControls');
+      const simpleViewControls = document.getElementById('simpleViewControls');
+      
+      if (['participant', 'volunteer'].includes(tab)) {
+        // Show only view controls for participant/volunteer
+        filterControls.style.display = 'none';
+        simpleViewControls.style.display = 'block';
+        
+        // Update simple view button states
+        document.querySelectorAll('#simpleViewControls .view-btn').forEach(btn => btn.classList.remove('active'));
+        const currentView = tabViews[tab];
+        if (currentView === 'list') document.getElementById('simpleViewList').classList.add('active');
+        else if (currentView === 'grid') document.getElementById('simpleViewGrid').classList.add('active');
+        else if (currentView === 'calendar') document.getElementById('simpleViewCalendar').classList.add('active');
+      } else {
+        // Show filters and view controls for all/approved/rejected
+        filterControls.style.display = 'block';
+        simpleViewControls.style.display = 'none';
+        
+        // Reset filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('filterAll').classList.add('active');
+        
+        // Update view button states
+        document.querySelectorAll('#filterControls .view-btn').forEach(btn => btn.classList.remove('active'));
+        const currentView = tabViews[tab];
+        if (currentView === 'list') document.getElementById('viewList').classList.add('active');
+        else if (currentView === 'grid') document.getElementById('viewGrid').classList.add('active');
+        else if (currentView === 'calendar') document.getElementById('viewCalendar').classList.add('active');
+      }
+      
+      renderForms();
+    }
+
+    // Filter by Role
+    function filterByRole(role) {
+      currentRoleFilter = role;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderForms();
+    }
+
+    // Change View
+    function changeView(view) {
+      // Store view preference for current tab
+      tabViews[currentTab] = view;
+      
+      // Update button states based on which control panel is visible
+      if (['participant', 'volunteer'].includes(currentTab)) {
+        document.querySelectorAll('#simpleViewControls .view-btn').forEach(btn => btn.classList.remove('active'));
+        if (view === 'list') document.getElementById('simpleViewList').classList.add('active');
+        else if (view === 'grid') document.getElementById('simpleViewGrid').classList.add('active');
+        else if (view === 'calendar') document.getElementById('simpleViewCalendar').classList.add('active');
+      } else {
+        document.querySelectorAll('#filterControls .view-btn').forEach(btn => btn.classList.remove('active'));
+        if (view === 'list') document.getElementById('viewList').classList.add('active');
+        else if (view === 'grid') document.getElementById('viewGrid').classList.add('active');
+        else if (view === 'calendar') document.getElementById('viewCalendar').classList.add('active');
+      }
+      
+      renderForms();
+    }
+
+    // Render Forms
+    function renderForms() {
+      const container = document.getElementById('formsContainer');
+      
+      // Filter forms based on current tab
+      let filteredForms = allForms;
+      
+      // Since loadForms() only loads pending forms (approved_by_event_leader=true, approved_by_faculty=false),
+      // we just need to filter by form_type
+      if (currentTab === 'participant') {
+        filteredForms = allForms.filter(f => f.form_type === 'participant');
+      } else if (currentTab === 'volunteer') {
+        filteredForms = allForms.filter(f => f.form_type === 'volunteer');
+      } else if (currentTab === 'approved' || currentTab === 'rejected') {
+        // These tabs would need separate queries to Supabase
+        // For now, show empty since we only load pending forms
+        filteredForms = [];
+      }
+
+      // Apply form_type filter for all, approved, rejected tabs
+      if (['all', 'approved', 'rejected'].includes(currentTab) && currentRoleFilter !== 'all') {
+        filteredForms = filteredForms.filter(f => f.form_type === currentRoleFilter);
+      }
+
+      if (filteredForms.length === 0) {
+        const tabNames = {
+          'participant': 'participant',
+          'volunteer': 'volunteer',
+          'all': 'all',
+          'approved': 'approved',
+          'rejected': 'rejected'
+        };
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">✅</div>
+            <h3 class="empty-title">All Caught Up!</h3>
+            <p class="empty-description">No ${tabNames[currentTab]} forms to display at the moment.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Render based on current view
+      const currentView = tabViews[currentTab];
+      if (currentView === 'grid') {
+        renderGridView(filteredForms, container);
+      } else if (currentView === 'calendar') {
+        renderCalendarView(filteredForms, container);
+      } else {
+        renderListView(filteredForms, container);
+      }
+    }
+
+    // Render List View (default)
+    function renderListView(filteredForms, container) {
+
+      const formsHTML = filteredForms.map(form => {
+        // Get student and event info from JOINs
+        const studentName = form.student?.full_name || form.student_name || 'N/A';
+        const rollNumber = form.student?.roll_number || form.roll_number || 'N/A';
+        const eventName = form.event?.event_name || form.event_name || 'N/A';
+        const eventType = form.event?.event_type || form.event_type || 'N/A';
+        const eventDate = form.event?.event_date || form.event_date || 'N/A';
+        
+        const roleBadge = form.form_type === 'volunteer' 
+          ? '<span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.75rem; background: rgba(251, 188, 4, 0.15); border: 1px solid rgba(251, 188, 4, 0.3); border-radius: 1rem; color: #FBBC04; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">🤝 Volunteer</span>'
+          : '<span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.75rem; background: rgba(66, 133, 244, 0.15); border: 1px solid rgba(66, 133, 244, 0.3); border-radius: 1rem; color: #4285F4; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">🎓 Participant</span>';
+        
+        // All forms loaded are pending faculty review (approved_by_event_leader=true, approved_by_faculty=false)
+        const statusBadge = '<span class="status-badge status-pending">⏳ Pending Faculty Review</span>';
+        
+        return `
+        <div class="form-card">
+          <div class="form-card-header">
+            <div>
+              <h3 class="form-title">${eventName} ${roleBadge}</h3>
+              <div class="form-meta">
+                <span>📋 ${form.form_id}</span>
+                <span>•</span>
+                <span>📅 ${formatDate(form.created_at)}</span>
+                <span>•</span>
+                <span>${eventType}</span>
+              </div>
+            </div>
+            ${statusBadge}
+          </div>
+
+          <div class="student-info">
+            <div class="info-item">
+              <span class="info-label">Student Name</span>
+              <span class="info-value">${studentName}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Roll Number</span>
+              <span class="info-value">${rollNumber}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Department</span>
+              <span class="info-value">${form.student?.department || form.department || 'N/A'}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Year & Division</span>
+              <span class="info-value">Year ${form.student?.year || form.year || 'N/A'} - Div ${form.student?.division || form.division || 'N/A'}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Event Date</span>
+              <span class="info-value">${formatDate(eventDate)}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Form Type</span>
+              <span class="info-value">${form.form_type.charAt(0).toUpperCase() + form.form_type.slice(1)}</span>
+            </div>
+          </div>
+
+          <div class="approval-history">
+            <div class="history-title">📊 Approval Status</div>
+            <div class="history-item">
+              ✅ Event Leader: <strong>Approved</strong>
+              <br>
+              ⏳ Faculty: <strong>Pending Your Review</strong>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button onclick="window.location.href='./review-od-form.html?id=${form.form_id}'" class="btn btn-primary" style="background: linear-gradient(135deg, #4285F4 0%, #34A853 100%); color: white; border: none;">
+              📝 Review Form
+            </button>
+          </div>
+        </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `<div class="forms-list">${formsHTML}</div>`;
+    }
+
+    // Render Grid View
+    function renderGridView(filteredForms, container) {
+      const formsHTML = filteredForms.map(form => {
+        const studentName = form.student?.full_name || form.student_name || 'N/A';
+        const rollNumber = form.student?.roll_number || form.roll_number || 'N/A';
+        const eventName = form.event?.event_name || form.event_name || 'N/A';
+        const roleBadge = form.form_type === 'volunteer' ? '🤝 Volunteer' : '🎓 Participant';
+        const statusBadge = '⏳ Pending';
+        
+        return `
+        <div class="form-card" style="height: 100%;">
+          <div class="form-card-header">
+            <div>
+              <h3 class="form-title" style="font-size: 1rem;">${eventName}</h3>
+              <div class="form-meta" style="font-size: 0.75rem;">
+                <span>${roleBadge}</span>
+              </div>
+            </div>
+            <span style="font-size: 0.75rem; color: #FBBC04;">${statusBadge}</span>
+          </div>
+
+          <div class="student-info" style="gap: 0.5rem;">
+            <div class="info-item">
+              <span class="info-label">Student</span>
+              <span class="info-value">${studentName}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Roll No</span>
+              <span class="info-value">${rollNumber}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Form ID</span>
+              <span class="info-value">${form.form_id}</span>
+            </div>
+          </div>
+
+          <div class="action-buttons" style="margin-top: auto;">
+            <button onclick="window.location.href='./review-od-form.html?id=${form.form_id}'" class="btn btn-primary" style="font-size: 0.875rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #4285F4 0%, #34A853 100%); color: white; border: none;">
+              📝 Review
+            </button>
+          </div>
+        </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `<div class="forms-grid">${formsHTML}</div>`;
+    }
+
+    // Render Calendar View
+    function renderCalendarView(filteredForms, container) {
+      // Group forms by event date
+      const formsByDate = {};
+      filteredForms.forEach(form => {
+        const dateKey = formatDate(form.event_date);
+        if (!formsByDate[dateKey]) {
+          formsByDate[dateKey] = [];
+        }
+        formsByDate[dateKey].push(form);
+      });
+
+      // Sort dates
+      const sortedDates = Object.keys(formsByDate).sort((a, b) => {
+        return new Date(formsByDate[b][0].event_date) - new Date(formsByDate[a][0].event_date);
+      });
+
+      const calendarHTML = sortedDates.map(dateKey => {
+        const forms = formsByDate[dateKey];
+        const formsHTML = forms.map(form => {
+          const studentName = form.student?.full_name || form.student_name || 'N/A';
+          const rollNumber = form.student?.roll_number || form.roll_number || 'N/A';
+          const eventName = form.event?.event_name || form.event_name || 'N/A';
+          const roleBadge = form.form_type === 'volunteer' 
+            ? '<span style="color: #FBBC04;">🤝 Volunteer</span>' 
+            : '<span style="color: #4285F4;">🎓 Participant</span>';
+          
+          const statusIcon = '⏳';
+          
+          return `
+            <div class="form-card">
+              <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                  <h4 style="font-weight: 700; color: #E2E8F0; margin-bottom: 0.25rem;">${eventName}</h4>
+                  <div style="font-size: 0.875rem; color: #94A3B8;">
+                    ${studentName} • ${rollNumber}
+                  </div>
+                  <div style="font-size: 0.75rem; margin-top: 0.25rem;">
+                    ${roleBadge}
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
+                  <span style="font-size: 1.5rem;">${statusIcon}</span>
+                  <button onclick="window.location.href='./review-od-form.html?id=${form.form_id}'" class="btn" style="font-size: 0.75rem; padding: 0.375rem 1rem; background: linear-gradient(135deg, #4285F4 0%, #34A853 100%); color: white; border: none;">
+                    📝 Review
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div>
+            <div class="calendar-date">📅 ${dateKey}</div>
+            <div class="calendar-forms">${formsHTML}</div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <div class="calendar-view">
+          <div class="calendar-header">📅 Forms by Event Date</div>
+          <div class="calendar-grid">${calendarHTML}</div>
+        </div>
+      `;
+    }
+
+    // Approve OD Form
+    async function approveODForm(formId) {
+      if (!confirm('Are you sure you want to approve this OD form?')) return;
+      
+      try {
+        const { error } = await supabaseClient
+          .from('od_forms')
+          .update({
+            approved_by_faculty: true,
+            status: 'approved',
+            updated_at: new Date().toISOString()
+          })
+          .eq('form_id', formId);
+
+        if (error) throw error;
+
+        alert('✅ OD Form approved successfully!');
+        await loadForms(); // Reload forms
+      } catch (error) {
+        console.error('Error approving form:', error);
+        alert('❌ Failed to approve form: ' + error.message);
+      }
+    }
+
+    // Reject OD Form
+    async function rejectODForm(formId) {
+      const reason = prompt('Please enter rejection reason:');
+      if (!reason) return;
+      
+      try {
+        const { error } = await supabaseClient
+          .from('od_forms')
+          .update({
+            approved_by_faculty: false,
+            status: 'rejected',
+            updated_at: new Date().toISOString()
+          })
+          .eq('form_id', formId);
+
+        if (error) throw error;
+
+        alert('❌ OD Form rejected.');
+        await loadForms(); // Reload forms
+      } catch (error) {
+        console.error('Error rejecting form:', error);
+        alert('❌ Failed to reject form: ' + error.message);
+      }
+    }
+
+    // Format Date
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-IN', { 
+        day: '2-digit', 
+        month: 'short', 
+        year: 'numeric' 
+      });
+    }
+
+    // Logout
+    document.getElementById('logoutBtn')?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (confirm('Are you sure you want to logout?')) {
+        await supabaseClient.auth.signOut();
+        sessionStorage.clear();
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('user');
+        window.location.href = '../../login.html';
+      }
+    });
+
+    // Initialize - Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM loaded, starting auth check...');
+        checkAuth();
+      });
+    } else {
+      console.log('DOM already loaded, starting auth check immediately...');
+      checkAuth();
+    }
+  </script>
+</body>
+</html>

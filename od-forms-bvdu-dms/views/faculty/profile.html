@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Profile - BVDU CampusFlow</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0E27;
+      color: #E2E8F0;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.08), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(52, 168, 83, 0.08), transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: #94A3B8;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .nav-link:hover {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .nav-link.active {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.15);
+    }
+
+    /* Page Header */
+    .page-header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .page-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: #94A3B8;
+      font-size: 1.125rem;
+    }
+
+    /* Profile Card */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .profile-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      padding: 2rem;
+    }
+
+    .profile-avatar-section {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-avatar-large {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      font-weight: 700;
+      color: white;
+      margin: 0 auto 1rem;
+      box-shadow: 0 10px 30px rgba(66, 133, 244, 0.3);
+    }
+
+    .profile-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 0.25rem;
+    }
+
+    .profile-role {
+      color: #94A3B8;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .profile-info-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: rgba(30, 41, 59, 0.5);
+      border-radius: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .profile-info-icon {
+      font-size: 1.25rem;
+    }
+
+    .profile-info-text {
+      flex: 1;
+    }
+
+    .profile-info-label {
+      font-size: 0.75rem;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .profile-info-value {
+      color: #E2E8F0;
+      font-weight: 500;
+    }
+
+    /* Form Card */
+    .form-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      padding: 2.5rem;
+    }
+
+    .form-section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      color: #E2E8F0;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      color: #E2E8F0;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: rgba(66, 133, 244, 0.5);
+      background: rgba(30, 41, 59, 0.7);
+    }
+
+    .form-input:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .btn {
+      padding: 0.875rem 2rem;
+      border: none;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(66, 133, 244, 0.3);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: rgba(30, 41, 59, 0.8);
+      color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(30, 41, 59, 1);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #94A3B8;
+    }
+
+    .password-toggle:hover {
+      color: #4285F4;
+    }
+
+    .info-text {
+      font-size: 0.875rem;
+      color: #94A3B8;
+      margin-top: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding: 1rem;
+      }
+
+      .form-card, .profile-card {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="../../index.html" class="navbar-brand">
+      🎓 BVDU Event Management - Faculty
+    </a>
+    <div class="nav-menu">
+      <a href="dashboard.html" class="nav-link">🎯 Events</a>
+      <a href="od-forms.html" class="nav-link">📋 OD Forms</a>
+      <a href="clubs.html" class="nav-link">🎪 Clubs</a>
+      <a href="create-event-leader.html" class="nav-link">👥 Create Event Leader</a>
+      <a href="profile.html" class="nav-link active">👤 Profile</a>
+      <a href="#" class="nav-link" id="logoutBtn">🚪 Logout</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">Faculty Profile</h1>
+      <p class="page-subtitle">Manage your account information</p>
+    </div>
+
+    <!-- Profile Grid -->
+    <div class="profile-grid">
+      <!-- Left Column - Profile Info -->
+      <div class="profile-card">
+        <div class="profile-avatar-section">
+          <div class="profile-avatar-large" id="profileAvatar">F</div>
+          <h2 class="profile-name" id="profileName">Faculty Name</h2>
+          <p class="profile-role" id="profileDesignation">Loading...</p>
+        </div>
+
+        <div class="profile-info-item">
+          <span class="profile-info-icon">📧</span>
+          <div class="profile-info-text">
+            <div class="profile-info-label">Email</div>
+            <div class="profile-info-value" id="sidebarEmail">-</div>
+          </div>
+        </div>
+
+        <div class="profile-info-item">
+          <span class="profile-info-icon">📱</span>
+          <div class="profile-info-text">
+            <div class="profile-info-label">Phone</div>
+            <div class="profile-info-value" id="sidebarPhone">-</div>
+          </div>
+        </div>
+
+        <div class="profile-info-item">
+          <span class="profile-info-icon">👤</span>
+          <div class="profile-info-text">
+            <div class="profile-info-label">Role</div>
+            <div class="profile-info-value">Faculty</div>
+          </div>
+        </div>
+
+        <div class="profile-info-item">
+          <span class="profile-info-icon">📅</span>
+          <div class="profile-info-text">
+            <div class="profile-info-label">Member Since</div>
+            <div class="profile-info-value" id="sidebarMemberSince">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Edit Form -->
+      <div>
+        <!-- Personal Information -->
+        <div class="form-card" style="margin-bottom: 2rem;">
+          <h3 class="form-section-title">👤 Personal Information</h3>
+          
+          <form id="profileForm">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" id="fullName" class="form-input" placeholder="Dr. John Smith" required />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" id="email" class="form-input" disabled />
+                <p class="info-text">Email cannot be changed</p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" id="phone" class="form-input" placeholder="+91 9876543210" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Designation</label>
+              <input type="text" id="designation" class="form-input" placeholder="Professor, Assistant Professor, etc." required />
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="updateProfileBtn">
+                ✓ Update Profile
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Change Password -->
+        <div class="form-card">
+          <h3 class="form-section-title">🔒 Change Password</h3>
+          
+          <form id="passwordForm">
+            <div class="form-group">
+              <label class="form-label">Current Password</label>
+              <div class="input-wrapper">
+                <input type="password" id="currentPassword" class="form-input" required />
+                <span class="password-toggle" onclick="togglePassword('currentPassword')">👁️</span>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">New Password</label>
+                <div class="input-wrapper">
+                  <input type="password" id="newPassword" class="form-input" minlength="6" required />
+                  <span class="password-toggle" onclick="togglePassword('newPassword')">👁️</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Confirm New Password</label>
+                <div class="input-wrapper">
+                  <input type="password" id="confirmPassword" class="form-input" minlength="6" required />
+                  <span class="password-toggle" onclick="togglePassword('confirmPassword')">👁️</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="changePasswordBtn">
+                🔑 Change Password
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/supabase-client.js"></script>
+  <script>
+    let currentUser = null;
+
+    // Toggle password visibility
+    function togglePassword(fieldId) {
+      const field = document.getElementById(fieldId);
+      const toggle = field.nextElementSibling;
+      
+      if (field.type === 'password') {
+        field.type = 'text';
+        toggle.textContent = '🙈';
+      } else {
+        field.type = 'password';
+        toggle.textContent = '👁️';
+      }
+    }
+
+    // Show notification
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        background: ${type === 'success' ? 'rgba(52, 168, 83, 0.95)' : 'rgba(234, 67, 53, 0.95)'};
+        color: white;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        z-index: 10000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      `;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 3000);
+    }
+
+    // Load user profile
+    async function loadProfile() {
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        
+        if (!session) {
+          window.location.href = '../../login.html';
+          return;
+        }
+
+        const { data: user, error } = await supabaseClient
+          .from('users')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (error || !user) {
+          showNotification('Failed to load profile', 'error');
+          return;
+        }
+
+        currentUser = user;
+
+        // Update sidebar
+        const initial = user.full_name.charAt(0).toUpperCase();
+        document.getElementById('profileAvatar').textContent = initial;
+        document.getElementById('profileName').textContent = user.full_name;
+        document.getElementById('profileDesignation').textContent = user.designation || 'Faculty';
+        document.getElementById('sidebarEmail').textContent = user.email;
+        document.getElementById('sidebarPhone').textContent = user.phone || '-';
+        
+        const memberSince = user.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'Recently';
+        document.getElementById('sidebarMemberSince').textContent = memberSince;
+
+        // Update form fields
+        document.getElementById('fullName').value = user.full_name;
+        document.getElementById('email').value = user.email;
+        document.getElementById('phone').value = user.phone || '';
+        document.getElementById('designation').value = user.designation || '';
+
+      } catch (error) {
+        console.error('Error loading profile:', error);
+        showNotification('Failed to load profile', 'error');
+      }
+    }
+
+    // Update profile
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const updateBtn = document.getElementById('updateProfileBtn');
+      const fullName = document.getElementById('fullName').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const designation = document.getElementById('designation').value.trim();
+
+      updateBtn.disabled = true;
+      updateBtn.textContent = 'Updating...';
+
+      try {
+        const { error } = await supabaseClient
+          .from('users')
+          .update({
+            full_name: fullName,
+            phone: phone,
+            designation: designation
+          })
+          .eq('id', currentUser.id);
+
+        if (error) throw error;
+
+        showNotification('Profile updated successfully!', 'success');
+        await loadProfile(); // Reload profile
+
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        showNotification(error.message || 'Failed to update profile', 'error');
+      } finally {
+        updateBtn.disabled = false;
+        updateBtn.textContent = '✓ Update Profile';
+      }
+    });
+
+    // Change password
+    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const changeBtn = document.getElementById('changePasswordBtn');
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (newPassword !== confirmPassword) {
+        showNotification('New passwords do not match', 'error');
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        showNotification('Password must be at least 6 characters', 'error');
+        return;
+      }
+
+      changeBtn.disabled = true;
+      changeBtn.textContent = 'Changing...';
+
+      try {
+        // Verify current password by signing in
+        const { error: signInError } = await supabaseClient.auth.signInWithPassword({
+          email: currentUser.email,
+          password: currentPassword
+        });
+
+        if (signInError) {
+          throw new Error('Current password is incorrect');
+        }
+
+        // Update password
+        const { error: updateError } = await supabaseClient.auth.updateUser({
+          password: newPassword
+        });
+
+        if (updateError) throw updateError;
+
+        showNotification('Password changed successfully!', 'success');
+        document.getElementById('passwordForm').reset();
+
+      } catch (error) {
+        console.error('Error changing password:', error);
+        showNotification(error.message || 'Failed to change password', 'error');
+      } finally {
+        changeBtn.disabled = false;
+        changeBtn.textContent = '🔑 Change Password';
+      }
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+      e.preventDefault();
+      if (confirm('Are you sure you want to logout?')) {
+        await supabaseClient.auth.signOut();
+        sessionStorage.clear();
+        window.location.href = '../../login.html';
+      }
+    });
+
+    // Initialize
+    loadProfile();
+  </script>
+</body>
+</html>

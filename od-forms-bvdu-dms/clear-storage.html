@@ -1,0 +1,16 @@
+<!-- Clear Browser Storage Script -->
+<!-- Add this temporarily to any page to clear all old data -->
+
+<script>
+// Clear all storage
+localStorage.clear();
+sessionStorage.clear();
+
+// Clear all cookies
+document.cookie.split(";").forEach(function(c) { 
+  document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+});
+
+console.log('✅ All browser storage cleared!');
+alert('Browser storage cleared! Please refresh the page.');
+</script>

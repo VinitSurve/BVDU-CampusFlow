@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Participant OD Form - Faculty - BVDU CampusFlow</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../../js/particles.js" defer></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0E27;
+      color: #E2E8F0;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Animated Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.08), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(52, 168, 83, 0.08), transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      margin-bottom: 2rem;
+    }
+
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .btn-back {
+      padding: 0.75rem 1.5rem;
+      background: rgba(66, 133, 244, 0.1);
+      color: #4285F4;
+      border: 1px solid rgba(66, 133, 244, 0.3);
+      border-radius: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-back:hover {
+      background: rgba(66, 133, 244, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* Header Section */
+    .header-section {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .header-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .form-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .info-label {
+      font-size: 0.875rem;
+      color: #94A3B8;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .info-value {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #E2E8F0;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .status-approved {
+      background: rgba(52, 168, 83, 0.2);
+      color: #34A853;
+      border: 1px solid rgba(52, 168, 83, 0.3);
+    }
+
+    .status-rejected {
+      background: rgba(234, 67, 53, 0.2);
+      color: #EA4335;
+      border: 1px solid rgba(234, 67, 53, 0.3);
+    }
+
+    .status-pending {
+      background: rgba(251, 188, 4, 0.2);
+      color: #FBBC04;
+      border: 1px solid rgba(251, 188, 4, 0.3);
+    }
+
+    /* Stats Section */
+    .stats-section {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      background: rgba(30, 41, 59, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: #94A3B8;
+      font-weight: 600;
+    }
+
+    /* Subjects Table */
+    .table-section {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      overflow-x: auto;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      color: #E2E8F0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    thead {
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 700;
+      color: #4285F4;
+      border-bottom: 2px solid rgba(66, 133, 244, 0.3);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    tbody tr {
+      background: rgba(30, 41, 59, 0.3);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(30, 41, 59, 0.5);
+    }
+
+    tbody tr.locked-row {
+      opacity: 0.6;
+      background: rgba(234, 67, 53, 0.05);
+    }
+
+    td {
+      padding: 1rem;
+      color: #E2E8F0;
+    }
+
+    .locked-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: rgba(234, 67, 53, 0.2);
+      color: #EA4335;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+
+    .leader-remarks {
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+      background: rgba(66, 133, 244, 0.1);
+      border-left: 3px solid #4285F4;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      color: #94A3B8;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .radio-option input[type="radio"] {
+      width: 1.25rem;
+      height: 1.25rem;
+      cursor: pointer;
+    }
+
+    .radio-label {
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+
+    .radio-label.approve {
+      color: #34A853;
+    }
+
+    .radio-label.reject {
+      color: #EA4335;
+    }
+
+    .remarks-row {
+      background: rgba(30, 41, 59, 0.6) !important;
+    }
+
+    .remarks-label {
+      display: block;
+      font-weight: 600;
+      color: #EA4335;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .remarks-textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 0.75rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(234, 67, 53, 0.3);
+      border-radius: 0.75rem;
+      color: #E2E8F0;
+      font-family: 'Inter', sans-serif;
+      resize: vertical;
+    }
+
+    .remarks-textarea:focus {
+      outline: none;
+      border-color: #EA4335;
+      box-shadow: 0 0 0 3px rgba(234, 67, 53, 0.1);
+    }
+
+    /* Action Section */
+    .action-section {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 1.5rem;
+      padding: 2rem;
+    }
+
+    .bulk-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn {
+      padding: 0.875rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: rgba(66, 133, 244, 0.2);
+      color: #4285F4;
+      border: 1px solid rgba(66, 133, 244, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: rgba(66, 133, 244, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .btn-approve {
+      background: rgba(52, 168, 83, 0.2);
+      color: #34A853;
+      border: 1px solid rgba(52, 168, 83, 0.3);
+    }
+
+    .btn-approve:hover:not(:disabled) {
+      background: rgba(52, 168, 83, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .btn-reject {
+      background: rgba(234, 67, 53, 0.2);
+      color: #EA4335;
+      border: 1px solid rgba(234, 67, 53, 0.3);
+    }
+
+    .btn-reject:hover:not(:disabled) {
+      background: rgba(234, 67, 53, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .alert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      z-index: 10000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      max-width: 400px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .alert-success {
+      background: rgba(52, 168, 83, 0.95);
+      color: white;
+    }
+
+    .alert-error {
+      background: rgba(234, 67, 53, 0.95);
+      color: white;
+    }
+
+    .alert-info {
+      background: rgba(66, 133, 244, 0.95);
+      color: white;
+      position: relative;
+      margin-top: 1.5rem;
+    }
+
+    #alertContainer {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="navbar-brand">🎓 BVDU CampusFlow</div>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <a href="od-forms.html" class="btn-back">
+        ← Back to OD Forms
+      </a>
+      <button id="logoutBtn" class="btn-back" style="background: rgba(234, 67, 53, 0.1); color: #EA4335; border-color: rgba(234, 67, 53, 0.3);">
+        🚪 Logout
+      </button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="alertContainer"></div>
+
+    <!-- Header Section -->
+    <div class="header-section">
+      <h1 class="header-title">📋 Review Participant OD Form</h1>
+      <div class="form-info-grid">
+        <div class="info-item">
+          <span class="info-label">Form ID</span>
+          <span class="info-value" id="formId">Loading...</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Student Name</span>
+          <span class="info-value" id="studentName">Loading...</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Roll Number</span>
+          <span class="info-value" id="rollNumber">Loading...</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Course & Semester</span>
+          <span class="info-value" id="course">Loading...</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Event Name</span>
+          <span class="info-value" id="eventName">Loading...</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Event Date</span>
+          <span class="info-value" id="eventDate">Loading...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value" id="leaderApprovedCount">0</div>
+          <div class="stat-label">Approved by Event Leader</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">❌</div>
+          <div class="stat-value" id="leaderRejectedCount">0</div>
+          <div class="stat-label">Rejected by Event Leader</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-value" id="pendingCount">0</div>
+          <div class="stat-label">Pending Your Review</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✓</div>
+          <div class="stat-value" id="yourApprovedCount">0</div>
+          <div class="stat-label">You Approved</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subjects Table -->
+    <div class="table-section">
+      <h2 class="section-title">📚 Subjects Review</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Subject</th>
+            <th>Faculty</th>
+            <th>Event Leader Decision</th>
+            <th>Your Decision</th>
+          </tr>
+        </thead>
+        <tbody id="subjectsTableBody">
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 2rem;">
+              <span style="font-size: 2rem;">⏳</span>
+              <p style="margin-top: 0.5rem; color: #64748B;">Loading subjects...</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div class="action-section">
+      <h2 class="section-title">⚡ Quick Actions</h2>
+      <div class="bulk-actions">
+        <button class="btn btn-approve" onclick="approveAllPending()">
+          ✅ Approve All Pending
+        </button>
+        <button class="btn btn-reject" onclick="rejectAllPending()">
+          ❌ Reject All Pending
+        </button>
+        <button class="btn btn-primary" onclick="submitDecisions()">
+          💾 Submit Final Decision
+        </button>
+      </div>
+      <div class="alert alert-info">
+        <span>ℹ️</span>
+        <span><strong>Note:</strong> All subjects approved by Event Leader must have your decision (Approve/Reject) before submission. Rejected subjects require remarks.</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/supabase-client.js"></script>
+  <script>
+    let currentForm = null;
+    let subjectApprovals = [];
+    let formId = null;
+    let currentUser = null;
+
+    // Get form ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    formId = urlParams.get('id');
+
+    if (!formId) {
+      showAlert('error', 'No form ID provided');
+      setTimeout(() => window.location.href = 'od-forms.html', 2000);
+    }
+
+    // Check auth and load data
+    async function init() {
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        
+        if (!session) {
+          window.location.href = '../../login.html';
+          return;
+        }
+
+        const { data: user, error: userError } = await supabaseClient
+          .from('users')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (userError || !user || user.role !== 'faculty') {
+          showAlert('error', 'Unauthorized access');
+          setTimeout(() => window.location.href = 'dashboard.html', 2000);
+          return;
+        }
+
+        currentUser = user;
+        await loadForm();
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert('error', 'Failed to initialize');
+      }
+    }
+
+    // Load form data
+    async function loadForm() {
+      try {
+        // Load OD form with student and event details
+        const { data: form, error: formError } = await supabaseClient
+          .from('od_forms')
+          .select(`
+            *,
+            student:student_id (
+              full_name,
+              roll_number,
+              department,
+              year
+            ),
+            event:event_id (
+              event_name,
+              event_date
+            )
+          `)
+          .eq('form_id', formId)
+          .eq('form_type', 'participant')
+          .single();
+
+        if (formError || !form) {
+          showAlert('error', 'Form not found');
+          setTimeout(() => window.location.href = 'od-forms.html', 2000);
+          return;
+        }
+
+        currentForm = form;
+
+        // Load subject approvals
+        const { data: approvals, error: approvalsError } = await supabaseClient
+          .from('od_subject_approvals')
+          .select('*')
+          .eq('form_id', formId)
+          .order('subject_date', { ascending: true })
+          .order('subject_time', { ascending: true });
+
+        if (approvalsError) throw approvalsError;
+
+        subjectApprovals = approvals || [];
+
+        // Display form info
+        document.getElementById('formId').textContent = form.form_id;
+        document.getElementById('studentName').textContent = form.student?.full_name || form.student_name;
+        document.getElementById('rollNumber').textContent = form.student?.roll_number || 'N/A';
+        document.getElementById('course').textContent = `${form.student?.department || 'N/A'} - Year ${form.student?.year || 'N/A'}`;
+        document.getElementById('eventName').textContent = form.event?.event_name || form.event_name;
+        document.getElementById('eventDate').textContent = formatDate(form.event?.event_date || form.od_dates?.[0]);
+
+        // Calculate stats
+        updateStats();
+
+        // Render subjects
+        renderSubjects();
+      } catch (error) {
+        console.error('Error loading form:', error);
+        showAlert('error', 'Error loading form data');
+      }
+    }
+
+    // Update stats
+    function updateStats() {
+      const leaderApproved = subjectApprovals.filter(s => s.event_leader_status === 'approved').length;
+      const leaderRejected = subjectApprovals.filter(s => s.event_leader_status === 'rejected').length;
+      const pending = subjectApprovals.filter(s => 
+        s.event_leader_status === 'approved' && s.faculty_status === 'pending'
+      ).length;
+      const yourApproved = subjectApprovals.filter(s => s.faculty_status === 'approved').length;
+
+      document.getElementById('leaderApprovedCount').textContent = leaderApproved;
+      document.getElementById('leaderRejectedCount').textContent = leaderRejected;
+      document.getElementById('pendingCount').textContent = pending;
+      document.getElementById('yourApprovedCount').textContent = yourApproved;
+    }
+
+    // Render subjects table
+    function renderSubjects() {
+      const tbody = document.getElementById('subjectsTableBody');
+      if (!subjectApprovals || subjectApprovals.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 2rem;">
+              <span style="font-size: 2rem;">📭</span>
+              <p style="margin-top: 0.5rem; color: #64748B;">No subjects found</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      let html = '';
+      subjectApprovals.forEach((subject) => {
+        const isRejectedByLeader = subject.event_leader_status === 'rejected';
+        const isApprovedByLeader = subject.event_leader_status === 'approved';
+        const rowClass = isRejectedByLeader ? 'locked-row' : '';
+        
+        // Leader status badge
+        const leaderBadge = isApprovedByLeader 
+          ? '<div class="flex items-center gap-2"><span style="display: inline-block; width: 1.5rem; height: 1.5rem; background: #34A853; border-radius: 50%; text-align: center; line-height: 1.5rem; font-size: 0.875rem;">✓</span><span class="font-semibold text-green-400" style="font-size: 0.95rem;">Approved</span></div>'
+          : '<div class="flex items-center gap-2"><span style="display: inline-block; width: 1.5rem; height: 1.5rem; background: #F44336; border-radius: 50%; text-align: center; line-height: 1.5rem; font-size: 0.875rem;">✗</span><span class="font-semibold text-red-400" style="font-size: 0.95rem;">Rejected</span></div>';
+        
+        const lockedBadge = isRejectedByLeader 
+          ? '<span class="locked-badge">🔒 Rejected</span>'
+          : '';
+
+        // Faculty decision radio buttons (disabled if rejected by leader)
+        const facultyStatus = subject.faculty_status || 'pending';
+        const disabled = isRejectedByLeader ? 'disabled' : '';
+        
+        html += `
+          <tr class="${rowClass}" data-subject-id="${subject.id}">
+            <td>${formatDate(subject.subject_date)}</td>
+            <td>${subject.subject_time}</td>
+            <td>
+              <strong>${subject.subject_name}</strong> (${subject.subject_code})
+              ${lockedBadge}
+              ${subject.event_leader_remarks ? `
+                <div class="leader-remarks">
+                  <strong>Event Leader's Remarks:</strong>
+                  ${subject.event_leader_remarks}
+                </div>
+              ` : ''}
+            </td>
+            <td>${subject.faculty_name}</td>
+            <td>${leaderBadge}</td>
+            <td>
+              ${isRejectedByLeader ? `
+                <span style="color: #64748B; font-size: 0.875rem;">🔒 Rejected by Event Leader</span>
+              ` : `
+                <div class="radio-group">
+                  <div class="radio-option">
+                    <input 
+                      type="radio" 
+                      name="decision_${subject.id}" 
+                      id="approve_${subject.id}" 
+                      value="approved"
+                      ${facultyStatus === 'approved' ? 'checked' : ''}
+                      ${disabled}
+                      onchange="updateSubjectStatus('${subject.id}', 'approved')"
+                    >
+                    <label for="approve_${subject.id}" class="radio-label approve">✅ Approve</label>
+                  </div>
+                  <div class="radio-option">
+                    <input 
+                      type="radio" 
+                      name="decision_${subject.id}" 
+                      id="reject_${subject.id}" 
+                      value="rejected"
+                      ${facultyStatus === 'rejected' ? 'checked' : ''}
+                      ${disabled}
+                      onchange="updateSubjectStatus('${subject.id}', 'rejected')"
+                    >
+                    <label for="reject_${subject.id}" class="radio-label reject">❌ Reject</label>
+                  </div>
+                </div>
+              `}
+            </td>
+          </tr>
+        `;
+
+        // Add remarks row if faculty rejected
+        if (facultyStatus === 'rejected' && !isRejectedByLeader) {
+          html += `
+            <tr class="remarks-row" id="remarks_row_${subject.id}">
+              <td colspan="6">
+                <label class="remarks-label">Rejection Reason:</label>
+                <textarea 
+                  class="remarks-textarea" 
+                  id="remarks_${subject.id}"
+                  placeholder="Explain why you are rejecting this subject..."
+                  onchange="updateSubjectRemarks('${subject.id}')"
+                >${subject.faculty_remarks || ''}</textarea>
+              </td>
+            </tr>
+          `;
+        }
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    // Update subject status
+    async function updateSubjectStatus(subjectId, status) {
+      try {
+        const subject = subjectApprovals.find(s => s.id === subjectId);
+        if (!subject) return;
+
+        const updateData = {
+          faculty_status: status,
+          faculty_reviewed_by: currentUser.id,
+          faculty_reviewed_at: new Date().toISOString()
+        };
+
+        if (status === 'approved') {
+          updateData.faculty_remarks = null; // Clear remarks if approved
+        }
+
+        const { error } = await supabaseClient
+          .from('od_subject_approvals')
+          .update(updateData)
+          .eq('id', subjectId);
+
+        if (error) throw error;
+
+        // Update local data
+        subject.faculty_status = status;
+        subject.faculty_reviewed_by = currentUser.id;
+        subject.faculty_reviewed_at = new Date().toISOString();
+        if (status === 'approved') {
+          subject.faculty_remarks = null;
+        }
+
+        updateStats();
+        renderSubjects(); // Re-render to show/hide remarks row
+      } catch (error) {
+        console.error('Error updating subject status:', error);
+        showAlert('error', 'Failed to update subject status');
+      }
+    }
+
+    // Update subject remarks
+    async function updateSubjectRemarks(subjectId) {
+      try {
+        const remarks = document.getElementById(`remarks_${subjectId}`).value;
+        
+        const { error } = await supabaseClient
+          .from('od_subject_approvals')
+          .update({ faculty_remarks: remarks })
+          .eq('id', subjectId);
+
+        if (error) throw error;
+
+        // Update local data
+        const subject = subjectApprovals.find(s => s.id === subjectId);
+        if (subject) {
+          subject.faculty_remarks = remarks;
+        }
+      } catch (error) {
+        console.error('Error updating remarks:', error);
+        showAlert('error', 'Failed to update remarks');
+      }
+    }
+
+    // Approve all pending (only Event Leader approved subjects)
+    async function approveAllPending() {
+      try {
+        const pendingSubjects = subjectApprovals.filter(s => 
+          s.event_leader_status === 'approved' && s.faculty_status === 'pending'
+        );
+
+        if (pendingSubjects.length === 0) {
+          showAlert('info', 'No pending subjects to approve');
+          return;
+        }
+
+        for (const subject of pendingSubjects) {
+          await updateSubjectStatus(subject.id, 'approved');
+        }
+
+        showAlert('success', `Approved ${pendingSubjects.length} pending subject(s)`);
+      } catch (error) {
+        console.error('Error approving all:', error);
+        showAlert('error', 'Failed to approve all pending subjects');
+      }
+    }
+
+    // Reject all pending
+    function rejectAllPending() {
+      const pendingSubjects = subjectApprovals.filter(s => 
+        s.event_leader_status === 'approved' && s.faculty_status === 'pending'
+      );
+
+      if (pendingSubjects.length === 0) {
+        showAlert('info', 'No pending subjects to reject');
+        return;
+      }
+
+      // Just mark as rejected locally, user must add remarks manually
+      pendingSubjects.forEach(subject => {
+        const radio = document.getElementById(`reject_${subject.id}`);
+        if (radio) radio.click();
+      });
+
+      showAlert('info', `Rejected ${pendingSubjects.length} pending subject(s). Please add remarks for each.`);
+    }
+
+    // Submit final decision
+    async function submitDecisions() {
+      try {
+        // Validate: All Event Leader approved subjects must have faculty decision
+        const needDecision = subjectApprovals.filter(s => 
+          s.event_leader_status === 'approved' && s.faculty_status === 'pending'
+        );
+
+        if (needDecision.length > 0) {
+          showAlert('error', `Please make a decision for all ${needDecision.length} approved subject(s)`);
+          return;
+        }
+
+        // Validate: All rejected subjects must have remarks
+        const needRemarks = subjectApprovals.filter(s => 
+          s.faculty_status === 'rejected' && !s.faculty_remarks?.trim()
+        );
+
+        if (needRemarks.length > 0) {
+          showAlert('error', `Please add remarks for all ${needRemarks.length} rejected subject(s)`);
+          return;
+        }
+
+        // Check if all subjects are approved or at least one is rejected
+        const allApproved = subjectApprovals.filter(s => s.event_leader_status === 'approved')
+          .every(s => s.faculty_status === 'approved');
+        
+        const anyRejected = subjectApprovals.some(s => s.faculty_status === 'rejected');
+
+        // Update OD form status
+        const updateData = {
+          approved_by_faculty: allApproved,
+          status: anyRejected ? 'rejected' : (allApproved ? 'partially_approved' : 'pending'),
+          updated_at: new Date().toISOString()
+        };
+
+        const { error } = await supabaseClient
+          .from('od_forms')
+          .update(updateData)
+          .eq('form_id', formId);
+
+        if (error) throw error;
+
+        showAlert('success', '✅ Faculty review submitted successfully!');
+        setTimeout(() => window.location.href = 'od-forms.html', 2000);
+      } catch (error) {
+        console.error('Error submitting decisions:', error);
+        showAlert('error', 'Failed to submit decisions');
+      }
+    }
+
+    // Show alert
+    function showAlert(type, message) {
+      const container = document.getElementById('alertContainer');
+      const icons = { error: '❌', success: '✅', info: 'ℹ️' };
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.innerHTML = `<span>${icons[type]}</span><span>${message}</span>`;
+      container.appendChild(alert);
+      setTimeout(() => alert.remove(), 5000);
+    }
+
+    // Format date
+    function formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-IN', { 
+        day: '2-digit', 
+        month: 'short', 
+        year: 'numeric' 
+      });
+    }
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (confirm('Are you sure you want to logout?')) {
+        await supabaseClient.auth.signOut();
+        sessionStorage.clear();
+        window.location.href = '../../login.html';
+      }
+    });
+
+    // Initialize
+    init();
+  </script>
+</body>
+</html>

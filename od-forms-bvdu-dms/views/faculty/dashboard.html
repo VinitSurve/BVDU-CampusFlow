@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Dashboard - BVDU CampusFlow</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Particles Animation -->
+  <script src="../../js/particles.js" defer></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0E27;
+      color: #E2E8F0;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.08), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(52, 168, 83, 0.08), transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: #94A3B8;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-link:hover {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .nav-link.active {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.15);
+    }
+
+    /* Page Header */
+    .page-header {
+      margin: 2rem 0;
+    }
+
+    .page-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-subtitle {
+      color: #64748B;
+      font-size: 1.1rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(66, 133, 244, 0.3);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+    }
+
+    .stat-label {
+      color: #64748B;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-change {
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .stat-change.positive {
+      color: #34A853;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .tab {
+      padding: 1rem 1.5rem;
+      background: transparent;
+      border: none;
+      color: #64748B;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      font-size: 1rem;
+    }
+
+    .tab:hover {
+      color: #4285F4;
+    }
+
+    .tab.active {
+      color: #4285F4;
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #4285F4;
+    }
+
+    .tab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 0.5rem;
+      background: rgba(66, 133, 244, 0.2);
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #4285F4;
+      margin-left: 0.5rem;
+    }
+
+    /* Events Grid */
+    .events-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .event-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .event-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(66, 133, 244, 0.3);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .event-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .event-title-section {
+      flex: 1;
+    }
+
+    .event-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .event-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 0.5rem;
+    }
+
+    .event-meta {
+      display: flex;
+      gap: 1rem;
+      color: #64748B;
+      font-size: 0.875rem;
+    }
+
+    .event-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .event-badges {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .badge {
+      padding: 0.375rem 0.75rem;
+      border-radius: 2rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .badge-status {
+      background: rgba(251, 188, 4, 0.15);
+      color: #FBBC04;
+      border: 1px solid rgba(251, 188, 4, 0.3);
+    }
+
+    .badge-category {
+      background: rgba(66, 133, 244, 0.15);
+      color: #4285F4;
+      border: 1px solid rgba(66, 133, 244, 0.3);
+    }
+
+    .event-leader-section {
+      background: rgba(66, 133, 244, 0.1);
+      border: 1px solid rgba(66, 133, 244, 0.2);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .leader-decision {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .decision-icon {
+      font-size: 1.5rem;
+    }
+
+    .decision-info h4 {
+      color: #E2E8F0;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .decision-status {
+      font-size: 0.875rem;
+      color: #64748B;
+    }
+
+    .decision-approved {
+      color: #34A853;
+    }
+
+    .decision-rejected {
+      color: #EA4335;
+    }
+
+    .leader-reason {
+      background: rgba(30, 41, 59, 0.5);
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      color: #94A3B8;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .event-description {
+      color: #94A3B8;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .event-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: #4285F4;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #3367D6;
+      box-shadow: 0 4px 15px rgba(66, 133, 244, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #64748B;
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .empty-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #94A3B8;
+    }
+
+    .empty-text {
+      color: #64748B;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="../../index.html" class="navbar-brand">
+      🎓 BVDU Event Management
+    </a>
+    <div class="nav-menu">
+      <a href="dashboard.html" class="nav-link active">🎯 Events</a>
+      <a href="od-forms.html" class="nav-link">📋 OD Forms</a>
+      <a href="clubs.html" class="nav-link">🎪 Clubs</a>
+      <a href="create-event-leader.html" class="nav-link">👥 Create Event Leader</a>
+      <a href="timetable-manager.html" class="nav-link">📅 Timetable</a>
+      <a href="profile.html" class="nav-link">👤 Profile</a>
+      <a href="../../index.html" class="nav-link" id="logoutBtn">🚪 Logout</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">Events Management</h1>
+      <p class="page-subtitle">Review and approve events forwarded by Event Leaders</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-icon">⏳</span>
+          <span class="stat-label">Pending Review</span>
+        </div>
+        <div class="stat-value" id="pendingCount">0</div>
+        <div class="stat-change">Events awaiting your approval</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-icon">✅</span>
+          <span class="stat-label">Approved</span>
+        </div>
+        <div class="stat-value" id="approvedCount">0</div>
+        <div class="stat-change positive">Events you approved</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-icon">❌</span>
+          <span class="stat-label">Rejected</span>
+        </div>
+        <div class="stat-value" id="rejectedCount">0</div>
+        <div class="stat-change">Events you rejected</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-icon">📊</span>
+          <span class="stat-label">Total Reviewed</span>
+        </div>
+        <div class="stat-value" id="totalCount">0</div>
+        <div class="stat-change">All events reviewed</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="pending" onclick="switchTab('pending')">
+        Pending Review
+        <span class="tab-badge" id="pendingBadge">0</span>
+      </button>
+      <button class="tab" data-tab="approved" onclick="switchTab('approved')">
+        Approved
+        <span class="tab-badge" id="approvedBadge">0</span>
+      </button>
+      <button class="tab" data-tab="rejected" onclick="switchTab('rejected')">
+        Rejected
+        <span class="tab-badge" id="rejectedBadge">0</span>
+      </button>
+      <button class="tab" data-tab="all" onclick="switchTab('all')">
+        All Events
+        <span class="tab-badge" id="allBadge">0</span>
+      </button>
+    </div>
+
+    <!-- Events Grid -->
+    <div class="events-grid" id="eventsGrid">
+      <!-- Events will be loaded here -->
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/supabase-client.js"></script>
+  <script>
+    let allEvents = [];
+    let currentTab = 'pending';
+
+    // Notification function
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        background: ${type === 'success' ? 'rgba(52, 168, 83, 0.95)' : 'rgba(234, 67, 53, 0.95)'};
+        color: white;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        z-index: 10000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      `;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 3000);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async function() {
+      await loadEvents();
+      await loadODFormsStats();
+    });
+
+    // Load OD Forms Stats
+    async function loadODFormsStats() {
+      try {
+        console.log('========== FACULTY OD FORMS STATS ==========');
+        console.log('Loading OD forms stats for faculty dashboard...');
+        
+        // Check current user
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        console.log('Current logged-in user:', user);
+        
+        // Get user details from users table
+        const { data: userData } = await supabaseClient
+          .from('users')
+          .select('*')
+          .eq('email', user.email)
+          .single();
+        console.log('User details from database:', userData);
+        
+        // First check all OD forms (as admin/bypass RLS check)
+        const { data: allODForms, error: allError } = await supabaseClient
+          .from('od_forms')
+          .select('*');
+        
+        console.log('All OD forms in database (RLS applied):', allODForms);
+        console.log('Total forms visible to this user:', allODForms ? allODForms.length : 0);
+        if (allError) console.error('Error fetching all OD forms:', allError);
+        
+        // Query OD forms that need faculty approval
+        const { data: odForms, error } = await supabaseClient
+          .from('od_forms')
+          .select('*')
+          .eq('approved_by_event_leader', true)
+          .eq('approved_by_faculty', false);
+
+        console.log('OD Forms pending faculty approval (after filtering):', odForms);
+        console.log('Forms needing faculty approval:', odForms ? odForms.length : 0);
+        
+        if (error) {
+          console.error('Error loading OD forms:', error);
+          console.error('Error code:', error.code);
+          console.error('Error details:', error.details);
+          return;
+        }
+
+        // Calculate stats
+        const pending = odForms ? odForms.length : 0;
+
+        // Update the "Pending Review" stat card with OD forms count
+        const pendingCountElement = document.getElementById('pendingCount');
+        const currentEventsCount = parseInt(pendingCountElement.textContent) || 0;
+        
+        console.log('Current events count:', currentEventsCount);
+        console.log('OD forms count:', pending);
+        console.log('Combined count:', currentEventsCount + pending);
+        console.log('========================================');
+        
+        // Show combined count (events + OD forms)
+        pendingCountElement.textContent = currentEventsCount + pending;
+        
+        // Update the subtitle to show breakdown
+        const statChange = pendingCountElement.parentElement.querySelector('.stat-change');
+        if (statChange) {
+          statChange.textContent = `${currentEventsCount} events, ${pending} OD forms`;
+        }
+
+      } catch (error) {
+        console.error('Error in loadODFormsStats:', error);
+      }
+    }
+
+    // Load Events
+    async function loadEvents() {
+      try {
+        // Load all events from Supabase (tabs will filter them)
+        const { data: events, error } = await supabaseClient
+          .from('events')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error loading events:', error);
+          showNotification('Failed to load events', 'error');
+          return;
+        }
+
+        allEvents = events || [];
+        console.log('Loaded events:', allEvents);
+        updateStats();
+        renderEvents();
+      } catch (error) {
+        console.error('Error in loadEvents:', error);
+        showNotification('Failed to load events', 'error');
+      }
+    }
+
+    // Removed mock data function - using Supabase now
+    function initializeMockDataOLD() {
+      // Always initialize with fresh mock data (remove this condition after testing)
+      if (true) {
+        const mockEvents = [
+          {
+            event_id: 'EVT-2025-001',
+            event_name: 'AI & Machine Learning Summit 2025',
+            event_type: 'Conference',
+            event_description: 'A comprehensive summit covering latest trends in AI, ML, and Deep Learning with industry experts and hands-on workshops.',
+            event_date: '2025-12-15',
+            start_time: '09:00',
+            end_time: '17:00',
+            venue: 'Main Auditorium, Block A',
+            expected_attendees: 200,
+            budget: 50000,
+            registration_required: 'yes',
+            external_attendees: 'yes',
+            hosting_club: 'AI/ML Club',
+            organizing_club: 'AI/ML Club',
+            event_leader_name: 'Dr. Rahul Sharma',
+            event_leader_id: 'EL2025001',
+            tags: 'AI, Machine Learning, Technology',
+            learning_outcomes: 'Understanding of modern AI techniques, hands-on ML model building, industry best practices',
+            key_speakers: 'Dr. Rajesh Kumar (Google AI), Prof. Sneha Sharma (MIT), Amit Patel (Microsoft Research)',
+            equipment_needs: {
+              wirelessMics: 2,
+              collarMics: 1,
+              chairs: 200,
+              table: 5,
+              waterBottles: 50
+            },
+            registration_link: 'https://forms.google.com/ai-summit-2025',
+            icon: '🤖',
+            created_at: '2025-11-10',
+            faculty_status: 'approved',
+            faculty_remarks: 'Excellent event for AI/ML learning. Approved.',
+            faculty_approval_date: '2025-11-11',
+            od_eligible: true,
+            certificate_provided: true,
+            is_national: true,
+            is_university: false,
+            event_category: 'Technical'
+          },
+          {
+            event_id: 'EVT-2025-002',
+            event_name: 'National Hackathon - Code Warriors',
+            event_type: 'Competition',
+            event_description: '48-hour intensive coding competition to solve real-world problems. Teams will build innovative solutions with mentorship from industry professionals.',
+            event_date: '2025-12-20',
+            start_time: '08:00',
+            end_time: '20:00',
+            venue: 'Computer Lab 501, 502, 503',
+            expected_attendees: 150,
+            budget: 75000,
+            registration_required: 'yes',
+            external_attendees: 'yes',
+            hosting_club: 'Coding Club',
+            organizing_club: 'Coding Club',
+            event_leader_name: 'Prof. Vikram Singh',
+            event_leader_id: 'EL2025002',
+            tags: 'Hackathon, Programming, Innovation',
+            learning_outcomes: 'Problem-solving skills, team collaboration, rapid prototyping, presentation skills',
+            key_speakers: 'Rahul Verma (Tech Lead, Amazon), Priya Desai (CTO, Startup Inc.)',
+            equipment_needs: {
+              wirelessMics: 2,
+              collarMics: 0,
+              chairs: 150,
+              table: 10,
+              waterBottles: 100
+            },
+            registration_link: 'https://hackathon.bvdu.edu.in/register',
+            icon: '💻',
+            created_at: '2025-11-12',
+            faculty_status: 'approved',
+            faculty_remarks: 'Great opportunity for students. Approved.',
+            faculty_approval_date: '2025-11-12',
+            od_eligible: true,
+            certificate_provided: true,
+            is_national: true,
+            is_university: false,
+            event_category: 'Competition'
+          },
+          {
+            event_id: 'EVT-2025-003',
+            event_name: 'Web Development Bootcamp - Full Stack',
+            event_type: 'Workshop',
+            event_description: 'Intensive 2-day bootcamp covering HTML, CSS, JavaScript, React, Node.js, and MongoDB. Build complete web applications from scratch.',
+            event_date: '2025-11-18',
+            start_time: '10:00',
+            end_time: '16:00',
+            venue: 'Lab 402',
+            expected_attendees: 80,
+            budget: 25000,
+            registration_required: 'yes',
+            external_attendees: 'no',
+            hosting_club: 'Web Dev Society',
+            organizing_club: 'Web Dev Society',
+            event_leader_name: 'Dr. Anita Deshmukh',
+            event_leader_id: 'EL2025003',
+            tags: 'Web Development, Full Stack, JavaScript',
+            learning_outcomes: 'Full stack web development, Modern JavaScript frameworks, Database integration, Deployment strategies',
+            key_speakers: 'Rohan Joshi (Senior Developer, TCS), Neha Kapoor (Freelance Full Stack Developer)',
+            equipment_needs: {
+              wirelessMics: 1,
+              collarMics: 1,
+              chairs: 80,
+              table: 3,
+              waterBottles: 30
+            },
+            registration_link: 'https://webdev.bvdu.edu.in/bootcamp',
+            icon: '🌐',
+            created_at: '2025-11-13',
+            faculty_status: 'approved',
+            faculty_remarks: 'Well-structured bootcamp. Approved.',
+            faculty_approval_date: '2025-11-13',
+            od_eligible: true,
+            certificate_provided: true,
+            is_national: false,
+            is_university: true,
+            event_category: 'Workshop'
+          },
+          {
+            event_id: 'EVT-2025-004',
+            event_name: 'Cultural Fest - Euphoria 2025',
+            event_type: 'Cultural',
+            event_description: 'Annual cultural festival featuring music, dance, drama, art exhibitions, fashion shows, and food stalls. A celebration of diversity and talent.',
+            event_date: '2025-12-05',
+            start_time: '09:00',
+            end_time: '21:00',
+            venue: 'Open Ground & Main Auditorium',
+            expected_attendees: 500,
+            budget: 150000,
+            registration_required: 'no',
+            external_attendees: 'yes',
+            hosting_club: 'Cultural Committee',
+            organizing_club: 'Cultural Committee',
+            event_leader_name: 'Prof. Meera Kulkarni',
+            event_leader_id: 'EL2025004',
+            tags: 'Cultural, Music, Dance, Arts',
+            learning_outcomes: 'Event management, team coordination, cultural appreciation, performance skills',
+            key_speakers: 'Celebrity Guest - TBA, Dance Troupe - Nritya Shakti',
+            equipment_needs: {
+              wirelessMics: 2,
+              collarMics: 2,
+              chairs: 500,
+              table: 20,
+              waterBottles: 200
+            },
+            registration_link: 'https://euphoria.bvdu.edu.in',
+            icon: '🎭',
+            created_at: '2025-11-08',
+            faculty_status: 'approved',
+            faculty_remarks: 'Important cultural event. Approved.',
+            faculty_approval_date: '2025-11-09',
+            od_eligible: true,
+            certificate_provided: false,
+            is_national: false,
+            is_university: true,
+            event_category: 'Cultural'
+          },
+          {
+            event_id: 'EVT-2025-005',
+            event_name: 'Blockchain & Cryptocurrency Workshop',
+            event_type: 'Workshop',
+            event_description: 'Deep dive into blockchain technology, smart contracts, DeFi, and cryptocurrency ecosystems. Hands-on Ethereum development.',
+            event_date: '2025-12-10',
+            start_time: '10:00',
+            end_time: '15:00',
+            venue: 'Seminar Hall 4th Floor',
+            expected_attendees: 100,
+            budget: 30000,
+            registration_required: 'yes',
+            external_attendees: 'no',
+            hosting_club: 'Blockchain Club',
+            organizing_club: 'Blockchain Club',
+            event_leader_name: 'Dr. Suresh Patil',
+            event_leader_id: 'EL2025005',
+            tags: 'Blockchain, Cryptocurrency, Web3',
+            learning_outcomes: 'Understanding blockchain fundamentals, Smart contract development, DeFi concepts, NFT creation',
+            key_speakers: 'Vikram Singh (Blockchain Consultant), Anjali Mehta (Crypto Analyst)',
+            equipment_needs: {
+              wirelessMics: 1,
+              collarMics: 1,
+              chairs: 100,
+              table: 5,
+              waterBottles: 40
+            },
+            registration_link: 'https://blockchain.bvdu.edu.in/workshop',
+            icon: '⛓️',
+            created_at: '2025-11-11',
+            faculty_status: 'approved',
+            faculty_remarks: 'Relevant emerging technology. Approved.',
+            faculty_approval_date: '2025-11-11',
+            od_eligible: true,
+            certificate_provided: true,
+            is_national: false,
+            is_university: true,
+            event_category: 'Workshop'
+          }
+        ];
+
+        localStorage.setItem('bvdu_events', JSON.stringify(mockEvents));
+      }
+
+      // Initialize mock OD forms if none exist
+      const existingForms = JSON.parse(localStorage.getItem('bvdu_od_forms')) || [];
+      if (existingForms.length === 0) {
+        const mockODForms = [
+          {
+            id: 'OD-2025-001',
+            student_name: 'Rahul Sharma',
+            student_id: 'BVD2022001',
+            event_name: 'IEEE International Conference on AI',
+            event_type: 'Conference',
+            event_date: '2025-11-18',
+            submission_date: '2025-11-10',
+            status: 'pending_faculty',
+            total_lectures: 4,
+            total_hours: 6,
+            event_leader_status: 'approved',
+            event_leader_remarks: 'Excellent opportunity for the student. The conference is highly relevant to his research area. Strongly recommend approval.',
+            event_leader_date: '2025-11-11T10:30:00'
+          },
+          {
+            id: 'OD-2025-002',
+            student_name: 'Priya Patel',
+            student_id: 'BVD2022045',
+            event_name: 'National Hackathon - Smart City Solutions',
+            event_type: 'Competition',
+            event_date: '2025-11-22',
+            submission_date: '2025-11-12',
+            status: 'pending_faculty',
+            total_lectures: 3,
+            total_hours: 4.5,
+            event_leader_status: 'approved',
+            event_leader_remarks: 'Student has excellent coding skills and represents the college well in competitions. This hackathon aligns with her project work.',
+            event_leader_date: '2025-11-13T09:15:00'
+          },
+          {
+            id: 'OD-2025-003',
+            student_name: 'Amit Kumar',
+            student_id: 'BVD2022089',
+            event_name: 'Workshop on Cloud Computing - AWS',
+            event_type: 'Workshop',
+            event_date: '2025-11-20',
+            submission_date: '2025-11-13',
+            status: 'pending_faculty',
+            total_lectures: 2,
+            total_hours: 3,
+            event_leader_status: 'approved',
+            event_leader_remarks: 'Workshop is conducted by AWS certified professionals. Will enhance student technical skills in cloud technologies.',
+            event_leader_date: '2025-11-14T11:00:00'
+          },
+          {
+            id: 'OD-2025-004',
+            student_name: 'Sneha Desai',
+            student_id: 'BVD2022123',
+            event_name: 'Inter-College Cultural Competition',
+            event_type: 'Cultural Event',
+            event_date: '2025-11-25',
+            submission_date: '2025-11-14',
+            status: 'pending_faculty',
+            total_lectures: 5,
+            total_hours: 7.5,
+            event_leader_status: 'approved',
+            event_leader_remarks: 'Student is representing college in dance competition. She is part of the winning team from last year. Approved for college representation.',
+            event_leader_date: '2025-11-14T14:30:00'
+          },
+          {
+            id: 'OD-2025-005',
+            student_name: 'Vikram Singh',
+            student_id: 'BVD2022156',
+            event_name: 'Startup Pitch Competition - TechVenture',
+            event_type: 'Competition',
+            event_date: '2025-11-28',
+            submission_date: '2025-11-14',
+            status: 'pending_faculty',
+            total_lectures: 3,
+            total_hours: 5,
+            event_leader_status: 'approved',
+            event_leader_remarks: 'Student has a promising startup idea in EdTech. This competition offers mentorship and funding opportunities. Highly recommend.',
+            event_leader_date: '2025-11-14T15:45:00'
+          }
+        ];
+
+        localStorage.setItem('bvdu_od_forms', JSON.stringify(mockODForms));
+      }
+    }
+
+    // Update Stats
+    function updateStats() {
+      const pending = allEvents.filter(e => !e.status || e.status === 'pending').length;
+      const approved = allEvents.filter(e => e.status === 'approved').length;
+      const rejected = allEvents.filter(e => e.status === 'rejected').length;
+      const completed = allEvents.filter(e => e.status === 'completed').length;
+      const total = allEvents.length;
+
+      document.getElementById('pendingCount').textContent = pending;
+      document.getElementById('approvedCount').textContent = approved;
+      document.getElementById('rejectedCount').textContent = rejected;
+      document.getElementById('totalCount').textContent = total;
+
+      document.getElementById('pendingBadge').textContent = pending;
+      document.getElementById('approvedBadge').textContent = approved;
+      document.getElementById('rejectedBadge').textContent = rejected;
+      document.getElementById('allBadge').textContent = allEvents.length;
+    }
+
+    // Switch Tab
+    function switchTab(tab) {
+      currentTab = tab;
+      
+      // Update tab UI
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+      
+      renderEvents();
+    }
+
+    // Render Events
+    function renderEvents() {
+      const grid = document.getElementById('eventsGrid');
+      let filteredEvents = [];
+
+      switch(currentTab) {
+        case 'pending':
+          filteredEvents = allEvents.filter(e => !e.status || e.status === 'pending');
+          break;
+        case 'approved':
+          filteredEvents = allEvents.filter(e => e.status === 'approved');
+          break;
+        case 'rejected':
+          filteredEvents = allEvents.filter(e => e.status === 'rejected');
+          break;
+        case 'all':
+          filteredEvents = allEvents;
+          break;
+      }
+
+      if (filteredEvents.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <div class="empty-title">No Events Found</div>
+            <div class="empty-text">There are no events in this category.</div>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filteredEvents.map(event => {
+        const statusBadge = !event.status || event.status === 'pending' 
+          ? '<span class="badge badge-status">⏳ Pending Review</span>'
+          : event.status === 'approved'
+          ? '<span class="badge badge-status" style="background: rgba(52, 168, 83, 0.15); color: #34A853; border-color: rgba(52, 168, 83, 0.3);">✅ Approved</span>'
+          : '<span class="badge badge-status" style="background: rgba(234, 67, 53, 0.15); color: #EA4335; border-color: rgba(234, 67, 53, 0.3);">❌ Rejected</span>';
+
+        return `
+          <div class="event-card" onclick="viewEventDetails('${event.event_id}')">
+            <div class="event-header">
+              <div class="event-title-section">
+                <div class="event-icon">🎉</div>
+                <h3 class="event-title">${event.event_name}</h3>
+                <div class="event-meta">
+                  <span class="event-meta-item">📅 ${event.event_date}</span>
+                  <span class="event-meta-item">🕒 ${event.start_time} - ${event.end_time}</span>
+                  <span class="event-meta-item">📍 ${event.venue}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="event-badges">
+              ${statusBadge}
+              <span class="badge badge-category">${event.event_category || event.event_type}</span>
+            </div>
+
+
+
+            <p class="event-description">${event.event_description || 'No description available'}</p>
+
+            <div class="event-actions">
+              ${(!event.status || event.status === 'pending') ? `
+              <button class="btn btn-primary" onclick="event.stopPropagation(); reviewEvent('${event.event_id}')" style="width: auto; padding: 0.75rem 2rem;">
+                ⚖️ Review Now
+              </button>
+              ` : `
+              <button class="btn btn-secondary" onclick="event.stopPropagation(); reviewEvent('${event.event_id}')" style="width: auto; padding: 0.75rem 2rem;">
+                👁️ View Details
+              </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // View Event Details
+    function viewEventDetails(eventId) {
+      window.location.href = `event-details.html?id=${eventId}`;
+    }
+
+    // Review Event
+    function reviewEvent(eventId) {
+      window.location.href = `review-event.html?id=${eventId}`;
+    }
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+      e.preventDefault();
+      if (confirm('Are you sure you want to logout?')) {
+        await supabaseClient.auth.signOut();
+        sessionStorage.clear();
+        localStorage.removeItem('currentUser');
+        window.location.href = '../../login.html';
+      }
+    });
+  </script>
+</body>
+</html>

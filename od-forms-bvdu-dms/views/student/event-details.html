@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Details - BVDU CampusFlow</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Particles Animation -->
+  <script src="../../js/particles.js" defer></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0E27;
+      color: #E2E8F0;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.08), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(52, 168, 83, 0.08), transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-link {
+      color: #94A3B8;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .nav-link:hover {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    /* Hero Banner */
+    .event-banner {
+      height: 400px;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .event-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(0, 0, 0, 0.6) 100%);
+    }
+
+    .event-banner-icon {
+      font-size: 10rem;
+      position: relative;
+      z-index: 1;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .back-button {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      z-index: 2;
+    }
+
+    .back-button:hover {
+      background: rgba(0, 0, 0, 0.7);
+      transform: translateX(-5px);
+    }
+
+    /* Content Section */
+    .event-content {
+      margin-top: -80px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .content-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      padding: 2.5rem;
+    }
+
+    .event-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      font-weight: 900;
+      color: #E2E8F0;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .event-badges {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .badge {
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-type {
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      color: white;
+    }
+
+    .badge-national {
+      background: rgba(251, 188, 4, 0.15);
+      color: #FBBC04;
+      border: 1px solid rgba(251, 188, 4, 0.3);
+    }
+
+    .badge-certificate {
+      background: rgba(52, 168, 83, 0.15);
+      color: #34A853;
+      border: 1px solid rgba(52, 168, 83, 0.3);
+    }
+
+    .badge-od {
+      background: rgba(234, 67, 53, 0.15);
+      color: #EA4335;
+      border: 1px solid rgba(234, 67, 53, 0.3);
+    }
+
+    .badge-completed {
+      background: rgba(100, 116, 139, 0.15);
+      color: #94A3B8;
+      border: 1px solid rgba(100, 116, 139, 0.3);
+    }
+
+    .badge-upcoming {
+      background: rgba(66, 133, 244, 0.15);
+      color: #4285F4;
+      border: 1px solid rgba(66, 133, 244, 0.3);
+    }
+
+    /* Grid Layout */
+    .details-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .info-card {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .info-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .info-icon {
+      font-size: 1.5rem;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .info-content {
+      flex: 1;
+    }
+
+    .info-label {
+      color: #64748B;
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .info-value {
+      color: #E2E8F0;
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .description {
+      color: #94A3B8;
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+
+    /* Sidebar */
+    .sidebar-card {
+      position: sticky;
+      top: 100px;
+    }
+
+    .organizer-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .organizer-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+      margin: 0 auto 1rem;
+    }
+
+    .organizer-name {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: #E2E8F0;
+      margin-bottom: 0.5rem;
+    }
+
+    .organizer-club {
+      color: #64748B;
+      font-size: 0.875rem;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 1rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(66, 133, 244, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Stats */
+    .event-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-box {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: #4285F4;
+    }
+
+    .stat-label {
+      color: #64748B;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      margin-top: 0.25rem;
+    }
+
+    /* Photos Section */
+    .photos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .photo-placeholder {
+      aspect-ratio: 1;
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      transition: all 0.3s ease;
+    }
+
+    .photo-placeholder:hover {
+      border-color: rgba(66, 133, 244, 0.5);
+      background: rgba(66, 133, 244, 0.05);
+    }
+
+    /* Map */
+    .map-container {
+      width: 100%;
+      height: 250px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+    }
+
+    @media (max-width: 1024px) {
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar-card {
+        position: static;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .event-title {
+        font-size: 2rem;
+      }
+
+      .event-banner {
+        height: 300px;
+      }
+
+      .event-banner-icon {
+        font-size: 6rem;
+      }
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <a href="../../index.html" class="navbar-brand flex items-center gap-3">
+          <span class="text-3xl">🎓</span>
+          <span>BVDU Events</span>
+        </a>
+        <ul class="flex items-center gap-2">
+          <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="all-events.html" class="nav-link">Events</a></li>
+          <li><a href="submit-form.html" class="nav-link">Submit OD</a></li>
+          <li><a href="profile.html" class="nav-link">Profile</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Event Banner -->
+  <div class="event-banner" id="eventBanner">
+    <a href="all-events.html" class="back-button">
+      ← Back to Events
+    </a>
+    <div class="event-banner-icon" id="bannerIcon">🎉</div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container mx-auto px-6 pb-12">
+    <div class="event-content">
+      <div class="content-card">
+        <h1 class="event-title" id="eventTitle">Loading...</h1>
+        
+        <div class="event-badges" id="eventBadges">
+          <!-- Badges will be loaded here -->
+        </div>
+
+        <div class="details-grid">
+          <!-- Main Content -->
+          <div>
+            <!-- Event Information -->
+            <div class="info-card">
+              <h2 class="info-card-title">
+                <span>📋</span> Event Information
+              </h2>
+              
+              <div class="info-item">
+                <div class="info-icon">📅</div>
+                <div class="info-content">
+                  <div class="info-label">Date & Time</div>
+                  <div class="info-value" id="eventDateTime">-</div>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <div class="info-icon">📍</div>
+                <div class="info-content">
+                  <div class="info-label">Venue</div>
+                  <div class="info-value" id="eventVenue">-</div>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <div class="info-icon">🏢</div>
+                <div class="info-content">
+                  <div class="info-label">Organizing Club</div>
+                  <div class="info-value" id="organizingClub">-</div>
+                </div>
+              </div>
+
+              <div class="info-item">
+                <div class="info-icon">👥</div>
+                <div class="info-content">
+                  <div class="info-label">Expected Participants</div>
+                  <div class="info-value" id="expectedParticipants">-</div>
+                </div>
+              </div>
+
+              <div class="info-item" id="registrationDeadlineItem" style="display: none;">
+                <div class="info-icon">⏰</div>
+                <div class="info-content">
+                  <div class="info-label">Registration Deadline</div>
+                  <div class="info-value" id="registrationDeadline">-</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- About Event -->
+            <div class="info-card">
+              <h2 class="info-card-title">
+                <span>📖</span> About This Event
+              </h2>
+              <p class="description" id="eventDescription">-</p>
+            </div>
+
+            <!-- Special Instructions -->
+            <div class="info-card" id="specialInstructionsCard" style="display: none;">
+              <h2 class="info-card-title">
+                <span>⚠️</span> Special Instructions
+              </h2>
+              <p class="description" id="specialInstructions">-</p>
+            </div>
+
+            <!-- Location Map -->
+            <div class="info-card" id="locationMapCard">
+              <h2 class="info-card-title">
+                <span>🗺️</span> Campus Location
+              </h2>
+              <div id="mapDisplay" style="display: none; border-radius: 1rem; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 1rem;">
+                <iframe 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3782.6380848425937!2d73.05629587516476!3d19.031037553192967!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c3004632ef29%3A0xe747324bfb1a6836!2sBharati%20Vidyapeeth%20Department%20of%20Management%20Studies%20(Off%20Campus)!5e0!3m2!1sen!2sin!4v1731586745632!5m2!1sen!2sin" 
+                  width="100%" 
+                  height="300" 
+                  style="border:0;" 
+                  allowfullscreen="" 
+                  loading="lazy" 
+                  referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+              </div>
+              <p style="color: #E2E8F0; margin-bottom: 0.5rem; font-weight: 600;">
+                <span id="venueAddress">Venue location will be displayed here</span>
+              </p>
+              <p style="color: #94A3B8; font-size: 0.875rem; margin-bottom: 0.5rem;">
+                Bharati Vidyapeeth Department of Management Studies (Off Campus)
+              </p>
+              <p style="color: #64748B; font-size: 0.8rem; margin-bottom: 1rem;">
+                Sector 3, Sector 4, Kharghar, Navi Mumbai, Maharashtra 410210
+              </p>
+              <a href="https://www.google.com/maps/place/Bharati+Vidyapeeth+Department+of+Management+Studies+(Off+Campus)/@19.0310375,73.0562959,17z" 
+                 target="_blank" 
+                 id="viewMapLink"
+                 style="display: none; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem; background: rgba(66, 133, 244, 0.1); border: 1px solid rgba(66, 133, 244, 0.3); border-radius: 0.5rem; color: #4285F4; text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
+                🗺️ View on Google Maps
+              </a>
+            </div>
+
+            <!-- Event Photos -->
+            <div class="info-card">
+              <h2 class="info-card-title">
+                <span>📸</span> Event Photos
+              </h2>
+              <div class="photos-grid">
+                <div class="photo-placeholder">📷</div>
+                <div class="photo-placeholder">🖼️</div>
+                <div class="photo-placeholder">📸</div>
+                <div class="photo-placeholder">🎨</div>
+              </div>
+              <p style="color: #64748B; margin-top: 1rem; text-align: center; font-size: 0.875rem;">
+                Photos will be uploaded after the event
+              </p>
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <div class="sidebar-card">
+            <!-- Organizer Info -->
+            <div class="organizer-card">
+              <div class="organizer-avatar" id="organizerAvatar">DR</div>
+              <div class="organizer-name" id="organizerName">-</div>
+              <div class="organizer-club">Event Leader</div>
+            </div>
+
+            <!-- Event Stats -->
+            <div class="event-stats">
+              <div class="stat-box">
+                <div class="stat-value" id="registeredCount">0</div>
+                <div class="stat-label">Registered</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-value" id="daysUntil">-</div>
+                <div class="stat-label" id="daysLabel">Days Left</div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+              <button class="btn btn-primary" id="registerBtn" onclick="handleRegister()">
+                <span>✅</span> Register for Event
+              </button>
+              <button class="btn btn-primary" id="applyODBtn" onclick="handleApplyOD()" style="display: none;">
+                <span>📝</span> Apply for OD
+              </button>
+              <a href="" id="eventLink" class="btn btn-secondary" target="_blank" style="display: none;">
+                <span>🔗</span> Event Link
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../js/config.js"></script>
+  <script>
+    // Initialize Supabase
+    let supabaseClient = null;
+    try {
+      if (typeof supabase !== 'undefined') {
+        const { createClient } = supabase;
+        supabaseClient = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+      }
+    } catch (error) {
+      console.log('Supabase not initialized - using mock mode');
+    }
+
+    // LocalStorage Helper
+    const STORAGE_KEY = 'bvdu_events';
+
+    // Mock events data
+    const mockEvents = [
+      {
+        event_id: 'EVT-1710234567890',
+        event_name: 'Machine Learning Workshop: From Basics to Advanced',
+        event_type: 'Workshop',
+        event_category: 'Technical',
+        event_description: 'Comprehensive hands-on workshop covering modern ML techniques, neural networks, and real-world applications',
+        event_date: '2025-03-25',
+        start_time: '09:00',
+        end_time: '17:00',
+        venue: 'Computer Lab, Block A',
+        organizing_club: 'AI/ML Club',
+        event_leader_name: 'Dr. Rahul Sharma',
+        expected_participants: 50,
+        registered_participants: 42,
+        is_national: true,
+        is_university: false,
+        certificate_provided: true,
+        od_eligible: true,
+        icon: '🤖'
+      },
+      {
+        event_id: 'EVT-1710134567891',
+        event_name: 'IEEE Technical Symposium 2025',
+        event_type: 'Conference',
+        event_category: 'Academic',
+        event_description: 'Annual technical symposium featuring keynote speakers, paper presentations, and latest research innovations',
+        event_date: '2025-03-28',
+        start_time: '10:00',
+        end_time: '18:00',
+        venue: 'Main Auditorium',
+        organizing_club: 'IEEE Student Branch',
+        event_leader_name: 'Prof. Priya Patel',
+        expected_participants: 200,
+        registered_participants: 156,
+        is_national: true,
+        is_university: true,
+        certificate_provided: true,
+        od_eligible: true,
+        icon: '🎯'
+      },
+      {
+        event_id: 'EVT-1710034567892',
+        event_name: 'Cultural Fest - Verve 2025',
+        event_type: 'Cultural',
+        event_category: 'Extra-Curricular',
+        event_description: 'Grand cultural festival featuring music concerts, dance battles, drama performances, and art exhibitions',
+        event_date: '2025-04-05',
+        start_time: '09:00',
+        end_time: '20:00',
+        venue: 'Open Ground',
+        organizing_club: 'Cultural Committee',
+        event_leader_name: 'Amit Kumar',
+        expected_participants: 500,
+        registered_participants: 387,
+        is_national: false,
+        is_university: true,
+        certificate_provided: false,
+        od_eligible: true,
+        icon: '🎭'
+      },
+      {
+        event_id: 'EVT-1709934567893',
+        event_name: 'Hackathon 2025: Code for Change',
+        event_type: 'Competition',
+        event_category: 'Technical',
+        event_description: '48-hour intensive coding marathon to build innovative solutions for real-world problems',
+        event_date: '2025-04-12',
+        start_time: '08:00',
+        end_time: '20:00',
+        venue: 'Innovation Lab',
+        organizing_club: 'Coding Club',
+        event_leader_name: 'Dr. Sneha Reddy',
+        expected_participants: 100,
+        registered_participants: 78,
+        is_national: true,
+        is_university: false,
+        certificate_provided: true,
+        od_eligible: true,
+        icon: '💻'
+      },
+      {
+        event_id: 'EVT-1709834567894',
+        event_name: 'Web Development Bootcamp',
+        event_type: 'Workshop',
+        event_category: 'Technical',
+        event_description: 'Intensive bootcamp covering HTML, CSS, JavaScript, React, and modern web development practices',
+        event_date: '2025-03-30',
+        start_time: '10:00',
+        end_time: '16:00',
+        venue: 'Lab 301, IT Building',
+        organizing_club: 'Web Dev Society',
+        event_leader_name: 'Rohan Desai',
+        expected_participants: 60,
+        registered_participants: 45,
+        is_national: false,
+        is_university: false,
+        certificate_provided: true,
+        od_eligible: true,
+        icon: '🌐'
+      },
+      {
+        event_id: 'EVT-1709734567895',
+        event_name: 'TEDx BVDU',
+        event_type: 'Conference',
+        event_category: 'Inspirational',
+        event_description: 'Ideas worth spreading - featuring inspiring talks from entrepreneurs, innovators, and thought leaders',
+        event_date: '2025-04-20',
+        start_time: '11:00',
+        end_time: '18:00',
+        venue: 'University Auditorium',
+        organizing_club: 'TEDx BVDU Team',
+        event_leader_name: 'Prof. Anjali Mehta',
+        expected_participants: 300,
+        registered_participants: 245,
+        is_national: true,
+        is_university: true,
+        certificate_provided: true,
+        od_eligible: true,
+        icon: '🎤'
+      }
+    ];
+
+    function saveEventsToStorage(events) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+        console.log('Events saved to localStorage:', events.length);
+      } catch (error) {
+        console.error('Error saving to localStorage:', error);
+      }
+    }
+
+    function getEventsFromStorage() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const events = JSON.parse(stored);
+          console.log('Events loaded from localStorage:', events.length);
+          return events;
+        }
+      } catch (error) {
+        console.error('Error loading from localStorage:', error);
+      }
+      return null;
+    }
+
+    function initializeStorage() {
+      const existing = getEventsFromStorage();
+      if (!existing || existing.length === 0) {
+        saveEventsToStorage(mockEvents);
+        console.log('Initialized localStorage with mock events');
+        return mockEvents;
+      }
+      return existing;
+    }
+
+    // Get Event ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventId = urlParams.get('id');
+
+    console.log('Event ID from URL:', eventId);
+
+    if (!eventId) {
+      console.error('No event ID provided in URL');
+      alert('No event ID provided. Redirecting to events page...');
+      setTimeout(() => {
+        window.location.href = 'all-events.html';
+      }, 1000);
+    }
+
+    // Load Event Details
+    async function loadEventDetails() {
+      try {
+        let event = null;
+
+        if (!supabaseClient) {
+          let events = getEventsFromStorage();
+          if (!events || events.length === 0) {
+            events = initializeStorage();
+          }
+          console.log('All events:', events);
+          console.log('Looking for event ID:', eventId);
+          event = events.find(e => e.event_id === eventId);
+          console.log('Found event:', event);
+        } else {
+          const { data, error } = await supabaseClient
+            .from('events')
+            .select(`
+              *,
+              event_leader:event_leader_id(full_name)
+            `)
+            .eq('event_id', eventId)
+            .single();
+
+          if (error) throw error;
+          event = data;
+        }
+
+        if (!event) {
+          console.error('Event not found. Available events:', getEventsFromStorage());
+          alert('Event not found. Redirecting to events page...');
+          setTimeout(() => {
+            window.location.href = 'all-events.html';
+          }, 1000);
+          return;
+        }
+
+        renderEventDetails(event);
+      } catch (error) {
+        console.error('Error loading event:', error);
+        alert('Error loading event details. Redirecting to events page...');
+        setTimeout(() => {
+          window.location.href = 'all-events.html';
+        }, 1000);
+      }
+    }
+
+    // Render Event Details
+    function renderEventDetails(event) {
+      console.log('Rendering event:', event);
+      
+      // Set gradient colors
+      const gradients = {
+        'Workshop': '#4285F4, #34A853',
+        'Conference': '#EA4335, #FBBC04',
+        'Cultural': '#9C27B0, #E91E63',
+        'Competition': '#FF5722, #FF9800',
+        'Seminar': '#3F51B5, #2196F3',
+        'Sports': '#4CAF50, #8BC34A'
+      };
+      const gradient = gradients[event.event_type] || '#4285F4, #34A853';
+      document.getElementById('eventBanner').style.background = `linear-gradient(135deg, ${gradient})`;
+      
+      // Icon and title (assign default icons if missing)
+      const iconMap = {
+        'Workshop': '🤖',
+        'Conference': '🎯',
+        'Cultural': '🎭',
+        'Competition': '💻',
+        'Seminar': '📚',
+        'Sports': '⚽'
+      };
+      const eventIcon = event.icon || iconMap[event.event_type] || '🎉';
+      document.getElementById('bannerIcon').textContent = eventIcon;
+      document.getElementById('eventTitle').textContent = event.event_name;
+
+      // Badges
+      const badgesHTML = `
+        <span class="badge badge-type">${event.event_type}</span>
+        ${event.is_national ? '<span class="badge badge-national">🌏 National Level</span>' : ''}
+        ${event.certificate_provided ? '<span class="badge badge-certificate">📜 Certificate</span>' : ''}
+        ${event.od_eligible ? '<span class="badge badge-od">✅ OD Eligible</span>' : ''}
+        ${isEventCompleted(event) ? '<span class="badge badge-completed">✓ Completed</span>' : '<span class="badge badge-upcoming">⏰ Upcoming</span>'}
+      `;
+      document.getElementById('eventBadges').innerHTML = badgesHTML;
+
+      // Date & Time
+      const eventDate = new Date(event.event_date);
+      const formattedDate = eventDate.toLocaleDateString('en-IN', { 
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      document.getElementById('eventDateTime').textContent = `${formattedDate} • ${event.start_time} - ${event.end_time}`;
+
+      // Venue
+      document.getElementById('eventVenue').textContent = event.venue;
+      document.getElementById('venueAddress').textContent = event.venue;
+
+      // Show map if external attendees are allowed
+      if (event.external_attendees === 'yes' || event.externalAttendees === 'yes') {
+        document.getElementById('mapDisplay').style.display = 'block';
+        document.getElementById('viewMapLink').style.display = 'flex';
+      } else {
+        document.getElementById('mapDisplay').style.display = 'none';
+        document.getElementById('viewMapLink').style.display = 'none';
+      }
+
+      // Organizing Club
+      document.getElementById('organizingClub').textContent = event.organizing_club;
+
+      // Participants
+      document.getElementById('expectedParticipants').textContent = event.expected_participants;
+
+      // Registration Deadline
+      if (event.registration_deadline) {
+        document.getElementById('registrationDeadlineItem').style.display = 'flex';
+        const deadline = new Date(event.registration_deadline);
+        document.getElementById('registrationDeadline').textContent = deadline.toLocaleDateString('en-IN', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+      }
+
+      // Description
+      document.getElementById('eventDescription').textContent = event.event_description || 'No description available.';
+
+      // Special Instructions
+      if (event.special_instructions) {
+        document.getElementById('specialInstructionsCard').style.display = 'block';
+        document.getElementById('specialInstructions').textContent = event.special_instructions;
+      }
+
+      // Organizer
+      const leaderName = event.event_leader?.full_name || 'Event Leader';
+      document.getElementById('organizerAvatar').textContent = getInitials(leaderName);
+      document.getElementById('organizerName').textContent = leaderName;
+
+      // Stats
+      document.getElementById('registeredCount').textContent = event.registered_participants || 0;
+      
+      const daysUntil = Math.ceil((eventDate - new Date()) / (1000 * 60 * 60 * 24));
+      if (daysUntil > 0) {
+        document.getElementById('daysUntil').textContent = daysUntil;
+        document.getElementById('daysLabel').textContent = daysUntil === 1 ? 'Day Left' : 'Days Left';
+      } else if (daysUntil === 0) {
+        document.getElementById('daysUntil').textContent = 'Today';
+        document.getElementById('daysLabel').textContent = '';
+      } else {
+        document.getElementById('daysUntil').textContent = Math.abs(daysUntil);
+        document.getElementById('daysLabel').textContent = 'Days Ago';
+      }
+
+      // Event Link
+      if (event.event_link) {
+        const linkBtn = document.getElementById('eventLink');
+        linkBtn.href = event.event_link;
+        linkBtn.style.display = 'flex';
+      }
+
+      // Show/Hide Buttons based on event status
+      const completed = isEventCompleted(event);
+      if (completed) {
+        document.getElementById('registerBtn').style.display = 'none';
+        document.getElementById('applyODBtn').style.display = 'flex';
+      } else {
+        document.getElementById('registerBtn').style.display = 'flex';
+        document.getElementById('applyODBtn').style.display = 'none';
+      }
+    }
+
+    // Check if event is completed
+    function isEventCompleted(event) {
+      const now = new Date();
+      const eventDate = new Date(event.event_date);
+      const endTime = event.end_time.split(':');
+      eventDate.setHours(parseInt(endTime[0]), parseInt(endTime[1]));
+      
+      return now > eventDate;
+    }
+
+    // Get Initials
+    function getInitials(name) {
+      if (!name) return 'N/A';
+      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+
+    // Handle Register
+    function handleRegister() {
+      alert('✅ Registration Successful!\n\nYou have successfully registered for this event.\n\nYou will receive further details via email.');
+    }
+
+    // Handle Apply OD
+    function handleApplyOD() {
+      window.location.href = `submit-form.html?event=${eventId}`;
+    }
+
+    // Initialize
+    loadEventDetails();
+  </script>
+</body>
+</html>

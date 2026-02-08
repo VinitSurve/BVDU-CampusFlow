@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Attendance - BVDU CampusFlow</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Maps API -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places" async defer></script>
+  
+  <!-- Google Sheets API -->
+  <script src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+  <script src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0E27;
+      color: #E2E8F0;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.08), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(52, 168, 83, 0.08), transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .glass-card {
+      background: rgba(26, 31, 58, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+      transition: all 0.3s ease;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+    }
+
+    #map {
+      width: 100%;
+      height: 400px;
+      border-radius: 1rem;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 0.75rem;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(66, 133, 244, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .status-present {
+      background: rgba(52, 168, 83, 0.2);
+      color: #34A853;
+      border: 1px solid #34A853;
+    }
+
+    .status-absent {
+      background: rgba(234, 67, 53, 0.2);
+      color: #EA4335;
+      border: 1px solid #EA4335;
+    }
+
+    .attendance-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 1rem;
+    }
+
+    .attendance-table th {
+      background: rgba(66, 133, 244, 0.2);
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid rgba(66, 133, 244, 0.5);
+    }
+
+    .attendance-table td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .attendance-table tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(66, 133, 244, 0.2), rgba(52, 168, 83, 0.2));
+      border-radius: 1rem;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .qr-scanner {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      border-radius: 1rem;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar py-4 px-6">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="navbar-brand">
+        BVDU CampusFlow
+      </div>
+      <button onclick="window.history.back()" class="btn-secondary">
+        ← Back
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-6 py-8">
+    <!-- Event Header -->
+    <div class="glass-card mb-8">
+      <div class="flex justify-between items-start">
+        <div>
+          <h1 class="text-3xl font-bold mb-2" id="eventName">Event Attendance</h1>
+          <p class="text-gray-400" id="eventDetails">Loading event details...</p>
+        </div>
+        <button onclick="openGoogleSheet()" class="btn-primary">
+          📊 Open Attendance Sheet
+        </button>
+      </div>
+    </div>
+
+    <!-- Event Location Map -->
+    <div class="glass-card mb-8">
+      <h2 class="text-2xl font-bold mb-4">📍 Event Location</h2>
+      <div id="map"></div>
+      <div class="mt-4 flex gap-4">
+        <button onclick="getDirections()" class="btn-primary">
+          🗺️ Get Directions
+        </button>
+        <button onclick="shareLocation()" class="btn-secondary">
+          📤 Share Location
+        </button>
+      </div>
+    </div>
+
+    <!-- Statistics Dashboard -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="stat-card">
+        <div class="text-gray-400 text-sm mb-2">Total Registered</div>
+        <div class="stat-number" id="totalRegistered">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-gray-400 text-sm mb-2">Present</div>
+        <div class="stat-number" id="totalPresent">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-gray-400 text-sm mb-2">Absent</div>
+        <div class="stat-number" id="totalAbsent">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-gray-400 text-sm mb-2">Attendance Rate</div>
+        <div class="stat-number" id="attendanceRate">0%</div>
+      </div>
+    </div>
+
+    <!-- Attendance Tracking Options -->
+    <div class="glass-card mb-8">
+      <h2 class="text-2xl font-bold mb-6">✅ Mark Attendance</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Manual Entry -->
+        <div>
+          <h3 class="text-xl font-semibold mb-4">Manual Entry</h3>
+          <form id="manualAttendanceForm" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Student PRN</label>
+              <input type="text" id="studentPRN" 
+                     class="w-full px-4 py-3 rounded-lg bg-[#1A1F3A] border border-gray-600 focus:border-blue-500 focus:outline-none"
+                     placeholder="Enter PRN" required>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Student Name</label>
+              <input type="text" id="studentName" 
+                     class="w-full px-4 py-3 rounded-lg bg-[#1A1F3A] border border-gray-600 focus:border-blue-500 focus:outline-none"
+                     placeholder="Enter full name" required>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Remarks (Optional)</label>
+              <input type="text" id="remarks" 
+                     class="w-full px-4 py-3 rounded-lg bg-[#1A1F3A] border border-gray-600 focus:border-blue-500 focus:outline-none"
+                     placeholder="Any additional notes">
+            </div>
+            <button type="submit" class="btn-primary w-full">
+              ✓ Mark Present
+            </button>
+          </form>
+        </div>
+
+        <!-- QR Code Scanner -->
+        <div>
+          <h3 class="text-xl font-semibold mb-4">QR Code Scan</h3>
+          <div class="qr-scanner" id="qrScanner">
+            <video id="qrVideo" width="100%" height="300" style="border-radius: 1rem;"></video>
+          </div>
+          <button onclick="startQRScanner()" class="btn-primary w-full mt-4">
+            📷 Start QR Scanner
+          </button>
+          <button onclick="stopQRScanner()" class="btn-secondary w-full mt-2">
+            ⏹️ Stop Scanner
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attendance List -->
+    <div class="glass-card">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">👥 Attendance List</h2>
+        <div class="flex gap-4">
+          <button onclick="exportAttendance()" class="btn-secondary">
+            📥 Export to Sheets
+          </button>
+          <button onclick="refreshAttendance()" class="btn-secondary">
+            🔄 Refresh
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="attendance-table">
+          <thead>
+            <tr>
+              <th>Sr. No.</th>
+              <th>PRN</th>
+              <th>Student Name</th>
+              <th>Department</th>
+              <th>Check-in Time</th>
+              <th>Check-out Time</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody">
+            <tr>
+              <td colspan="8" class="text-center py-8 text-gray-400">
+                No attendance records yet. Start marking attendance above.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../../js/config.js"></script>
+  <script src="../../js/supabase-client.js"></script>
+  <script src="../../js/maps-integration.js"></script>
+  <script src="../../js/sheets-integration.js"></script>
+  <script src="../../js/tracking.js"></script>
+  
+  <script>
+    // Global variables
+    let currentEvent = null;
+    let spreadsheetId = null;
+    let eventLocation = null;
+
+    // Initialize page
+    async function initializePage() {
+      // Get event ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const eventId = urlParams.get('eventId');
+
+      if (!eventId) {
+        alert('No event specified');
+        window.history.back();
+        return;
+      }
+
+      try {
+        // Fetch event details
+        currentEvent = await fetchEventDetails(eventId);
+        displayEventDetails(currentEvent);
+
+        // Initialize map
+        if (currentEvent.latitude && currentEvent.longitude) {
+          eventLocation = {
+            lat: parseFloat(currentEvent.latitude),
+            lng: parseFloat(currentEvent.longitude),
+            name: currentEvent.event_name,
+            address: currentEvent.venue
+          };
+          window.MapsIntegration.initializeMap('map', eventLocation);
+        }
+
+        // Check if attendance sheet exists
+        if (currentEvent.attendance_sheet_id) {
+          spreadsheetId = currentEvent.attendance_sheet_id;
+          loadAttendanceData();
+        } else {
+          // Prompt to create new sheet
+          if (confirm('No attendance sheet found. Create one now?')) {
+            await createNewAttendanceSheet();
+          }
+        }
+
+      } catch (error) {
+        console.error('Error initializing page:', error);
+        alert('Error loading event details');
+      }
+    }
+
+    // Fetch event details
+    async function fetchEventDetails(eventId) {
+      // Implementation depends on your backend
+      // This is a placeholder
+      return {
+        id: eventId,
+        event_name: 'Sample Event',
+        start_date: '2025-01-15',
+        venue: 'Main Auditorium',
+        latitude: 18.4538,
+        longitude: 73.8636
+      };
+    }
+
+    // Display event details
+    function displayEventDetails(event) {
+      document.getElementById('eventName').textContent = event.event_name;
+      document.getElementById('eventDetails').textContent = 
+        `${event.start_date} • ${event.venue}`;
+    }
+
+    // Create new attendance sheet
+    async function createNewAttendanceSheet() {
+      try {
+        await window.SheetsIntegration.authenticateUser();
+        
+        const result = await window.SheetsIntegration.createAttendanceSheet(currentEvent);
+        spreadsheetId = result.spreadsheetId;
+
+        // Save sheet ID to event in database
+        // await saveAttendanceSheetId(currentEvent.id, spreadsheetId);
+
+        alert('Attendance sheet created successfully!');
+        window.open(result.spreadsheetUrl, '_blank');
+
+      } catch (error) {
+        console.error('Error creating attendance sheet:', error);
+        alert('Error creating attendance sheet. Please try again.');
+      }
+    }
+
+    // Mark attendance manually
+    document.getElementById('manualAttendanceForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const studentData = {
+        prn: document.getElementById('studentPRN').value,
+        full_name: document.getElementById('studentName').value,
+        department: 'Computer Science', // Fetch from user profile
+        year: 'TE',
+        division: 'A',
+        remarks: document.getElementById('remarks').value
+      };
+
+      try {
+        if (!spreadsheetId) {
+          alert('Please create an attendance sheet first');
+          return;
+        }
+
+        await window.SheetsIntegration.authenticateUser();
+        await window.SheetsIntegration.markAttendance(spreadsheetId, studentData);
+
+        alert('Attendance marked successfully!');
+        document.getElementById('manualAttendanceForm').reset();
+        loadAttendanceData();
+
+      } catch (error) {
+        console.error('Error marking attendance:', error);
+        alert('Error marking attendance. Please try again.');
+      }
+    });
+
+    // Load attendance data
+    async function loadAttendanceData() {
+      try {
+        const data = await window.SheetsIntegration.getAttendanceData(spreadsheetId);
+        displayAttendanceTable(data);
+        updateStatistics(data);
+      } catch (error) {
+        console.error('Error loading attendance data:', error);
+      }
+    }
+
+    // Display attendance table
+    function displayAttendanceTable(data) {
+      const tbody = document.getElementById('attendanceTableBody');
+      
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center py-8 text-gray-400">
+              No attendance records yet. Start marking attendance above.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = data.map((row, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${row[1]}</td>
+          <td>${row[2]}</td>
+          <td>${row[3]}</td>
+          <td>${row[6]}</td>
+          <td>${row[7] || '-'}</td>
+          <td><span class="status-badge status-${row[8].toLowerCase()}">${row[8]}</span></td>
+          <td>
+            <button onclick="markCheckOut('${row[1]}')" class="btn-secondary text-sm py-1 px-3">
+              Check-out
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Update statistics
+    function updateStatistics(data) {
+      const total = data.length;
+      const present = data.filter(row => row[8] === 'Present').length;
+      const absent = total - present;
+      const rate = total > 0 ? ((present / total) * 100).toFixed(1) : 0;
+
+      document.getElementById('totalRegistered').textContent = total;
+      document.getElementById('totalPresent').textContent = present;
+      document.getElementById('totalAbsent').textContent = absent;
+      document.getElementById('attendanceRate').textContent = `${rate}%`;
+    }
+
+    // Mark check-out
+    async function markCheckOut(prn) {
+      try {
+        await window.SheetsIntegration.authenticateUser();
+        await window.SheetsIntegration.markCheckOut(spreadsheetId, prn);
+        alert('Check-out time recorded!');
+        loadAttendanceData();
+      } catch (error) {
+        console.error('Error marking check-out:', error);
+        alert('Error marking check-out');
+      }
+    }
+
+    // Open Google Sheet
+    function openGoogleSheet() {
+      if (spreadsheetId) {
+        window.open(`https://docs.google.com/spreadsheets/d/${spreadsheetId}`, '_blank');
+      } else {
+        alert('No attendance sheet available. Please create one first.');
+      }
+    }
+
+    // Get directions
+    function getDirections() {
+      if (eventLocation) {
+        window.MapsIntegration.getDirections(eventLocation);
+      }
+    }
+
+    // Share location
+    function shareLocation() {
+      if (eventLocation && navigator.share) {
+        navigator.share({
+          title: currentEvent.event_name,
+          text: `Join us at ${currentEvent.venue}`,
+          url: `https://www.google.com/maps/search/?api=1&query=${eventLocation.lat},${eventLocation.lng}`
+        });
+      } else {
+        alert('Share not supported on this device');
+      }
+    }
+
+    // Refresh attendance
+    function refreshAttendance() {
+      loadAttendanceData();
+    }
+
+    // Export attendance
+    async function exportAttendance() {
+      alert('Attendance is already synced with Google Sheets!');
+      openGoogleSheet();
+    }
+
+    // QR Scanner functions (placeholder - requires additional library)
+    function startQRScanner() {
+      alert('QR Scanner feature requires additional setup. Use manual entry for now.');
+    }
+
+    function stopQRScanner() {
+      // Stop scanner
+    }
+
+    // Initialize on page load
+    window.addEventListener('load', initializePage);
+  </script>
+</body>
+</html>

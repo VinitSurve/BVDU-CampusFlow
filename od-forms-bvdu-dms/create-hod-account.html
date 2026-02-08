@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create HOD Account - BVDU OD Forms</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      padding: 2rem;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 2rem;
+    }
+
+    .info-box {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-box h3 {
+      color: #60a5fa;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .info-box p {
+      margin: 0.25rem 0;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .info-box code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      color: #93c5fd;
+    }
+
+    button {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .status.success {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+    }
+
+    .status.error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    .status.info {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #93c5fd;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 0.5rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 1rem;
+      color: #60a5fa;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>🎓 Create HOD Account</h1>
+    <p>Administrative utility to create the Head of Department account</p>
+
+    <div class="info-box">
+      <h3>Account Details</h3>
+      <p><strong>Email:</strong> <code>hod@bvdu.in</code></p>
+      <p><strong>Password:</strong> <code>Mona@123456</code></p>
+      <p><strong>Role:</strong> <code>HOD</code></p>
+      <p><strong>Full Name:</strong> <code>Head of Department</code></p>
+    </div>
+
+    <button id="createBtn" onclick="createHODAccount()">
+      Create HOD Account
+    </button>
+
+    <div id="status"></div>
+
+    <a href="index.html" class="back-link">← Back to Home</a>
+  </div>
+
+  <script>
+    // Supabase Configuration
+    const SUPABASE_URL = 'https://nzkwqsbigkyvaxazfwgu.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56a3dxc2JpZ2t5dmF4YXpmd2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3OTg4NTgsImV4cCI6MjA4MDM3NDg1OH0.ZYyF95McgS3McU8zr7K3L2HHXkEHR1Acd0AmoTu5wL4';
+
+    // Initialize Supabase
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function showStatus(message, type = 'info') {
+      const statusDiv = document.getElementById('status');
+      statusDiv.className = `status ${type}`;
+      statusDiv.innerHTML = message;
+    }
+
+    async function createHODAccount() {
+      const btn = document.getElementById('createBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Creating Account...';
+
+      try {
+        showStatus('Creating authentication user...', 'info');
+
+        // Create auth user
+        const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+          email: 'hod@bvdu.in',
+          password: 'Mona@123456',
+          options: {
+            emailRedirectTo: window.location.origin + '/login.html'
+          }
+        });
+
+        // Check if user already exists
+        if (authError && authError.message.includes('already registered')) {
+          showStatus('User already exists in auth. Attempting to sign in and create database record...', 'info');
+          
+          // Sign in to get the user ID
+          const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({
+            email: 'hod@bvdu.in',
+            password: 'Mona@123456'
+          });
+
+          if (signInError) {
+            throw new Error(`Cannot sign in to existing account: ${signInError.message}`);
+          }
+
+          // Try to create user record with the existing auth user's ID
+          const userData = {
+            id: signInData.user.id,
+            email: 'hod@bvdu.in',
+            full_name: 'Head of Department',
+            role: 'hod',
+            phone: null,
+            employee_id: 'HOD001',
+            department: 'Administration',
+            designation: 'Head of Department'
+          };
+
+          const { error: userError } = await supabaseClient
+            .from('users')
+            .insert([userData]);
+
+          if (userError) {
+            // Check if user record already exists
+            if (userError.message.includes('duplicate') || userError.code === '23505') {
+              showStatus(
+                '✅ HOD account already exists!<br><br>' +
+                '<strong>Login Credentials:</strong><br>' +
+                'Email: hod@bvdu.in<br>' +
+                'Password: Mona@123456<br><br>' +
+                'You can now <a href="login.html" style="color: #60a5fa;">login here</a>',
+                'success'
+              );
+              btn.innerHTML = '✓ Account Already Exists';
+              return;
+            }
+            throw new Error(`User record error: ${userError.message}`);
+          }
+
+          showStatus(
+            '✅ HOD database record created successfully!<br><br>' +
+            '<strong>Login Credentials:</strong><br>' +
+            'Email: hod@bvdu.in<br>' +
+            'Password: Mona@123456<br><br>' +
+            'You can now <a href="login.html" style="color: #60a5fa;">login here</a>',
+            'success'
+          );
+
+          btn.innerHTML = '✓ Account Created';
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 3000);
+          return;
+        }
+
+        if (authError) {
+          throw new Error(`Auth error: ${authError.message}`);
+        }
+
+        if (!authData.user) {
+          throw new Error('Failed to create user - no user data returned');
+        }
+
+        showStatus('Creating user record...', 'info');
+
+        // Create user record with HOD role
+        const userData = {
+          id: authData.user.id,
+          email: 'hod@bvdu.in',
+          full_name: 'Head of Department',
+          role: 'hod',
+          phone: null,
+          employee_id: 'HOD001',
+          department: 'Administration',
+          designation: 'Head of Department'
+        };
+
+        const { error: userError } = await supabaseClient
+          .from('users')
+          .insert([userData]);
+
+        if (userError) {
+          throw new Error(`User record error: ${userError.message}`);
+        }
+
+        showStatus(
+          '✅ HOD account created successfully!<br><br>' +
+          '<strong>Login Credentials:</strong><br>' +
+          'Email: hod@bvdu.in<br>' +
+          'Password: Mona@123456<br><br>' +
+          'You can now <a href="login.html" style="color: #60a5fa;">login here</a>',
+          'success'
+        );
+
+        btn.innerHTML = '✓ Account Created';
+        
+        // Redirect to login after 3 seconds
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 3000);
+
+      } catch (error) {
+        console.error('Error creating HOD account:', error);
+        showStatus(
+          `❌ Failed to create HOD account<br><br>` +
+          `Error: ${error.message}<br><br>` +
+          `Please check:<br>` +
+          `• Supabase connection is working<br>` +
+          `• The email is not already registered<br>` +
+          `• Your database has the correct schema`,
+          'error'
+        );
+        btn.disabled = false;
+        btn.innerHTML = 'Try Again';
+      }
+    }
+  </script>
+</body>
+</html>

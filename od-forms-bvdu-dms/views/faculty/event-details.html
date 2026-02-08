@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Details - Faculty - BVDU CampusFlow</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../../js/particles.js" defer></script>
+  
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../js/config.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0E27;
+      color: #E2E8F0;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.08), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(52, 168, 83, 0.08), transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: #94A3B8;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .nav-link:hover {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .page-header {
+      margin: 2rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .page-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .btn-back {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .section {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 1rem;
+    }
+
+    .badge {
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-right: 0.5rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .info-item {
+      background: rgba(30, 41, 59, 0.5);
+      padding: 1rem;
+      border-radius: 0.75rem;
+    }
+
+    .info-label {
+      color: #64748B;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .info-value {
+      color: #E2E8F0;
+      font-weight: 600;
+    }
+
+    .decision-history {
+      margin-top: 2rem;
+    }
+
+    .decision-item {
+      background: rgba(30, 41, 59, 0.5);
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      border-left: 4px solid;
+      margin-bottom: 1rem;
+    }
+
+    .decision-item.approved {
+      border-left-color: #34A853;
+    }
+
+    .decision-item.rejected {
+      border-left-color: #EA4335;
+    }
+
+    .decision-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .decision-role {
+      font-weight: 600;
+      color: #E2E8F0;
+    }
+
+    .decision-status {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .decision-status.approved {
+      color: #34A853;
+    }
+
+    .decision-status.rejected {
+      color: #EA4335;
+    }
+
+    .decision-reason {
+      color: #94A3B8;
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+    }
+
+    .decision-meta {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.875rem;
+      color: #64748B;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../../index.html" class="navbar-brand">
+      🎓 BVDU Event Management
+    </a>
+    <div class="nav-menu">
+      <a href="dashboard.html" class="nav-link">🎯 Events</a>
+      <a href="od-forms.html" class="nav-link">📋 OD Forms</a>
+      <a href="../../index.html" class="nav-link" id="logoutBtn">🚪 Logout</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">Event Details</h1>
+      <a href="dashboard.html" class="btn-back">← Back to Dashboard</a>
+    </div>
+
+    <div class="section">
+      <h3 class="section-title">📋 Event Information</h3>
+      <div id="eventInfo"></div>
+    </div>
+
+    <div class="section" id="decisionHistorySection">
+      <h3 class="section-title">📜 Decision History</h3>
+      <div class="decision-history" id="decisionHistory"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentEvent = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadEventDetails();
+    });
+
+    async function loadEventDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const eventId = urlParams.get('id');
+
+      if (!eventId) {
+        alert('Event not found!');
+        window.location.href = 'dashboard.html';
+        return;
+      }
+
+      try {
+        // Fetch event with event leader details
+        const { data: event, error } = await supabaseClient
+          .from('events')
+          .select(`
+            *,
+            event_leader:event_leader_id(full_name, email),
+            faculty:approved_by_faculty(full_name),
+            hod:approved_by_hod(full_name)
+          `)
+          .eq('event_id', eventId)
+          .single();
+
+        if (error) throw error;
+
+        if (!event) {
+          alert('Event not found!');
+          window.location.href = 'dashboard.html';
+          return;
+        }
+
+        currentEvent = event;
+        renderEventInfo();
+        renderDecisionHistory();
+
+      } catch (error) {
+        console.error('Error loading event:', error);
+        alert('Failed to load event details');
+        window.location.href = 'dashboard.html';
+      }
+    }
+
+    function renderEventInfo() {
+      const statusBadge = currentEvent.status === 'approved'
+        ? '<span class="badge" style="background: rgba(52, 168, 83, 0.15); color: #34A853; border: 1px solid rgba(52, 168, 83, 0.3);">✅ Approved</span>'
+        : currentEvent.status === 'rejected'
+        ? '<span class="badge" style="background: rgba(234, 67, 53, 0.15); color: #EA4335; border: 1px solid rgba(234, 67, 53, 0.3);">❌ Rejected</span>'
+        : currentEvent.status === 'completed'
+        ? '<span class="badge" style="background: rgba(66, 133, 244, 0.15); color: #4285F4; border: 1px solid rgba(66, 133, 244, 0.3);">🏁 Completed</span>'
+        : '<span class="badge" style="background: rgba(251, 188, 4, 0.15); color: #FBBC04; border: 1px solid rgba(251, 188, 4, 0.3);">⏳ Pending</span>';
+
+      document.getElementById('eventInfo').innerHTML = `
+        <div style="margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.75rem; font-weight: 700; color: #E2E8F0; margin-bottom: 0.5rem;">${currentEvent.event_name}</h2>
+          <div>${statusBadge}<span class="badge" style="background: rgba(66, 133, 244, 0.15); color: #4285F4; border: 1px solid rgba(66, 133, 244, 0.3);">${currentEvent.event_category || currentEvent.event_type}</span></div>
+        </div>
+
+        <p style="color: #94A3B8; line-height: 1.8; margin-bottom: 1.5rem;">${currentEvent.event_description || 'No description'}</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Event Date</div>
+            <div class="info-value">${currentEvent.event_date}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Time</div>
+            <div class="info-value">${currentEvent.start_time} - ${currentEvent.end_time}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Venue</div>
+            <div class="info-value">${currentEvent.venue}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Organizing Club</div>
+            <div class="info-value">${currentEvent.organizing_club || 'N/A'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Event Leader</div>
+            <div class="info-value">${currentEvent.event_leader?.full_name || 'N/A'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Expected Participants</div>
+            <div class="info-value">${currentEvent.expected_participants || 'N/A'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">OD Eligible</div>
+            <div class="info-value">${currentEvent.od_eligible ? 'Yes' : 'No'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Certificate Provided</div>
+            <div class="info-value">${currentEvent.certificate_provided ? 'Yes' : 'No'}</div>
+          </div>
+        </div>
+
+        ${currentEvent.learning_outcomes ? `
+        <div style="margin-top: 2rem;">
+          <h4 style="color: #E2E8F0; font-weight: 600; margin-bottom: 0.75rem;">📚 Learning Outcomes:</h4>
+          <p style="color: #94A3B8; line-height: 1.6;">${currentEvent.learning_outcomes}</p>
+        </div>
+        ` : ''}
+
+        ${currentEvent.key_speakers ? `
+        <div style="margin-top: 2rem;">
+          <h4 style="color: #E2E8F0; font-weight: 600; margin-bottom: 0.75rem;">🎤 Key Speakers:</h4>
+          <p style="color: #94A3B8; line-height: 1.6;">${currentEvent.key_speakers}</p>
+        </div>
+        ` : ''}
+      `;
+    }
+
+    function renderDecisionHistory() {
+      let historyHTML = '';
+
+      // Faculty Decision
+      if (currentEvent.approved_by_faculty) {
+        historyHTML += `
+          <div class="decision-item approved">
+            <div class="decision-header">
+              <div>
+                <div class="decision-role">🎓 Faculty: ${currentEvent.faculty?.full_name || 'N/A'}</div>
+              </div>
+              <div class="decision-status approved">
+                ✅ Approved
+              </div>
+            </div>
+            <div class="decision-reason">${currentEvent.rejection_reason || 'Approved by faculty'}</div>
+            <div class="decision-meta">
+              <span>📅 ${currentEvent.updated_at ? new Date(currentEvent.updated_at).toLocaleString() : 'N/A'}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // HOD Decision
+      if (currentEvent.approved_by_hod) {
+        historyHTML += `
+          <div class="decision-item approved">
+            <div class="decision-header">
+              <div>
+                <div class="decision-role">👨‍💼 HOD: ${currentEvent.hod?.full_name || 'N/A'}</div>
+              </div>
+              <div class="decision-status approved">
+                ✅ Approved
+              </div>
+            </div>
+            <div class="decision-reason">Final approval by HOD</div>
+            <div class="decision-meta">
+              <span>📅 ${currentEvent.updated_at ? new Date(currentEvent.updated_at).toLocaleString() : 'N/A'}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // Rejection
+      if (currentEvent.status === 'rejected') {
+        historyHTML += `
+          <div class="decision-item rejected">
+            <div class="decision-header">
+              <div>
+                <div class="decision-role">❌ Rejected</div>
+              </div>
+              <div class="decision-status rejected">
+                ❌ Rejected
+              </div>
+            </div>
+            <div class="decision-reason">${currentEvent.rejection_reason || 'No reason provided'}</div>
+            <div class="decision-meta">
+              <span>📅 ${currentEvent.updated_at ? new Date(currentEvent.updated_at).toLocaleString() : 'N/A'}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      if (historyHTML) {
+        document.getElementById('decisionHistory').innerHTML = historyHTML;
+      } else {
+        document.getElementById('decisionHistorySection').style.display = 'none';
+      }
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+      e.preventDefault();
+      if (confirm('Are you sure you want to logout?')) {
+        await supabaseClient.auth.signOut();
+        sessionStorage.clear();
+        localStorage.removeItem('currentUser');
+        window.location.href = '../../login.html';
+      }
+    });
+  </script>
+</body>
+</html>

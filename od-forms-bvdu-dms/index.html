@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BVDU CampusFlow - Discover Events Near You</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0E27;
+      color: #E2E8F0;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.08), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(52, 168, 83, 0.08), transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-link {
+      color: #94A3B8;
+      text-decoration: none;
+      padding: 0.625rem 1.25rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .nav-link:hover {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .btn-login {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #E2E8F0;
+      padding: 0.625rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-login:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-signup {
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      color: white;
+      padding: 0.625rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      border: none;
+    }
+
+    .btn-signup:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(66, 133, 244, 0.4);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 5rem 0 4rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 4rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 50%, #FBBC04 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .hero-subtitle {
+      font-size: 1.5rem;
+      color: #94A3B8;
+      margin-bottom: 3rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .search-bar {
+      max-width: 600px;
+      margin: 0 auto 3rem;
+      display: flex;
+      gap: 1rem;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 0.75rem;
+    }
+
+    .search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #E2E8F0;
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+      outline: none;
+    }
+
+    .search-input::placeholder {
+      color: #64748B;
+    }
+
+    .search-btn {
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+    }
+
+    /* Category Pills */
+    .categories {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      padding: 1rem 0 2rem;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .categories::-webkit-scrollbar {
+      display: none;
+    }
+
+    .category-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.5rem;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 3rem;
+      color: #94A3B8;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .category-pill:hover {
+      border-color: rgba(66, 133, 244, 0.5);
+      color: #4285F4;
+      transform: translateY(-2px);
+    }
+
+    .category-pill.active {
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 4px 16px rgba(66, 133, 244, 0.3);
+    }
+
+    .category-icon {
+      font-size: 1.25rem;
+    }
+
+    /* Section Headers */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 3rem 0 2rem;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #E2E8F0;
+    }
+
+    .view-all {
+      color: #4285F4;
+      text-decoration: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .view-all:hover {
+      gap: 0.75rem;
+    }
+
+    /* Event Cards */
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .event-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .event-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(66, 133, 244, 0.4);
+      box-shadow: 0 12px 40px rgba(66, 133, 244, 0.25);
+    }
+
+    .event-image {
+      height: 200px;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .event-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+    }
+
+    .event-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: white;
+      text-transform: uppercase;
+      z-index: 1;
+    }
+
+    .event-date-badge {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      background: white;
+      color: #0A0E27;
+      padding: 0.75rem;
+      border-radius: 0.75rem;
+      text-align: center;
+      font-weight: 700;
+      z-index: 1;
+      min-width: 70px;
+    }
+
+    .event-date-day {
+      font-size: 1.75rem;
+      line-height: 1;
+      display: block;
+    }
+
+    .event-date-month {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #4285F4;
+    }
+
+    .event-content {
+      padding: 1.5rem;
+    }
+
+    .event-time {
+      color: #4285F4;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .event-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 0.75rem;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .event-organizer {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .organizer-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+      font-size: 1rem;
+    }
+
+    .organizer-info {
+      flex: 1;
+    }
+
+    .organizer-name {
+      font-weight: 600;
+      color: #E2E8F0;
+      font-size: 0.875rem;
+    }
+
+    .organizer-club {
+      color: #64748B;
+      font-size: 0.75rem;
+    }
+
+    .event-meta {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #94A3B8;
+      font-size: 0.875rem;
+    }
+
+    .event-badges {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .mini-badge {
+      padding: 0.25rem 0.625rem;
+      border-radius: 1rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-national {
+      background: rgba(251, 188, 4, 0.15);
+      color: #FBBC04;
+      border: 1px solid rgba(251, 188, 4, 0.3);
+    }
+
+    .badge-certificate {
+      background: rgba(52, 168, 83, 0.15);
+      color: #34A853;
+      border: 1px solid rgba(52, 168, 83, 0.3);
+    }
+
+    .badge-od {
+      background: rgba(234, 67, 53, 0.15);
+      color: #EA4335;
+      border: 1px solid rgba(234, 67, 53, 0.3);
+    }
+
+    .event-attendees {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .attendee-avatars {
+      display: flex;
+      margin-left: -0.5rem;
+    }
+
+    .attendee-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid #0F172A;
+      margin-left: -0.5rem;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .attendee-count {
+      color: #94A3B8;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    /* Stats Section */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin: 4rem 0;
+      padding: 3rem;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #94A3B8;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 5rem;
+      padding: 3rem 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+      color: #64748B;
+    }
+
+    .footer-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.5rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1.1rem;
+      }
+
+      .events-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .categories {
+        padding-bottom: 1rem;
+      }
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <a href="index.html" class="navbar-brand flex items-center gap-3">
+          <span class="text-4xl">🎓</span>
+          <span>BVDU Events</span>
+        </a>
+        <div class="flex items-center gap-4">
+          <a href="#events" class="nav-link">Events</a>
+          <a href="#about" class="nav-link">About</a>
+          <a href="login.html" class="btn-login">Log in</a>
+          <a href="register.html" class="btn-signup">Sign up</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="hero">
+    <div class="container mx-auto px-6">
+      <h1 class="hero-title">Discover Amazing Events<br>Near You</h1>
+      <p class="hero-subtitle">Join thousands of students exploring workshops, conferences, cultural events, and more</p>
+      
+      <div class="search-bar">
+        <input type="text" class="search-input" placeholder="🔍 Search events, workshops, conferences..." id="searchInput">
+        <button class="search-btn" onclick="searchEvents()">Search</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories -->
+  <div class="container mx-auto px-6">
+    <div class="categories" id="categoriesContainer">
+      <div class="category-pill active" onclick="filterByCategory('all')">
+        <span class="category-icon">✨</span>
+        <span>All Events</span>
+      </div>
+      <div class="category-pill" onclick="filterByCategory('Workshop')">
+        <span class="category-icon">🤖</span>
+        <span>Workshops</span>
+      </div>
+      <div class="category-pill" onclick="filterByCategory('Conference')">
+        <span class="category-icon">🎯</span>
+        <span>Conferences</span>
+      </div>
+      <div class="category-pill" onclick="filterByCategory('Cultural')">
+        <span class="category-icon">🎭</span>
+        <span>Cultural</span>
+      </div>
+      <div class="category-pill" onclick="filterByCategory('Competition')">
+        <span class="category-icon">💻</span>
+        <span>Competitions</span>
+      </div>
+      <div class="category-pill" onclick="filterByCategory('Seminar')">
+        <span class="category-icon">📚</span>
+        <span>Seminars</span>
+      </div>
+      <div class="category-pill" onclick="filterByCategory('Sports')">
+        <span class="category-icon">⚽</span>
+        <span>Sports</span>
+      </div>
+      <div class="category-pill" onclick="filterByCategory('national')">
+        <span class="category-icon">🌏</span>
+        <span>National Level</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upcoming Events -->
+  <div class="container mx-auto px-6" id="events">
+    <div class="section-header">
+      <h2 class="section-title">🎉 Upcoming Events</h2>
+      <a href="views/student/all-events.html" class="view-all">View all →</a>
+    </div>
+
+    <div class="events-grid" id="eventsGrid">
+      <!-- Events will be loaded here -->
+      <p style="color: #64748B;">Loading events...</p>
+    </div>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="container mx-auto px-6">
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-value" id="statEvents">150+</div>
+        <div class="stat-label">Active Events</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statStudents">5,000+</div>
+        <div class="stat-label">Students Joined</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statClubs">25+</div>
+        <div class="stat-label">Active Clubs</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statHours">10,000+</div>
+        <div class="stat-label">Learning Hours</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container mx-auto px-6">
+      <div class="footer-logo">🎓 BVDU Events</div>
+      <p>Connect. Learn. Grow.</p>
+      <p style="margin-top: 1rem; font-size: 0.875rem;">© 2025 Bharati Vidyapeeth University. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script>
+    // Initialize Supabase
+    let supabaseClient = null;
+    try {
+      if (typeof supabase !== 'undefined') {
+        const { createClient } = supabase;
+        supabaseClient = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+      }
+    } catch (error) {
+      console.log('Supabase not initialized - using mock mode');
+    }
+
+    let allEvents = [];
+    let currentFilter = 'all';
+
+    // LocalStorage Helper Functions
+    const STORAGE_KEY = 'bvdu_events';
+
+    function saveEventsToStorage(events) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+        console.log('Events saved to localStorage:', events.length);
+      } catch (error) {
+        console.error('Error saving to localStorage:', error);
+      }
+    }
+
+    function getEventsFromStorage() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const events = JSON.parse(stored);
+          console.log('Events loaded from localStorage:', events.length);
+          return events;
+        }
+      } catch (error) {
+        console.error('Error loading from localStorage:', error);
+      }
+      return null;
+    }
+
+    function initializeStorage() {
+      const existing = getEventsFromStorage();
+      if (!existing || existing.length === 0) {
+        saveEventsToStorage(mockEvents);
+        console.log('Initialized localStorage with mock events');
+        return mockEvents;
+      }
+      return existing;
+    }
+
+    // Mock events with attendee info
+    const mockEvents = [
+      {
+        event_id: 'EVT-1710234567890',
+        event_name: 'Machine Learning Workshop: From Basics to Advanced',
+        event_type: 'Workshop',
+        event_category: 'Technical',
+        event_description: 'Comprehensive hands-on workshop covering modern ML techniques, neural networks, and real-world applications',
+        event_date: '2025-03-25',
+        start_time: '09:00',
+        end_time: '17:00',
+        venue: 'Computer Lab, Block A',
+        organizing_club: 'AI/ML Club',
+        event_leader_name: 'Dr. Rahul Sharma',
+        expected_participants: 50,
+        registered_participants: 42,
+        is_national: true,
+        is_university: false,
+        certificate_provided: true,
+        od_eligible: true,
+        icon: '🤖'
+      },
+      {
+        event_id: 'EVT-1710134567891',
+        event_name: 'IEEE Technical Symposium 2025',
+        event_type: 'Conference',
+        event_category: 'Academic',
+        event_description: 'Annual technical symposium featuring keynote speakers, paper presentations, and latest research innovations',
+        event_date: '2025-03-28',
+        start_time: '10:00',
+        end_time: '18:00',
+        venue: 'Main Auditorium',
+        organizing_club: 'IEEE Student Branch',
+        event_leader_name: 'Prof. Priya Patel',
+        expected_participants: 200,
+        registered_participants: 156,
+        is_national: true,
+        is_university: true,
+        certificate_provided: true,
+        od_eligible: true,
+        icon: '🎯'
+      },
+      {
+        event_id: 'EVT-1710034567892',
+        event_name: 'Cultural Fest - Verve 2025',
+        event_type: 'Cultural',
+        event_category: 'Extra-Curricular',
+        event_description: 'Grand cultural festival featuring music concerts, dance battles, drama performances, and art exhibitions',
+        event_date: '2025-04-05',
+        start_time: '09:00',
+        end_time: '20:00',
+        venue: 'Open Ground',
+        organizing_club: 'Cultural Committee',
+        event_leader_name: 'Amit Kumar',
+        expected_participants: 500,
+        registered_participants: 387,
+        is_national: false,
+        is_university: true,
+        certificate_provided: false,
+        od_eligible: true,
+        icon: '🎭'
+      },
+      {
+        event_id: 'EVT-1709934567893',
+        event_name: 'Hackathon 2025: Code for Change',
+        event_type: 'Competition',
+        event_category: 'Technical',
+        event_description: '48-hour intensive coding marathon to build innovative solutions for real-world problems',
+        event_date: '2025-04-12',
+        start_time: '08:00',
+        end_time: '20:00',
+        venue: 'Innovation Lab',
+        organizing_club: 'Coding Club',
+        event_leader_name: 'Dr. Sneha Reddy',
+        expected_participants: 100,
+        registered_participants: 78,
+        is_national: true,
+        is_university: false,
+        certificate_provided: true,
+        od_eligible: true,
+        icon: '💻'
+      },
+      {
+        event_id: 'EVT-1709834567894',
+        event_name: 'Web Development Bootcamp',
+        event_type: 'Workshop',
+        event_category: 'Technical',
+        event_description: 'Intensive bootcamp covering HTML, CSS, JavaScript, React, and modern web development practices',
+        event_date: '2025-03-30',
+        start_time: '10:00',
+        end_time: '16:00',
+        venue: 'Lab 301, IT Building',
+        organizing_club: 'Web Dev Society',
+        event_leader_name: 'Rohan Desai',
+        expected_participants: 60,
+        registered_participants: 45,
+        is_national: false,
+        is_university: false,
+        certificate_provided: true,
+        od_eligible: true,
+        icon: '🌐'
+      },
+      {
+        event_id: 'EVT-1709734567895',
+        event_name: 'TEDx BVDU',
+        event_type: 'Conference',
+        event_category: 'Inspirational',
+        event_description: 'Ideas worth spreading - featuring inspiring talks from entrepreneurs, innovators, and thought leaders',
+        event_date: '2025-04-20',
+        start_time: '11:00',
+        end_time: '18:00',
+        venue: 'University Auditorium',
+        organizing_club: 'TEDx BVDU Team',
+        event_leader_name: 'Prof. Anjali Mehta',
+        expected_participants: 300,
+        registered_participants: 245,
+        is_national: true,
+        is_university: true,
+        certificate_provided: true,
+        od_eligible: true,
+        icon: '🎤'
+      }
+    ];
+
+    // Load Events
+    async function loadEvents() {
+      try {
+        let events = [];
+        
+        if (!supabaseClient) {
+          // Try localStorage first
+          events = getEventsFromStorage();
+          if (!events || events.length === 0) {
+            events = initializeStorage();
+          }
+        } else {
+          // Load only APPROVED events from Supabase
+          const { data, error } = await supabaseClient
+            .from('events')
+            .select('*')
+            .eq('status', 'approved')
+            .gte('event_date', new Date().toISOString().split('T')[0])
+            .order('event_date', { ascending: true })
+            .limit(6);
+
+          if (error) throw error;
+          events = data || [];
+        }
+
+        allEvents = events;
+        renderEvents(events);
+      } catch (error) {
+        console.error('Error loading events:', error);
+        allEvents = [];
+        renderEvents(allEvents);
+      }
+    }
+
+    // Render Events
+    function renderEvents(events) {
+      const grid = document.getElementById('eventsGrid');
+
+      if (events.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">📅</div>
+            <h3 style="font-size: 1.5rem; font-weight: 700; color: #E2E8F0; margin-bottom: 0.5rem;">No Events Found</h3>
+            <p style="color: #64748B;">Check back later for upcoming events</p>
+          </div>
+        `;
+        return;
+      }
+
+      const eventsHTML = events.map(event => {
+        const date = new Date(event.event_date);
+        const day = date.getDate();
+        const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+        const attendeeCount = event.registered_participants || 0;
+        
+        // Use photo_folder_url (event flyer) if available, otherwise use gradient background with icon
+        const backgroundStyle = event.photo_folder_url 
+          ? `background-image: url('${event.photo_folder_url}'); background-size: cover; background-position: center;`
+          : `background: linear-gradient(135deg, ${getGradientColors(event.event_type)});`;
+        
+        return `
+          <a href="views/student/event-details.html?id=${event.event_id}" class="event-card">
+            <div class="event-image" style="${backgroundStyle}">
+              ${!event.photo_folder_url ? `<div style="font-size: 5rem; position: relative; z-index: 1;">${event.icon || '🎉'}</div>` : ''}
+              <div class="event-badge">${event.event_type}</div>
+              <div class="event-date-badge">
+                <span class="event-date-day">${day}</span>
+                <span class="event-date-month">${month}</span>
+              </div>
+            </div>
+
+            <div class="event-content">
+              <div class="event-time">
+                <span>⏰</span>
+                <span>${event.start_time} - ${event.end_time}</span>
+              </div>
+
+              <h3 class="event-title">${event.event_name}</h3>
+
+              <div class="event-organizer">
+                <div class="organizer-avatar">${getInitials(event.event_leader_name || 'Event Leader')}</div>
+                <div class="organizer-info">
+                  <div class="organizer-name">${event.organizing_club}</div>
+                  <div class="organizer-club">by ${event.event_leader_name || 'Event Leader'}</div>
+                </div>
+              </div>
+
+              <div class="event-meta">
+                <div class="meta-item">
+                  <span>📍</span>
+                  <span>${event.venue}</span>
+                </div>
+              </div>
+
+              <div class="event-badges">
+                ${event.is_national ? '<span class="mini-badge badge-national">🌏 National</span>' : ''}
+                ${event.certificate_provided ? '<span class="mini-badge badge-certificate">📜 Certificate</span>' : ''}
+                ${event.od_eligible ? '<span class="mini-badge badge-od">✅ OD Eligible</span>' : ''}
+              </div>
+
+              <div class="event-attendees">
+                <div class="attendee-avatars">
+                  ${generateAttendeeAvatars(Math.min(attendeeCount, 3))}
+                </div>
+                <span class="attendee-count">${attendeeCount} attending</span>
+              </div>
+            </div>
+          </a>
+        `;
+      }).join('');
+
+      grid.innerHTML = eventsHTML;
+    }
+
+    // Generate Attendee Avatars
+    function generateAttendeeAvatars(count) {
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let html = '';
+      for (let i = 0; i < count; i++) {
+        const letter = letters[Math.floor(Math.random() * letters.length)];
+        html += `<div class="attendee-avatar">${letter}</div>`;
+      }
+      return html;
+    }
+
+    // Get Gradient Colors based on Event Type
+    function getGradientColors(type) {
+      const gradients = {
+        'Workshop': '#4285F4, #34A853',
+        'Conference': '#EA4335, #FBBC04',
+        'Cultural': '#9C27B0, #E91E63',
+        'Competition': '#FF5722, #FF9800',
+        'Seminar': '#3F51B5, #2196F3',
+        'Sports': '#4CAF50, #8BC34A'
+      };
+      return gradients[type] || '#4285F4, #34A853';
+    }
+
+    // Get Initials
+    function getInitials(name) {
+      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+
+    // Filter by Category
+    function filterByCategory(category) {
+      currentFilter = category;
+      
+      // Update active pill
+      document.querySelectorAll('.category-pill').forEach(pill => {
+        pill.classList.remove('active');
+      });
+      event.target.closest('.category-pill').classList.add('active');
+      
+      let filtered = allEvents;
+      
+      if (category !== 'all') {
+        if (category === 'national') {
+          filtered = allEvents.filter(e => e.is_national === true);
+        } else {
+          filtered = allEvents.filter(e => e.event_type === category);
+        }
+      }
+      
+      renderEvents(filtered);
+    }
+
+    // Search Events
+    function searchEvents() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      
+      if (!query) {
+        renderEvents(allEvents);
+        return;
+      }
+      
+      const filtered = allEvents.filter(event => 
+        event.event_name.toLowerCase().includes(query) ||
+        event.event_description.toLowerCase().includes(query) ||
+        event.organizing_club.toLowerCase().includes(query) ||
+        event.event_type.toLowerCase().includes(query)
+      );
+      
+      renderEvents(filtered);
+    }
+
+    // Search on Enter
+    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        searchEvents();
+      }
+    });
+
+    // Initialize
+    loadEvents();
+  </script>
+  <script src="js/particles.js"></script>
+</body>
+</html>

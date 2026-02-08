@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HOD Dashboard - BVDU CampusFlow</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../../js/particles.js" defer></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0E27;
+      color: #E2E8F0;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.08), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(52, 168, 83, 0.08), transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: #94A3B8;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .nav-link:hover {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .nav-link.active {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.15);
+    }
+
+    /* Page Header */
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: #94A3B8;
+      font-size: 1.125rem;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      border-color: rgba(66, 133, 244, 0.3);
+      box-shadow: 0 10px 30px rgba(66, 133, 244, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat-icon {
+      font-size: 1.5rem;
+    }
+
+    .stat-label {
+      color: #94A3B8;
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #E2E8F0;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding: 0.5rem;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      background: transparent;
+      border: none;
+      color: #94A3B8;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tab:hover {
+      color: #E2E8F0;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab.active {
+      background: rgba(66, 133, 244, 0.2);
+      color: #4285F4;
+    }
+
+    .tab-badge {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .tab.active .tab-badge {
+      background: rgba(66, 133, 244, 0.3);
+    }
+
+    /* Forms Grid */
+    .forms-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+
+    .form-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-card:hover {
+      border-color: rgba(66, 133, 244, 0.3);
+      box-shadow: 0 10px 30px rgba(66, 133, 244, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .form-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .form-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #E2E8F0;
+      margin-bottom: 0.25rem;
+    }
+
+    .form-id {
+      color: #94A3B8;
+      font-size: 0.875rem;
+    }
+
+    .form-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 0.75rem;
+      color: #94A3B8;
+      font-size: 0.875rem;
+    }
+
+    .badge {
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-pending {
+      background: rgba(251, 188, 4, 0.2);
+      color: #FBBC04;
+      border: 1px solid rgba(251, 188, 4, 0.3);
+    }
+
+    .badge-approved {
+      background: rgba(52, 168, 83, 0.2);
+      color: #34A853;
+      border: 1px solid rgba(52, 168, 83, 0.3);
+    }
+
+    .badge-rejected {
+      background: rgba(234, 67, 53, 0.2);
+      color: #EA4335;
+      border: 1px solid rgba(234, 67, 53, 0.3);
+    }
+
+    .badge-category {
+      background: rgba(66, 133, 244, 0.2);
+      color: #4285F4;
+      border: 1px solid rgba(66, 133, 244, 0.3);
+    }
+
+    /* Decision Sections */
+    .decision-section {
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .decision-header {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .decision-remarks {
+      color: #94A3B8;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    .event-leader-section {
+      background: rgba(52, 168, 83, 0.1);
+      border-color: rgba(52, 168, 83, 0.2);
+    }
+
+    .event-leader-section .decision-header {
+      color: #34A853;
+    }
+
+    .faculty-section {
+      background: rgba(66, 133, 244, 0.1);
+      border-color: rgba(66, 133, 244, 0.2);
+    }
+
+    .faculty-section .decision-header {
+      color: #4285F4;
+    }
+
+    /* Form Actions */
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: #34A853;
+      color: white;
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      background: #2E9549;
+      box-shadow: 0 5px 15px rgba(52, 168, 83, 0.3);
+    }
+
+    .btn-danger {
+      background: #EA4335;
+      color: white;
+      flex: 1;
+    }
+
+    .btn-danger:hover {
+      background: #D33828;
+      box-shadow: 0 5px 15px rgba(234, 67, 53, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      width: 100%;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #94A3B8;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      color: #E2E8F0;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .form-textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 1rem;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      color: #E2E8F0;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      resize: vertical;
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: rgba(66, 133, 244, 0.5);
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="../../index.html" class="navbar-brand">
+      🎓 BVDU Event Management - HOD
+    </a>
+    <div class="nav-menu">
+      <a href="dashboard.html" class="nav-link active">📋 OD Forms</a>
+      <a href="create-faculty.html" class="nav-link">👥 Create Faculty</a>
+      <a href="../../index.html" class="nav-link" id="logoutBtn">🚪 Logout</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">OD Forms Management - Final Approval</h1>
+      <p class="page-subtitle">Final stage: Approve to mark attendance or Reject to deny attendance</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-icon">⏳</span>
+          <span class="stat-label">Pending Review</span>
+        </div>
+        <div class="stat-value" id="pendingCount">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-icon">✅</span>
+          <span class="stat-label">Approved</span>
+        </div>
+        <div class="stat-value" id="approvedCount">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-icon">❌</span>
+          <span class="stat-label">Rejected</span>
+        </div>
+        <div class="stat-value" id="rejectedCount">0</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-icon">📊</span>
+          <span class="stat-label">Total Forms</span>
+        </div>
+        <div class="stat-value" id="totalCount">0</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="pending" onclick="switchTab('pending')">
+        Pending Review
+        <span class="tab-badge" id="pendingBadge">0</span>
+      </button>
+      <button class="tab" data-tab="approved" onclick="switchTab('approved')">
+        Approved
+        <span class="tab-badge" id="approvedBadge">0</span>
+      </button>
+      <button class="tab" data-tab="rejected" onclick="switchTab('rejected')">
+        Rejected
+        <span class="tab-badge" id="rejectedBadge">0</span>
+      </button>
+      <button class="tab" data-tab="all" onclick="switchTab('all')">
+        All Forms
+        <span class="tab-badge" id="allBadge">0</span>
+      </button>
+    </div>
+
+    <!-- Forms Grid -->
+    <div class="forms-grid" id="formsGrid">
+      <!-- Forms will be loaded here -->
+    </div>
+  </div>
+
+  <!-- Approve Modal -->
+  <div class="modal" id="approveModal">
+    <div class="modal-content">
+      <h3 class="modal-title">✅ Approve OD Form & Mark Attendance</h3>
+      <div style="padding: 1rem; background: rgba(52, 168, 83, 0.1); border: 1px solid rgba(52, 168, 83, 0.3); border-radius: 0.75rem; margin-bottom: 1rem;">
+        <p style="color: #34A853; font-size: 0.9rem; font-weight: 600;">✓ This will mark the student's attendance for the event</p>
+        <p style="color: #94A3B8; font-size: 0.85rem; margin-top: 0.5rem;">Final approval stage - Student will be marked present</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Comments (Optional)</label>
+        <textarea id="approveComments" class="form-textarea" placeholder="Add any comments or notes..."></textarea>
+      </div>
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="closeApproveModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitApproval()">✓ Approve & Mark Attendance</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reject Modal -->
+  <div class="modal" id="rejectModal">
+    <div class="modal-content">
+      <h3 class="modal-title">❌ Reject OD Form & Deny Attendance</h3>
+      <div style="padding: 1rem; background: rgba(234, 67, 53, 0.1); border: 1px solid rgba(234, 67, 53, 0.3); border-radius: 0.75rem; margin-bottom: 1rem;">
+        <p style="color: #EA4335; font-size: 0.9rem; font-weight: 600;">✗ This will NOT mark attendance for the student</p>
+        <p style="color: #94A3B8; font-size: 0.85rem; margin-top: 0.5rem;">Final rejection - Student attendance will remain unmarked</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rejection Reason (Required)</label>
+        <textarea id="rejectReason" class="form-textarea" placeholder="Please provide a clear reason for rejection..." required></textarea>
+      </div>
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="closeRejectModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="submitRejection()">✗ Reject & Deny Attendance</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/supabase-client.js"></script>
+  <script>
+    let allForms = [];
+    let currentTab = 'pending';
+    let selectedFormId = null;
+
+    // Notification function
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        background: ${type === 'success' ? 'rgba(52, 168, 83, 0.95)' : 'rgba(234, 67, 53, 0.95)'};
+        color: white;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        z-index: 10000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        animation: slideIn 0.3s ease-out;
+      `;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      loadForms();
+    });
+
+    // Load Forms
+    async function loadForms() {
+      try {
+        console.log('========== HOD DASHBOARD LOADING FORMS ==========');
+        
+        // Load forms from Supabase that need HOD approval
+        const { data: forms, error } = await supabaseClient
+          .from('od_forms')
+          .select(`
+            *,
+            student:users!od_forms_student_id_fkey(full_name, prn),
+            event:events!od_forms_event_id_fkey(event_name, event_type, event_date)
+          `)
+          .in('status', ['approved_by_faculty', 'partially_approved_by_faculty', 'faculty_approved', 'hod_approved', 'hod_rejected', 'approved', 'rejected'])
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error loading forms:', error);
+          console.error('Error details:', error.message, error.code);
+          showNotification('Failed to load forms', 'error');
+          return;
+        }
+
+        console.log('Forms loaded from database:', forms);
+        console.log('Total forms:', forms?.length || 0);
+        
+        if (forms && forms.length > 0) {
+          console.log('Form statuses:', forms.map(f => f.status));
+          const statusBreakdown = forms.reduce((acc, f) => {
+            acc[f.status] = (acc[f.status] || 0) + 1;
+            return acc;
+          }, {});
+          console.table(statusBreakdown);
+        }
+
+        // HOD sees forms that are approved by faculty (full or partial) or already processed by HOD
+        allForms = forms || [];
+        
+        console.log('All forms assigned:', allForms.length);
+        console.log('=================================================');
+        
+        updateStats();
+        renderForms();
+      } catch (error) {
+        console.error('Error in loadForms:', error);
+        console.error('Error stack:', error.stack);
+        showNotification('Failed to load forms', 'error');
+      }
+    }
+
+    // Update Stats
+    function updateStats() {
+      const pending = allForms.filter(f => 
+        f.status === 'approved_by_faculty' || 
+        f.status === 'partially_approved_by_faculty' || 
+        f.status === 'faculty_approved'
+      ).length;
+      const approved = allForms.filter(f => f.status === 'hod_approved' || f.status === 'approved').length;
+      const rejected = allForms.filter(f => f.status === 'hod_rejected' || f.status === 'rejected').length;
+
+      document.getElementById('pendingCount').textContent = pending;
+      document.getElementById('approvedCount').textContent = approved;
+      document.getElementById('rejectedCount').textContent = rejected;
+      document.getElementById('totalCount').textContent = allForms.length;
+
+      document.getElementById('pendingBadge').textContent = pending;
+      document.getElementById('approvedBadge').textContent = approved;
+      document.getElementById('rejectedBadge').textContent = rejected;
+      document.getElementById('allBadge').textContent = allForms.length;
+    }
+
+    // Switch Tab
+    function switchTab(tab) {
+      currentTab = tab;
+      
+      // Update active tab
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+      
+      renderForms();
+    }
+
+    // Render Forms
+    function renderForms() {
+      const grid = document.getElementById('formsGrid');
+      let filteredForms = [];
+
+      switch(currentTab) {
+        case 'pending':
+          filteredForms = allForms.filter(f => 
+            f.status === 'approved_by_faculty' || 
+            f.status === 'partially_approved_by_faculty' || 
+            f.status === 'faculty_approved'
+          );
+          break;
+        case 'approved':
+          filteredForms = allForms.filter(f => f.status === 'hod_approved' || f.status === 'approved');
+          break;
+        case 'rejected':
+          filteredForms = allForms.filter(f => f.status === 'hod_rejected' || f.status === 'rejected');
+          break;
+        case 'all':
+          filteredForms = allForms;
+          break;
+      }
+
+      if (filteredForms.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">No forms found</h3>
+            <p>There are no OD forms in this category.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filteredForms.map(form => {
+        let statusBadge = '';
+        if (form.status === 'faculty_approved') {
+          statusBadge = '<span class="badge badge-pending">⏳ Pending HOD Review</span>';
+        } else if (form.status === 'hod_approved') {
+          statusBadge = '<span class="badge badge-approved">✅ Approved by HOD</span>';
+        } else if (form.status === 'hod_rejected') {
+          statusBadge = '<span class="badge badge-rejected">❌ Rejected by HOD</span>';
+        }
+
+        return `
+          <div class="form-card" onclick="viewFormDetails('${form.form_id}')" style="cursor: pointer;">
+            <div class="form-header">
+              <div style="flex: 1;">
+                <h3 class="form-title">${form.event?.event_name || 'Unknown Event'}</h3>
+                <p class="form-id">${form.form_id}</p>
+                <div class="form-meta">
+                  <span>👤 ${form.student?.full_name || 'Unknown Student'}</span>
+                  <span>🆔 ${form.student?.prn || form.roll_number || 'N/A'}</span>
+                  <span>📅 ${form.event?.event_date || 'N/A'}</span>
+                  <span>📋 ${form.event?.event_type || 'N/A'}</span>
+                  <span>📚 ${form.subjects?.length || 0} subjects</span>
+                </div>
+              </div>
+              ${statusBadge}
+            </div>
+
+            ${form.event_leader_comments ? `
+            <div class="decision-section event-leader-section">
+              <div class="decision-header">
+                ✅ Event Leader Approved
+              </div>
+              <div class="decision-remarks">${form.event_leader_comments}</div>
+            </div>
+            ` : ''}
+
+            ${form.faculty_comments ? `
+            <div class="decision-section faculty-section">
+              <div class="decision-header">
+                ✅ Faculty Approved
+              </div>
+              <div class="decision-remarks">${form.faculty_comments}</div>
+            </div>
+            ` : ''}
+
+            ${form.hod_comments ? `
+            <div class="decision-section" style="background: ${form.status === 'hod_approved' || form.status === 'approved' ? 'rgba(52, 168, 83, 0.1)' : 'rgba(234, 67, 53, 0.1)'}; border-color: ${form.status === 'hod_approved' || form.status === 'approved' ? 'rgba(52, 168, 83, 0.2)' : 'rgba(234, 67, 53, 0.2)'};">
+              <div class="decision-header" style="color: ${form.status === 'hod_approved' || form.status === 'approved' ? '#34A853' : '#EA4335'};">
+                ${form.status === 'hod_approved' || form.status === 'approved' ? '✅ HOD Final Approval - Attendance Marked' : '❌ HOD Final Rejection - No Attendance'}
+              </div>
+              <div class="decision-remarks">${form.hod_comments}</div>
+              ${form.status === 'hod_approved' || form.status === 'approved' ? `
+                <div style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(52, 168, 83, 0.2); border-radius: 0.5rem;">
+                  <strong style="color: #34A853;">✓ Attendance Status: MARKED</strong>
+                </div>
+              ` : `
+                <div style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(234, 67, 53, 0.2); border-radius: 0.5rem;">
+                  <strong style="color: #EA4335;">✗ Attendance Status: NOT MARKED</strong>
+                </div>
+              `}
+            </div>
+            ` : ''}
+
+            <div class="form-actions" onclick="event.stopPropagation()">
+              <button class="btn btn-secondary" onclick="viewFormDetails('${form.form_id}')" style="flex: 1;">
+                👁️ Review Form
+              </button>
+              ${form.status === 'approved_by_faculty' || form.status === 'partially_approved_by_faculty' || form.status === 'faculty_approved' ? `
+                <button class="btn btn-primary" onclick="showApproveModal('${form.form_id}')" style="flex: 1;">
+                  ✅ Quick Approve
+                </button>
+                <button class="btn btn-danger" onclick="showRejectModal('${form.form_id}')" style="flex: 1;">
+                  ❌ Quick Reject
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Show Approve Modal
+    function showApproveModal(formId) {
+      selectedFormId = formId;
+      document.getElementById('approveComments').value = '';
+      document.getElementById('approveModal').classList.add('active');
+    }
+
+    // Close Approve Modal
+    function closeApproveModal() {
+      selectedFormId = null;
+      document.getElementById('approveModal').classList.remove('active');
+    }
+
+    // Submit Approval
+    async function submitApproval() {
+      const comments = document.getElementById('approveComments').value.trim();
+      
+      try {
+        // Update form in Supabase
+        const { error } = await supabaseClient
+          .from('od_forms')
+          .update({
+            approved_by_hod: true,
+            hod_remarks: comments || 'Approved by HOD - Attendance Marked',
+            status: 'hod_approved',
+            attendance_marked: true
+          })
+          .eq('id', selectedFormId);
+
+        if (error) throw error;
+        
+        closeApproveModal();
+        showNotification('✅ OD Form approved successfully! Attendance has been marked for the student.', 'success');
+        await loadForms();
+      } catch (error) {
+        console.error('Error approving form:', error);
+        showNotification('Failed to approve form', 'error');
+      }
+    }
+
+    // Show Reject Modal
+    function showRejectModal(formId) {
+      selectedFormId = formId;
+      document.getElementById('rejectReason').value = '';
+      document.getElementById('rejectModal').classList.add('active');
+    }
+
+    // Close Reject Modal
+    function closeRejectModal() {
+      selectedFormId = null;
+      document.getElementById('rejectModal').classList.remove('active');
+    }
+
+    // Submit Rejection
+    async function submitRejection() {
+      const reason = document.getElementById('rejectReason').value.trim();
+      
+      if (!reason) {
+        showNotification('Please provide a rejection reason', 'error');
+        return;
+      }
+      
+      try {
+        // Update form in Supabase
+        const { error } = await supabaseClient
+          .from('od_forms')
+          .update({
+            approved_by_hod: false,
+            hod_remarks: reason,
+            status: 'hod_rejected',
+            attendance_marked: false
+          })
+          .eq('id', selectedFormId);
+
+        if (error) throw error;
+        
+        closeRejectModal();
+        showNotification('❌ OD Form rejected. Attendance will NOT be marked.', 'success');
+        await loadForms();
+      } catch (error) {
+        console.error('Error rejecting form:', error);
+        showNotification('Failed to reject form', 'error');
+      }
+    }
+
+    // View Form Details
+    function viewFormDetails(formId) {
+      window.location.href = `review-od-form.html?id=${formId}`;
+    }
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+      e.preventDefault();
+      if (confirm('Are you sure you want to logout?')) {
+        await supabaseClient.auth.signOut();
+        sessionStorage.clear();
+        window.location.href = '../../login.html';
+      }
+    });
+  </script>
+</body>
+</html>

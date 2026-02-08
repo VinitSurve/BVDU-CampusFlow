@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review OD Form - BVDU CampusFlow</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../../css/variables.css">
+  
+  <!-- Particles Animation -->
+  <script src="../../js/particles.js" defer></script>
+  
+  <script src="../../js/config.js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0E27;
+      color: #E2E8F0;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Animated Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.08), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(52, 168, 83, 0.08), transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-link {
+      color: #94A3B8;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .nav-link:hover {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .nav-link.active {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.15);
+    }
+
+    .review-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* Page Header */
+    .page-header {
+      margin-bottom: 2.5rem;
+      padding: 3rem;
+      background: linear-gradient(135deg, rgba(251, 146, 60, 0.1) 0%, rgba(249, 115, 22, 0.1) 100%);
+      border: 1px solid rgba(251, 146, 60, 0.2);
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 50%, rgba(251, 146, 60, 0.15), transparent 60%);
+      pointer-events: none;
+    }
+
+    .page-header-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FB923C 0%, #F97316 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .form-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .meta-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 1.25rem;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .meta-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(251, 146, 60, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .meta-label {
+      font-size: 0.875rem;
+      color: #94A3B8;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .meta-value {
+      font-size: 1.125rem;
+      color: #E2E8F0;
+      font-weight: 600;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1.25rem;
+      border-radius: 2rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .status-pending {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(251, 146, 60, 0.2) 100%);
+      color: #FCD34D;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .status-approved {
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.2) 0%, rgba(16, 185, 129, 0.2) 100%);
+      color: #6EE7B7;
+      border: 1px solid rgba(52, 211, 153, 0.3);
+    }
+
+    .status-rejected {
+      background: linear-gradient(135deg, rgba(248, 113, 113, 0.2) 0%, rgba(239, 68, 68, 0.2) 100%);
+      color: #FCA5A5;
+      border: 1px solid rgba(248, 113, 113, 0.3);
+    }
+
+    /* Info Cards */
+    .info-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .info-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(251, 146, 60, 0.2);
+      box-shadow: 0 8px 32px rgba(251, 146, 60, 0.1);
+    }
+
+    .info-card h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #FB923C;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .info-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1.25rem;
+      transition: all 0.3s ease;
+    }
+
+    .info-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(251, 146, 60, 0.2);
+    }
+
+    .info-item label {
+      display: block;
+      font-size: 0.875rem;
+      color: #94A3B8;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .info-item value {
+      display: block;
+      font-size: 1.125rem;
+      color: #E2E8F0;
+      font-weight: 600;
+    }
+
+    /* Table Styling */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .subjects-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .subjects-table th {
+      background: rgba(251, 146, 60, 0.1);
+      color: #FB923C;
+      padding: 1.25rem;
+      text-align: left;
+      font-weight: 700;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid rgba(251, 146, 60, 0.2);
+    }
+
+    .subjects-table td {
+      padding: 1.25rem;
+      color: #CBD5E1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.9375rem;
+    }
+
+    .subjects-table tr {
+      transition: all 0.3s ease;
+    }
+
+    .subjects-table tbody tr:hover {
+      background: rgba(251, 146, 60, 0.05);
+    }
+
+    .subjects-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .subjects-table tbody tr.approved {
+      background: rgba(52, 168, 83, 0.08);
+    }
+
+    .subjects-table tbody tr.rejected {
+      background: rgba(234, 67, 53, 0.08);
+    }
+
+    /* Subject Action Buttons */
+    .subject-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .btn-subject {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-subject-approve {
+      background: rgba(52, 168, 83, 0.2);
+      color: #34A853;
+      border: 1px solid rgba(52, 168, 83, 0.3);
+    }
+
+    .btn-subject-approve:hover {
+      background: rgba(52, 168, 83, 0.3);
+      transform: scale(1.05);
+    }
+
+    .btn-subject-approve.active {
+      background: #34A853;
+      color: white;
+    }
+
+    .btn-subject-reject {
+      background: rgba(234, 67, 53, 0.2);
+      color: #EA4335;
+      border: 1px solid rgba(234, 67, 53, 0.3);
+    }
+
+    .btn-subject-reject:hover {
+      background: rgba(234, 67, 53, 0.3);
+      transform: scale(1.05);
+    }
+
+    .btn-subject-reject.active {
+      background: #EA4335;
+      color: white;
+    }
+
+    .approval-summary {
+      background: rgba(251, 146, 60, 0.1);
+      border: 1px solid rgba(251, 146, 60, 0.2);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .summary-item {
+      text-align: center;
+    }
+
+    .summary-number {
+      font-size: 2rem;
+      font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .summary-label {
+      font-size: 0.875rem;
+      color: #94A3B8;
+      margin-top: 0.25rem;
+    }
+
+    .summary-approved .summary-number {
+      color: #34A853;
+    }
+
+    .summary-rejected .summary-number {
+      color: #EA4335;
+    }
+
+    .summary-pending .summary-number {
+      color: #FBBC04;
+    }
+
+    /* Document Links */
+    .document-link {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem;
+      background: rgba(251, 146, 60, 0.05);
+      border: 1px solid rgba(251, 146, 60, 0.15);
+      border-radius: 12px;
+      color: #FB923C;
+      text-decoration: none;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .document-link:hover {
+      background: rgba(251, 146, 60, 0.1);
+      border-color: rgba(251, 146, 60, 0.3);
+      transform: translateX(8px);
+      box-shadow: 0 4px 20px rgba(251, 146, 60, 0.2);
+    }
+
+    .document-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #FB923C, #F97316);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    /* Approval Section */
+    .approval-section {
+      background: linear-gradient(135deg, rgba(251, 146, 60, 0.05) 0%, rgba(249, 115, 22, 0.05) 100%);
+      border: 2px solid rgba(251, 146, 60, 0.2);
+      border-radius: 24px;
+      padding: 2.5rem;
+      margin-top: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .approval-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(251, 146, 60, 0.1), transparent 70%);
+      pointer-events: none;
+    }
+
+    .approval-section h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #FB923C;
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .comments-box {
+      width: 100%;
+      min-height: 120px;
+      padding: 1.25rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: #E2E8F0;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      resize: vertical;
+      transition: all 0.3s ease;
+    }
+
+    .comments-box:focus {
+      outline: none;
+      border-color: rgba(251, 146, 60, 0.5);
+      box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.1);
+    }
+
+    .approval-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-approve {
+      background: linear-gradient(135deg, #34A853 0%, #0F9D58 100%);
+      color: white;
+      box-shadow: 0 4px 20px rgba(52, 168, 83, 0.3);
+    }
+
+    .btn-approve:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(52, 168, 83, 0.4);
+    }
+
+    .btn-reject {
+      background: linear-gradient(135deg, #EA4335 0%, #C5221F 100%);
+      color: white;
+      box-shadow: 0 4px 20px rgba(234, 67, 53, 0.3);
+    }
+
+    .btn-reject:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(234, 67, 53, 0.4);
+    }
+
+    .btn-back {
+      background: rgba(255, 255, 255, 0.05);
+      color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Loading State */
+    .loading {
+      text-align: center;
+      padding: 6rem 2rem;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(251, 146, 60, 0.1);
+      border-top-color: #FB923C;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1.5rem;
+    }
+
+    .loading-text {
+      font-size: 1.25rem;
+      color: #94A3B8;
+      font-weight: 500;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .page-title {
+        font-size: 1.75rem;
+      }
+
+      .form-meta {
+        grid-template-columns: 1fr;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .approval-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .subjects-table {
+        font-size: 0.875rem;
+      }
+
+      .subjects-table th,
+      .subjects-table td {
+        padding: 0.875rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <a href="dashboard.html" class="navbar-brand">🎓 BVDU CampusFlow</a>
+        <div class="flex items-center gap-6">
+          <a href="dashboard.html" class="nav-link">Dashboard</a>
+          <a href="my-events.html" class="nav-link">My Events</a>
+          <button onclick="logout()" class="nav-link" style="background: rgba(234, 67, 53, 0.1); color: #EA4335;">Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="review-container container">
+    <!-- Loading State -->
+    <div class="loading" id="loading">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading OD form details...</div>
+    </div>
+
+    <!-- Form Content -->
+    <div id="formContent" style="display: none;">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="page-header-content">
+          <h1 class="page-title">
+            <span>🤝</span>
+            <span>Review OD Form (Volunteer)</span>
+          </h1>
+          
+          <div class="form-meta">
+            <div class="meta-item">
+              <div class="meta-label">📝 Form ID</div>
+              <div class="meta-value" id="formId">-</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">👤 Student</div>
+              <div class="meta-value" id="studentName">-</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">🎯 Event</div>
+              <div class="meta-value" id="eventName">-</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">📊 Status</div>
+              <span id="statusBadge" class="status-badge status-pending">Pending Review</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Information -->
+      <div class="info-card">
+        <h2>
+          <span>👨‍🎓</span>
+          <span>Student Information</span>
+        </h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Roll Number</label>
+            <value id="rollNumber">-</value>
+          </div>
+          <div class="info-item">
+            <label>Course</label>
+            <value id="course">-</value>
+          </div>
+          <div class="info-item">
+            <label>Year</label>
+            <value id="year">-</value>
+          </div>
+          <div class="info-item">
+            <label>Division</label>
+            <value id="division">-</value>
+          </div>
+          <div class="info-item">
+            <label>Form Type</label>
+            <value>Volunteer</value>
+          </div>
+        </div>
+      </div>
+
+      <!-- Missed Lectures -->
+      <div class="info-card">
+        <h2>
+          <span>📚</span>
+          <span>Missed Lectures</span>
+        </h2>
+
+        <!-- Approval Summary -->
+        <div class="approval-summary" id="approvalSummary" style="display: none;">
+          <div class="summary-item summary-approved">
+            <div class="summary-number" id="approvedCount">0</div>
+            <div class="summary-label">Approved</div>
+          </div>
+          <div class="summary-item summary-rejected">
+            <div class="summary-number" id="rejectedCount">0</div>
+            <div class="summary-label">Rejected</div>
+          </div>
+          <div class="summary-item summary-pending">
+            <div class="summary-number" id="pendingCount">0</div>
+            <div class="summary-label">Pending</div>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="subjects-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Subject</th>
+                <th>Subject Code</th>
+                <th>Faculty</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Duration</th>
+                <th>Type</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="subjectsTableBody">
+              <tr>
+                <td colspan="9" style="text-align: center; padding: 2rem; color: #94A3B8;">No lectures found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Proof Documents -->
+      <div class="info-card">
+        <h2>
+          <span>📎</span>
+          <span>Proof Documents</span>
+        </h2>
+        <div id="proofDocuments">
+          <p style="color: #94A3B8;">No documents uploaded</p>
+        </div>
+      </div>
+
+      <!-- Approval Section -->
+      <div class="approval-section">
+        <h2>✅ Event Leader Approval</h2>
+        <label for="comments" style="display: block; margin-bottom: 0.75rem; color: #94A3B8; font-weight: 500; font-size: 0.9375rem;">
+          Comments / Remarks (Optional)
+        </label>
+        <textarea id="comments" class="comments-box" placeholder="Add any comments, remarks, or notes about this OD form..."></textarea>
+
+        <div class="approval-buttons">
+          <button class="btn btn-back" onclick="goBack()">
+            <span>← Back</span>
+          </button>
+          <button class="btn btn-reject" onclick="handleDecision('reject')">
+            <span>✖ Reject All</span>
+          </button>
+          <button class="btn btn-approve" onclick="handleDecision('approve')">
+            <span>✓ Approve All</span>
+          </button>
+          <button class="btn btn-approve" onclick="submitDecisions()" style="background: linear-gradient(135deg, #FBBC04 0%, #F9AB00 100%); grid-column: span 2;">
+            <span>📤 Submit Decisions</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    let currentForm = null;
+    let currentUser = null;
+    let subjectApprovals = {}; // Track individual subject approvals
+
+    async function init() {
+      // Check authentication
+      const sessionUser = sessionStorage.getItem('currentUser');
+      if (sessionUser) {
+        currentUser = JSON.parse(sessionUser);
+      } else {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) {
+          window.location.href = '../../login.html';
+          return;
+        }
+        
+        const { data: profile } = await supabaseClient
+          .from('users')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        currentUser = profile;
+        sessionStorage.setItem('currentUser', JSON.stringify(profile));
+      }
+
+      if (currentUser.role !== 'event_leader') {
+        alert('Access denied. This page is for event leaders only.');
+        window.location.href = '../../login.html';
+        return;
+      }
+
+      // Get form ID from URL
+      const params = new URLSearchParams(window.location.search);
+      const formId = params.get('id');
+
+      if (!formId) {
+        alert('No form ID provided');
+        window.location.href = 'dashboard.html';
+        return;
+      }
+
+      await loadFormDetails(formId);
+    }
+
+    async function loadFormDetails(formId) {
+      try {
+        // Load OD form with event details and student info
+        const { data: form, error } = await supabaseClient
+          .from('od_forms')
+          .select(`
+            *,
+            events (
+              event_name,
+              event_leader_id
+            ),
+            users!student_id (
+              course,
+              year,
+              division
+            )
+          `)
+          .eq('form_id', formId)
+          .single();
+
+        if (error) throw error;
+
+        // Check if current user is the event leader
+        if (form.events.event_leader_id !== currentUser.id) {
+          alert('You are not authorized to review this form');
+          window.location.href = 'dashboard.html';
+          return;
+        }
+
+        currentForm = form;
+
+        // Populate form details
+        document.getElementById('formId').textContent = form.form_id;
+        document.getElementById('studentName').textContent = form.student_name;
+        document.getElementById('eventName').textContent = form.events.event_name;
+        document.getElementById('rollNumber').textContent = form.roll_number;
+        document.getElementById('course').textContent = (form.users?.course || 'N/A').toUpperCase();
+        document.getElementById('year').textContent = `Year ${form.users?.year || form.year}`;
+        document.getElementById('division').textContent = `Division ${form.users?.division || form.division}`;
+
+        // Update status badge
+        const statusBadge = document.getElementById('statusBadge');
+        statusBadge.textContent = form.approved_by_event_leader ? 'Approved' : 'Pending';
+        statusBadge.className = `status-badge ${form.approved_by_event_leader ? 'status-approved' : 'status-pending'}`;
+
+        // Load subjects
+        if (form.subjects && form.subjects.length > 0) {
+          const tbody = document.getElementById('subjectsTableBody');
+          tbody.innerHTML = form.subjects.map((subject, index) => {
+            const subjectId = `subject_${index}`;
+            subjectApprovals[subjectId] = null; // Initialize as pending
+            
+            return `
+            <tr id="row_${subjectId}">
+              <td>${index + 1}</td>
+              <td>${subject.subject_name}</td>
+              <td>${subject.subject_code || '-'}</td>
+              <td>${subject.faculty_name}</td>
+              <td>${new Date(subject.lecture_date).toLocaleDateString()}</td>
+              <td>${subject.lecture_time}</td>
+              <td>${subject.duration} mins</td>
+              <td>${subject.lecture_type}</td>
+              <td>
+                <div class="subject-actions">
+                  <button class="btn-subject btn-subject-approve" onclick="toggleSubjectApproval('${subjectId}', true)">
+                    ✓ Approve
+                  </button>
+                  <button class="btn-subject btn-subject-reject" onclick="toggleSubjectApproval('${subjectId}', false)">
+                    ✖ Reject
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `}).join('');
+          
+          document.getElementById('approvalSummary').style.display = 'flex';
+          updateApprovalSummary();
+        }
+
+        // Load proof documents
+        if (form.proof_documents && form.proof_documents.length > 0) {
+          const proofDiv = document.getElementById('proofDocuments');
+          proofDiv.innerHTML = form.proof_documents.map((doc, index) => `
+            <a href="${SUPABASE_URL}/storage/v1/object/public/${doc}" target="_blank" class="document-link">
+              <div class="document-icon">📄</div>
+              <div>
+                <div style="font-weight: 600; margin-bottom: 0.25rem;">Document ${index + 1}</div>
+                <div style="font-size: 0.875rem; opacity: 0.7;">Click to view or download</div>
+              </div>
+            </a>
+          `).join('');
+        }
+
+        // Hide loading, show content
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('formContent').style.display = 'block';
+
+      } catch (error) {
+        console.error('Error loading form:', error);
+        alert('Failed to load form details: ' + error.message);
+        window.location.href = 'dashboard.html';
+      }
+    }
+
+    function toggleSubjectApproval(subjectId, isApproved) {
+      subjectApprovals[subjectId] = isApproved;
+      
+      const row = document.getElementById(`row_${subjectId}`);
+      const approveBtn = row.querySelector('.btn-subject-approve');
+      const rejectBtn = row.querySelector('.btn-subject-reject');
+      
+      // Update button states
+      if (isApproved) {
+        approveBtn.classList.add('active');
+        rejectBtn.classList.remove('active');
+        row.classList.remove('rejected');
+        row.classList.add('approved');
+      } else {
+        rejectBtn.classList.add('active');
+        approveBtn.classList.remove('active');
+        row.classList.remove('approved');
+        row.classList.add('rejected');
+      }
+      
+      updateApprovalSummary();
+    }
+
+    function updateApprovalSummary() {
+      let approved = 0, rejected = 0, pending = 0;
+      
+      Object.values(subjectApprovals).forEach(status => {
+        if (status === true) approved++;
+        else if (status === false) rejected++;
+        else pending++;
+      });
+      
+      document.getElementById('approvedCount').textContent = approved;
+      document.getElementById('rejectedCount').textContent = rejected;
+      document.getElementById('pendingCount').textContent = pending;
+    }
+
+    function approveAll() {
+      Object.keys(subjectApprovals).forEach(subjectId => {
+        toggleSubjectApproval(subjectId, true);
+      });
+    }
+
+    function rejectAll() {
+      Object.keys(subjectApprovals).forEach(subjectId => {
+        toggleSubjectApproval(subjectId, false);
+      });
+    }
+
+    async function handleDecision(action) {
+      const comments = document.getElementById('comments').value.trim();
+      
+      // Check if it's approve/reject all or individual
+      if (action === 'approve') {
+        approveAll();
+      } else if (action === 'reject') {
+        rejectAll();
+      }
+    }
+
+    async function submitDecisions() {
+      const comments = document.getElementById('comments').value.trim();
+      
+      // Check if any decisions have been made
+      const hasPendingDecisions = Object.values(subjectApprovals).some(status => status === null);
+      
+      if (hasPendingDecisions) {
+        if (!confirm('⚠️ Some subjects are still pending. Do you want to continue?\n\nPending subjects will not be forwarded for further approval.')) {
+          return;
+        }
+      }
+
+      const approved = Object.values(subjectApprovals).filter(s => s === true).length;
+      const rejected = Object.values(subjectApprovals).filter(s => s === false).length;
+      const pending = Object.values(subjectApprovals).filter(s => s === null).length;
+
+      if (approved === 0 && rejected === 0) {
+        alert('⚠️ Please approve or reject at least one subject before submitting.');
+        return;
+      }
+
+      const confirmMsg = `📊 Approval Summary:\n\n✅ Approved: ${approved}\n❌ Rejected: ${rejected}\n⏳ Pending: ${pending}\n\n${approved > 0 ? 'Approved subjects will be forwarded to faculty for review.\n' : ''}${rejected > 0 ? 'Rejected subjects will be marked and student will be notified.\n' : ''}${pending > 0 ? 'Pending subjects will not be processed.\n' : ''}\nContinue?`;
+
+      if (!confirm(confirmMsg)) {
+        return;
+      }
+
+      try {
+        // Create individual subject approval records
+        const subjectApprovalRecords = currentForm.subjects.map((subject, index) => {
+          const subjectId = `subject_${index}`;
+          const approvalStatus = subjectApprovals[subjectId];
+          
+          if (approvalStatus === null) return null; // Skip pending
+          
+          return {
+            form_id: currentForm.form_id,
+            student_id: currentForm.student_id,
+            subject_name: subject.subject_name,
+            subject_code: subject.subject_code,
+            faculty_name: subject.faculty_name,
+            subject_date: subject.lecture_date,
+            subject_time: subject.lecture_time,
+            duration: subject.duration,
+            lecture_type: subject.lecture_type,
+            approved_by_event_leader: approvalStatus === true,
+            rejected_by_event_leader: approvalStatus === false,
+            event_leader_comments: approvalStatus === false ? comments : null,
+            status: approvalStatus === true ? 'approved_by_leader' : 'rejected_by_leader'
+          };
+        }).filter(record => record !== null);
+
+        // Insert subject approval records
+        if (subjectApprovalRecords.length > 0) {
+          const { error: subjectError } = await supabaseClient
+            .from('od_subject_approvals')
+            .upsert(subjectApprovalRecords, {
+              onConflict: 'form_id,subject_name,subject_date,subject_time'
+            });
+
+          if (subjectError) throw subjectError;
+        }
+
+        // Update main OD form with overall status
+        const allApproved = approved > 0 && rejected === 0 && pending === 0;
+        const allRejected = rejected > 0 && approved === 0;
+        const partialApproval = approved > 0 && (rejected > 0 || pending > 0);
+
+        const { error } = await supabaseClient
+          .from('od_forms')
+          .update({
+            approved_by_event_leader: allApproved || partialApproval,
+            event_leader_comments: comments || null,
+            status: allApproved ? 'approved_by_leader' : (partialApproval ? 'partially_approved_by_leader' : 'rejected_by_leader'),
+            approved_subjects_count: approved,
+            rejected_subjects_count: rejected
+          })
+          .eq('form_id', currentForm.form_id);
+
+        if (error) throw error;
+
+        const successMsg = allApproved 
+          ? `✅ All ${approved} subjects approved!\n\nThe form will now be sent to faculty for review.`
+          : partialApproval
+          ? `✅ Partial approval completed!\n\n✅ Approved: ${approved} subjects\n❌ Rejected: ${rejected} subjects\n\nOnly approved subjects will be forwarded to faculty.`
+          : `❌ All subjects rejected.\n\nThe student will be notified.`;
+
+        alert(successMsg);
+        window.location.href = 'dashboard.html';
+
+      } catch (error) {
+        console.error('Error updating form:', error);
+        alert('❌ Failed to update form: ' + error.message);
+      }
+    }
+
+    function goBack() {
+      window.location.href = 'dashboard.html';
+    }
+
+    function logout() {
+      sessionStorage.clear();
+      localStorage.clear();
+      window.location.href = '../../login.html';
+    }
+
+    // Initialize on page load
+    init();
+  </script>
+</body>
+</html>

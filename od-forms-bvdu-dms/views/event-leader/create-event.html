@@ -1,0 +1,2629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Event - BVDU CampusFlow</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Particles Animation -->
+  <script src="../../js/particles.js" defer></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0E27;
+      color: #E2E8F0;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.08), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(52, 168, 83, 0.08), transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-link {
+      color: #94A3B8;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .nav-link:hover {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .nav-link.active {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.15);
+    }
+
+    /* Form Container */
+    .form-container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Back Button */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #94A3B8;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      margin-bottom: 2rem;
+      font-weight: 500;
+    }
+
+    .back-btn:hover {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    /* Progress Steps */
+    .progress-steps {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: relative;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .step:hover {
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .step::after {
+      content: '';
+      position: absolute;
+      left: calc(100% + .07rem);
+      width: 2rem;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .step:last-child::after {
+      display: none;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-number {
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      border-color: #4285F4;
+      box-shadow: 0 0 20px rgba(66, 133, 244, 0.5);
+    }
+
+    .step.completed .step-number {
+      background: #34A853;
+      border-color: #34A853;
+    }
+
+    .step-label {
+      font-weight: 600;
+      color: #64748B;
+    }
+
+    .step.active .step-label {
+      color: #4285F4;
+    }
+
+    .step.completed .step-label {
+      color: #34A853;
+    }
+
+    /* Form Layout */
+    .form-layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 2rem;
+    }
+
+    @media (max-width: 1200px) {
+      .form-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Form Card */
+    .form-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      padding: 2.5rem;
+      backdrop-filter: blur(20px);
+    }
+
+    .form-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 2rem;
+    }
+
+    /* Form Groups */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #E2E8F0;
+      font-size: 0.95rem;
+    }
+
+    .form-label .required {
+      color: #EA4335;
+    }
+
+    .form-hint {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.85rem;
+      color: #64748B;
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      color: #E2E8F0;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: #4285F4;
+      box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+    }
+
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    /* Generate Button */
+    .generate-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      background: rgba(66, 133, 244, 0.15);
+      border: 1px solid rgba(66, 133, 244, 0.3);
+      border-radius: 0.75rem;
+      color: #4285F4;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .generate-btn:hover {
+      background: rgba(66, 133, 244, 0.25);
+      border-color: #4285F4;
+    }
+
+    /* Category Pills */
+    .category-pills {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .category-pill {
+      padding: 1rem;
+      background: rgba(30, 41, 59, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .category-pill:hover {
+      border-color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .category-pill.selected {
+      border-color: #4285F4;
+      background: rgba(66, 133, 244, 0.2);
+      box-shadow: 0 0 20px rgba(66, 133, 244, 0.3);
+    }
+
+    /* Checkboxes */
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .checkbox-item:hover {
+      background: rgba(66, 133, 244, 0.1);
+      border-color: #4285F4;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #4285F4;
+    }
+
+    /* Counter Controls */
+    .counter-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .counter-label {
+      font-weight: 600;
+      color: #E2E8F0;
+    }
+
+    .counter-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .counter-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(66, 133, 244, 0.15);
+      border: 1px solid rgba(66, 133, 244, 0.3);
+      color: #4285F4;
+      font-size: .8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .counter-btn:hover {
+      background: rgba(66, 133, 244, 0.25);
+      border-color: #4285F4;
+    }
+
+    .counter-value {
+      min-width: 40px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #4285F4;
+    }
+
+    /* Venue Checkbox Group */
+    .venue-checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .venue-checkbox-group .checkbox-item {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+    }
+
+    .venue-checkbox-group .checkbox-item:hover {
+      background: rgba(66, 133, 244, 0.1);
+      border-color: rgba(66, 133, 244, 0.3);
+    }
+
+    .venue-checkbox-group .checkbox-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #4285F4;
+      cursor: pointer;
+    }
+
+    .venue-checkbox-group .checkbox-item input[type="checkbox"]:checked + span {
+      color: #4285F4;
+      font-weight: 600;
+    }
+
+    /* Radio Buttons */
+    .radio-group {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .radio-item input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #4285F4;
+    }
+
+    /* Calendar Sidebar */
+    .calendar-sidebar {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 100px;
+      overflow-x: hidden;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .calendar-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: #E2E8F0;
+    }
+
+    .calendar-hint {
+      font-size: 0.85rem;
+      color: #64748B;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Selected Info Card */
+    .selected-info {
+      padding: 1.5rem;
+      background: rgba(66, 133, 244, 0.1);
+      border: 1px solid rgba(66, 133, 244, 0.3);
+      border-radius: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .selected-info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      color: #E2E8F0;
+      word-break: break-word;
+    }
+
+    .selected-info-item span:first-child {
+      flex-shrink: 0;
+    }
+
+    .selected-info-item span:last-child {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .selected-info-item:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Calendar */
+    .calendar {
+      background: rgba(30, 41, 59, 0.5);
+      border-radius: 1rem;
+      padding: 1rem;
+      overflow: hidden;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .calendar-nav-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(66, 133, 244, 0.15);
+      border: 1px solid rgba(66, 133, 244, 0.3);
+      color: #4285F4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .calendar-nav-btn:hover {
+      background: rgba(66, 133, 244, 0.25);
+      border-color: #4285F4;
+    }
+
+    .calendar-month {
+      font-weight: 700;
+      color: #E2E8F0;
+      flex: 1;
+      text-align: center;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.2rem;
+      margin-top: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .calendar-day-header {
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #64748B;
+      padding: 0.25rem;
+      text-transform: uppercase;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.4rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #E2E8F0;
+      font-size: 0.85rem;
+    }
+
+    .calendar-day:not(.empty):hover {
+      background: rgba(66, 133, 244, 0.3);
+      border-color: rgba(66, 133, 244, 0.5);
+      transform: scale(1.05);
+    }
+
+    .calendar-day.today {
+      border: 2px solid #4285F4;
+      background: rgba(66, 133, 244, 0.15);
+      box-shadow: 0 0 15px rgba(66, 133, 244, 0.4);
+    }
+
+    .calendar-day.selected {
+      background: #4285F4;
+      color: white;
+      border-color: #4285F4;
+      box-shadow: 0 4px 15px rgba(66, 133, 244, 0.5);
+    }
+
+    .calendar-day.has-bookings::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #FBBC04;
+      box-shadow: 0 0 8px rgba(251, 188, 4, 0.6);
+    }
+
+    .calendar-day.empty {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #475569;
+      cursor: default;
+    }
+
+    .calendar-day.empty:hover {
+      background: transparent;
+      transform: none;
+    }
+
+    /* Time Slots Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 2rem;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #0F172A;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+    }
+
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #E2E8F0;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-hint {
+      font-size: 0.9rem;
+      color: #64748B;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Time Slots */
+    .time-slots {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .time-slot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      background: rgba(30, 41, 59, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .time-slot:hover:not(.booked) {
+      border-color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .time-slot.selected {
+      border-color: #4285F4;
+      background: rgba(66, 133, 244, 0.2);
+      box-shadow: 0 0 20px rgba(66, 133, 244, 0.3);
+    }
+
+    .time-slot.booked {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: rgba(234, 67, 53, 0.1);
+      border-color: rgba(234, 67, 53, 0.3);
+    }
+
+    .time-slot-time {
+      font-weight: 600;
+      color: #E2E8F0;
+    }
+
+    .time-slot-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .time-slot-status.available {
+      color: #34A853;
+    }
+
+    .time-slot-status.booked {
+      color: #EA4335;
+    }
+
+    /* Modal Footer */
+    .modal-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn {
+      padding: 0.875rem 2rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 25px rgba(66, 133, 244, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #E2E8F0;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid rgba(66, 133, 244, 0.5);
+      color: #4285F4;
+    }
+
+    .btn-outline:hover {
+      background: rgba(66, 133, 244, 0.1);
+      border-color: #4285F4;
+    }
+
+    /* Hide inactive steps */
+    .step-content {
+      display: none;
+    }
+
+    .step-content.active {
+      display: block;
+    }
+
+    /* Preview Modal Styles */
+    .preview-modal {
+      max-width: 900px;
+    }
+
+    .preview-header {
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      padding: 3rem 2rem;
+      text-align: center;
+      border-radius: 1rem 1rem 0 0;
+      margin: -2rem -2rem 2rem -2rem;
+    }
+
+    .preview-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .preview-event-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 0.5rem;
+    }
+
+    .preview-category {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2rem;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .preview-section {
+      margin-bottom: 2rem;
+    }
+
+    .preview-section-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #4285F4;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .preview-text {
+      color: #94A3B8;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    .preview-info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .preview-info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .preview-info-icon {
+      font-size: 1.5rem;
+    }
+
+    .preview-info-content h4 {
+      font-weight: 600;
+      color: #E2E8F0;
+      margin-bottom: 0.25rem;
+    }
+
+    .preview-info-content p {
+      color: #64748B;
+      font-size: 0.9rem;
+    }
+
+    .preview-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .preview-tag {
+      padding: 0.5rem 1rem;
+      background: rgba(66, 133, 244, 0.1);
+      border: 1px solid rgba(66, 133, 244, 0.3);
+      border-radius: 2rem;
+      color: #4285F4;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .preview-audiences {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .preview-audience {
+      padding: 0.5rem 1rem;
+      background: rgba(52, 168, 83, 0.1);
+      border: 1px solid rgba(52, 168, 83, 0.3);
+      border-radius: 2rem;
+      color: #34A853;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .preview-notice {
+      background: rgba(251, 188, 4, 0.1);
+      border: 1px solid rgba(251, 188, 4, 0.3);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      color: #FBBC04;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(66, 133, 244, 0.3);
+      border-radius: 50%;
+      border-top-color: #4285F4;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <a href="../../index.html" class="navbar-brand flex items-center gap-3">
+          <span class="text-3xl">🎓</span>
+          <span>BVDU Event Management</span>
+        </a>
+        <ul class="flex items-center gap-2">
+          <li><a href="dashboard.html" class="nav-link flex items-center gap-2">
+            <span>📊</span> Dashboard
+          </a></li>
+          <li><a href="create-event.html" class="nav-link active flex items-center gap-2">
+            <span>➕</span> Create Event
+          </a></li>
+          <li><a href="my-events.html" class="nav-link flex items-center gap-2">
+            <span>📅</span> My Events
+          </a></li>
+          <li><a href="#" class="nav-link flex items-center gap-2" id="logoutBtn">
+            <span>🚪</span> Logout
+          </a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="form-container">
+    <!-- Back Button -->
+    <a href="dashboard.html" class="back-btn">
+      <span>←</span> Back to My Proposals
+    </a>
+
+    <!-- Progress Steps -->
+    <div class="progress-steps">
+      <div class="step active" data-step="1" onclick="goToStep(1)" style="cursor: pointer;">
+        <div class="step-number">1</div>
+        <div class="step-label">Event Details</div>
+      </div>
+      <div class="step" data-step="2" onclick="goToStep(2)" style="cursor: pointer;">
+        <div class="step-number">2</div>
+        <div class="step-label">Content & Audience</div>
+      </div>
+      <div class="step" data-step="3" onclick="goToStep(3)" style="cursor: pointer;">
+        <div class="step-number">3</div>
+        <div class="step-label">Logistics & Media</div>
+      </div>
+    </div>
+
+    <!-- Form Layout -->
+    <div class="form-layout">
+      <!-- Left: Form Steps -->
+      <div>
+        <!-- Step 1: Event Details -->
+        <div class="form-card step-content active" id="step1">
+          <h2 class="form-title">📋 Event Details</h2>
+
+          <div class="form-group">
+            <label class="form-label">Event Title <span class="required">*</span></label>
+            <input type="text" class="form-input" id="eventTitle" placeholder="Speaker Session: [Your Topic Here]">
+          </div>
+
+          <div class="form-group">
+            <button class="generate-btn" onclick="generateEventDetails()">
+              <span>✨</span> Generate Event Details
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Event Description <span class="required">*</span></label>
+            <textarea class="form-textarea" id="eventDescription" placeholder="Join us for an enlightening session with an industry expert. This talk will delve into [briefly describe topic], offering valuable insights for anyone interested in [field of interest]. A Q&A session will follow the presentation, providing a great opportunity for networking."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tags</label>
+            <input type="text" class="form-input" id="eventTags" placeholder="e.g., AI, Career, Networking">
+            <span class="form-hint">Comma-separated tags to help students discover your event.</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Select Category <span class="required">*</span></label>
+            <div class="category-pills">
+              <div class="category-pill" onclick="selectCategory(this, 'Guest Speaker')">
+                🎤 Guest Speaker
+              </div>
+              <div class="category-pill" onclick="selectCategory(this, 'Workshop')">
+                🤖 Workshop
+              </div>
+              <div class="category-pill" onclick="selectCategory(this, 'Conference')">
+                🎯 Conference
+              </div>
+              <div class="category-pill" onclick="selectCategory(this, 'Cultural')">
+                🎭 Cultural
+              </div>
+              <div class="category-pill" onclick="selectCategory(this, 'Competition')">
+                💻 Competition
+              </div>
+              <div class="category-pill" onclick="selectCategory(this, 'Seminar')">
+                📚 Seminar
+              </div>
+            </div>
+            <input type="hidden" id="eventCategory">
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn btn-secondary" onclick="saveDraft()">Save Draft</button>
+            <button class="btn btn-outline" onclick="previewEvent()">Preview</button>
+            <button class="btn btn-primary" onclick="nextStep(2)">Next →</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Content & Audience -->
+        <div class="form-card step-content" id="step2">
+          <h2 class="form-title">👥 Content & Audience</h2>
+
+          <div class="form-group">
+            <label class="form-label">Target Audience <span class="required">*</span></label>
+            <div class="checkbox-group">
+              <label class="checkbox-item">
+                <input type="checkbox" name="audience" value="All Students" checked>
+                <span>All Students</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="audience" value="BCA">
+                <span>BCA</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="audience" value="BBA">
+                <span>BBA</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="audience" value="BAF">
+                <span>BAF</span>
+              </label>
+              <label class="checkbox-item">
+                <input type="checkbox" name="audience" value="MBA">
+                <span>MBA</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">What You'll Learn <span class="required">*</span></label>
+            <textarea class="form-textarea" id="learningOutcomes" placeholder="- Gain deep insights from a seasoned professional.&#10;- Explore the latest trends and challenges in [field].&#10;- Understand key concepts and practical applications.&#10;- Network with the speaker and fellow attendees."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Key Speakers or Guests (Optional)</label>
+            <input type="text" class="form-input" id="keySpeakers" placeholder="e.g., Rakesh Varade - Google Cloud Specialist, Jane Doe - AI Researcher">
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn btn-secondary" onclick="prevStep(1)">← Back</button>
+            <button class="btn btn-secondary" onclick="saveDraft()">Save Draft</button>
+            <button class="btn btn-outline" onclick="previewEvent()">Preview</button>
+            <button class="btn btn-primary" onclick="nextStep(3)">Next →</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Logistics & Media -->
+        <div class="form-card step-content" id="step3">
+          <h2 class="form-title">🎯 Logistics & Media</h2>
+
+          <div class="form-group">
+            <label class="form-label">Date & Time <span class="required">*</span></label>
+            <span class="form-hint">Please select a date, time, and location from the calendar view on the right.</span>
+            <input type="hidden" id="selectedDate">
+            <input type="hidden" id="selectedTime">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Equipment Needs</label>
+            
+            <div class="counter-group">
+              <span class="counter-label">Wireless Mics (Max: 2)</span>
+              <div class="counter-controls">
+                <button class="counter-btn" onclick="updateCounter('wirelessMics', -1)">-</button>
+                <span class="counter-value" id="wirelessMics">0</span>
+                <button class="counter-btn" onclick="updateCounter('wirelessMics', 1)">+</button>
+              </div>
+            </div>
+
+            <div class="counter-group">
+              <span class="counter-label">Collar Mics (Max: 2)</span>
+              <div class="counter-controls">
+                <button class="counter-btn" onclick="updateCounter('collarMics', -1)">-</button>
+                <span class="counter-value" id="collarMics">0</span>
+                <button class="counter-btn" onclick="updateCounter('collarMics', 1)">+</button>
+              </div>
+            </div>
+
+            <div class="counter-group">
+              <span class="counter-label">Chairs (Max: 5)</span>
+              <div class="counter-controls">
+                <button class="counter-btn" onclick="updateCounter('chairs', -1)">-</button>
+                <span class="counter-value" id="chairs">0</span>
+                <button class="counter-btn" onclick="updateCounter('chairs', 1)">+</button>
+              </div>
+            </div>
+
+            <div class="counter-group">
+              <span class="counter-label">Table (Max: 1)</span>
+              <div class="counter-controls">
+                <button class="counter-btn" onclick="updateCounter('table', -1)">-</button>
+                <span class="counter-value" id="table">0</span>
+                <button class="counter-btn" onclick="updateCounter('table', 1)">+</button>
+              </div>
+            </div>
+
+            <div class="counter-group">
+              <span class="counter-label">Water Bottles</span>
+              <div class="counter-controls">
+                <button class="counter-btn" onclick="updateCounter('waterBottles', -5)">-5</button>
+                <button class="counter-btn" onclick="updateCounter('waterBottles', -1)">-</button>
+                <span class="counter-value" id="waterBottles">0</span>
+                <button class="counter-btn" onclick="updateCounter('waterBottles', 1)">+</button>
+                <button class="counter-btn" onclick="updateCounter('waterBottles', 5)">+5</button>
+                <button class="counter-btn" onclick="updateCounter('waterBottles', 10)">+10</button>
+                <button class="counter-btn" onclick="clearCounter('waterBottles')" style="margin-left: 0.5rem;">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Are external attendees allowed?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="externalAttendees" value="yes" onchange="toggleMapDisplay()">
+                <span>Yes</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="externalAttendees" value="no" checked onchange="toggleMapDisplay()">
+                <span>No</span>
+              </label>
+            </div>
+            <span class="form-hint">If yes, a public map will be shown on the event page.</span>
+            
+            <!-- Map Display -->
+            <div id="mapContainer" style="display: none; margin-top: 1rem; border-radius: 1rem; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1);">
+              <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3782.6380848425937!2d73.05629587516476!3d19.031037553192967!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c3004632ef29%3A0xe747324bfb1a6836!2sBharati%20Vidyapeeth%20Department%20of%20Management%20Studies%20(Off%20Campus)!5e0!3m2!1sen!2sin!4v1731586745632!5m2!1sen!2sin" 
+                width="100%" 
+                height="300" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+              </iframe>
+              <div style="padding: 1rem; background: rgba(66, 133, 244, 0.1); border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="color: #4285F4; font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: 600;">📍 Campus Location</p>
+                <p style="color: #94A3B8; font-size: 0.85rem; margin-bottom: 0.5rem;">Bharati Vidyapeeth Department of Management Studies (Off Campus)</p>
+                <p style="color: #64748B; font-size: 0.8rem;">Sector 3, Sector 4, Kharghar, Navi Mumbai, Maharashtra 410210</p>
+                <a href="https://www.google.com/maps/place/Bharati+Vidyapeeth+Department+of+Management+Studies+(Off+Campus)/@19.0310375,73.0562959,17z" 
+                   target="_blank" 
+                   style="display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; color: #4285F4; font-size: 0.85rem; text-decoration: none; font-weight: 600;">
+                  🗺️ View on Google Maps
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Will certificates be provided to participants?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="certificatesProvided" value="yes" onchange="toggleCertificateInfo()">
+                <span>Yes</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="certificatesProvided" value="no" checked onchange="toggleCertificateInfo()">
+                <span>No</span>
+              </label>
+            </div>
+            <span class="form-hint">If yes, a Google Drive folder for certificates will be created when the event is approved by faculty.</span>
+            
+            <!-- Certificate Folder Info -->
+            <div id="certificateInfo" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(52, 168, 83, 0.1); border: 1px solid rgba(52, 168, 83, 0.3); border-radius: 0.75rem;">
+              <p style="color: #34A853; font-size: 0.9rem; margin-bottom: 0.5rem;">📜 Certificate Distribution Plan</p>
+              <p style="color: #94A3B8; font-size: 0.85rem;">After faculty approval, a dedicated folder will be created on Google Drive for uploading participant certificates. You can upload certificates after the event concludes.</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Will attendance be marked for this event?</label>
+            <div class="radio-group">
+              <label class="radio-item">
+                <input type="radio" name="attendanceMarking" value="yes" checked>
+                <span>Yes</span>
+              </label>
+              <label class="radio-item">
+                <input type="radio" name="attendanceMarking" value="no">
+                <span>No</span>
+              </label>
+            </div>
+            <span class="form-hint">Attendance records will help track participation and generate reports.</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Budget & Funding (Optional)</label>
+            <textarea class="form-textarea" id="budget" placeholder="e.g., Total budget: $500. Requesting $200 from college."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Registration Link <span class="required">*</span></label>
+            <input type="text" class="form-input" id="registrationLink" placeholder="https://...">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Event Flyer <span class="required">*</span></label>
+            <input type="file" class="form-input" id="eventFlyer" accept="image/*" onchange="previewFlyer()" required>
+            <div style="padding: 0.75rem; background: rgba(66, 133, 244, 0.1); border: 1px solid rgba(66, 133, 244, 0.3); border-radius: 0.75rem; margin-top: 0.5rem;">
+              <p style="color: #4285F4; font-size: 0.85rem;">📄 Upload event flyer/poster (JPG, PNG, max 5MB)</p>
+              <p style="color: #94A3B8; font-size: 0.8rem;">Flyer will be displayed on homepage after approval</p>
+            </div>
+            <div id="flyerPreview" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 0.5rem;">
+              <img id="flyerPreviewImg" style="max-width: 100%; max-height: 300px; border-radius: 0.5rem;">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Hosting as Club</label>
+            <select class="form-select" id="hostingClub">
+              <option value="Vertex Community">Vertex Community</option>
+              <option value="AI/ML Club">AI/ML Club</option>
+              <option value="IEEE Student Branch">IEEE Student Branch</option>
+              <option value="Cultural Committee">Cultural Committee</option>
+              <option value="Coding Club">Coding Club</option>
+              <option value="Web Dev Society">Web Dev Society</option>
+            </select>
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn btn-secondary" onclick="prevStep(2)">← Back</button>
+            <button class="btn btn-secondary" onclick="saveDraft()">Save Draft</button>
+            <button class="btn btn-outline" onclick="previewEvent()">Preview</button>
+            <button class="btn btn-primary" onclick="submitEvent()">Submit Event Request 🚀</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Calendar Sidebar -->
+      <div class="calendar-sidebar">
+        <h3 class="calendar-title">Select Date, Time & Location*</h3>
+        <p class="calendar-hint">Click a date on the calendar to open the daily schedule and select a time slot.</p>
+
+        <!-- Selected Info -->
+        <div class="selected-info" id="selectedInfo" style="display: none;">
+          <div class="selected-info-item">
+            <span>📅</span>
+            <span id="displayDate">No date selected</span>
+          </div>
+          <div class="selected-info-item">
+            <span>🕒</span>
+            <span id="displayTime">No time selected</span>
+          </div>
+          <div class="selected-info-item">
+            <span>📍</span>
+            <span id="displayVenue">No venue selected</span>
+          </div>
+        </div>
+
+        <!-- Venue Selection -->
+        <div class="form-group">
+          <label class="form-label">Venue (Select multiple if needed)</label>
+          <div class="venue-checkbox-group" id="venueCheckboxGroup">
+            <label class="checkbox-item">
+              <input type="checkbox" name="venue" value="Seminar Hall (1st Floor)" onchange="updateVenueDisplay()">
+              <span>📍 Seminar Hall (1st Floor)</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" name="venue" value="Seminar Hall (4th Floor)" onchange="updateVenueDisplay()">
+              <span>📍 Seminar Hall (4th Floor)</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" name="venue" value="Lab 503" onchange="updateVenueDisplay()">
+              <span>💻 Lab 503</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" name="venue" value="Lab 402" onchange="updateVenueDisplay()">
+              <span>💻 Lab 402</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" name="venue" value="Lab 401" onchange="updateVenueDisplay()">
+              <span>💻 Lab 401</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Calendar -->
+        <div class="calendar">
+          <div class="calendar-header">
+            <button class="calendar-nav-btn" onclick="changeMonth(-1)">‹</button>
+            <span class="calendar-month" id="calendarMonth">November 2025</span>
+            <button class="calendar-nav-btn" onclick="changeMonth(1)">›</button>
+          </div>
+          <div class="calendar-grid" id="calendarGrid">
+            <div class="calendar-day-header">Sun</div>
+            <div class="calendar-day-header">Mon</div>
+            <div class="calendar-day-header">Tue</div>
+            <div class="calendar-day-header">Wed</div>
+            <div class="calendar-day-header">Thu</div>
+            <div class="calendar-day-header">Fri</div>
+            <div class="calendar-day-header">Sat</div>
+            <!-- Calendar days will be inserted here by JavaScript -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Time Slots Modal -->
+  <div class="modal" id="timeSlotsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Select Time for November 11, 2025</h3>
+        <button class="modal-close" onclick="closeTimeSlots()">×</button>
+      </div>
+      <p class="modal-hint">Click one available slot to select a single hour, or two to select a range.</p>
+      
+      <div class="time-slots" id="timeSlotsList"></div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeTimeSlots()">Clear</button>
+        <button class="btn btn-primary" onclick="confirmTimeSelection()">Confirm Selection</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div class="modal" id="previewModal">
+    <div class="modal-content preview-modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Event Preview</h3>
+        <button class="modal-close" onclick="closePreview()">×</button>
+      </div>
+      
+      <div id="previewContent">
+        <!-- Preview content will be dynamically inserted here -->
+      </div>
+
+      <div class="preview-notice">
+        ⚡ This is a live preview. Changes in the form will update here automatically.
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closePreview()">Close</button>
+        <button class="btn btn-primary" onclick="closePreview()">Continue Editing</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../js/config.js"></script>
+  <script>
+    // Initialize Supabase
+    let supabaseClient = null;
+    let currentUser = null;
+
+    if (typeof supabase !== 'undefined' && USE_SUPABASE) {
+      try {
+        const { createClient } = supabase;
+        supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('Supabase client initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize Supabase:', error);
+      }
+    }
+
+    // Check Authentication
+    async function checkAuth() {
+      try {
+        // Check sessionStorage first
+        const sessionUser = sessionStorage.getItem('currentUser');
+        if (sessionUser) {
+          const userData = JSON.parse(sessionUser);
+          if (userData && (userData.role === 'event-leader' || userData.role === 'event_leader')) {
+            currentUser = userData;
+            return userData;
+          }
+        }
+
+        if (!supabaseClient) {
+          console.warn('No Supabase client available');
+          window.location.href = '../../login.html?from=create-event';
+          return null;
+        }
+
+        const { data: { user }, error } = await supabaseClient.auth.getUser();
+        
+        if (!user || error) {
+          console.error('Auth error:', error);
+          window.location.href = '../../login.html?from=create-event';
+          return null;
+        }
+        
+        const { data: profile, error: profileError } = await supabaseClient
+          .from('users')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        if (profileError || !profile) {
+          console.error('Profile error:', profileError);
+          window.location.href = '../../login.html?from=create-event';
+          return null;
+        }
+
+        if (profile.role !== 'event-leader' && profile.role !== 'event_leader') {
+          alert('Access denied. Only Event Leaders can create events.');
+          window.location.href = '../../login.html';
+          return null;
+        }
+        
+        currentUser = profile;
+        sessionStorage.setItem('currentUser', JSON.stringify(profile));
+        return profile;
+      } catch (error) {
+        console.error('Auth check error:', error);
+        window.location.href = '../../login.html?from=create-event';
+        return null;
+      }
+    }
+
+    // Load Clubs from Database
+    async function loadClubs() {
+      try {
+        console.log('Loading clubs from database...');
+        
+        if (!supabaseClient) {
+          console.error('Supabase client not initialized, keeping mock clubs');
+          return;
+        }
+
+        // Fetch clubs - actual columns are: id, name, category, description, is_active
+        const { data: clubs, error } = await supabaseClient
+          .from('clubs')
+          .select('id, name, category, is_active')
+          .eq('is_active', true)
+          .order('name');
+
+        console.log('Clubs query result:', clubs, 'Error:', error);
+
+        if (error) {
+          console.error('Error loading clubs:', error);
+          return;
+        }
+
+        if (clubs && clubs.length > 0) {
+          console.log(`✅ Found ${clubs.length} active clubs`);
+          
+          const clubSelect = document.getElementById('hostingClub');
+          
+          // Clear existing options
+          clubSelect.innerHTML = '<option value="">-- Select Club --</option>';
+          
+          // Add clubs from database
+          clubs.forEach(club => {
+            const option = document.createElement('option');
+            option.value = club.name;  // Use 'name' column
+            option.textContent = club.name;
+            clubSelect.appendChild(option);
+          });
+          
+          console.log(`✅ Successfully loaded ${clubs.length} active clubs into dropdown`);
+        } else {
+          console.warn('⚠️ No active clubs found in database');
+        }
+      } catch (error) {
+        console.error('❌ Error in loadClubs:', error);
+      }
+    }
+
+    // Gemini API Configuration
+    const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY_HERE'; // Replace with your actual API key
+    const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+
+    let currentStep = 1;
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+    let selectedDate = null;
+    let selectedTimeSlots = []; // Changed to array for multiple selection
+    let selectedCategory = null;
+    let previewUpdateInterval = null;
+
+    // Check if step fields are completed
+    function isStepCompleted(step) {
+      if (step === 1) {
+        const title = document.getElementById('eventTitle').value.trim();
+        const description = document.getElementById('eventDescription').value.trim();
+        const category = document.getElementById('eventCategory').value;
+        return title && description && category;
+      } else if (step === 2) {
+        const outcomes = document.getElementById('learningOutcomes').value.trim();
+        const audience = document.querySelectorAll('input[name="audience"]:checked');
+        return outcomes && audience.length > 0;
+      } else if (step === 3) {
+        const date = document.getElementById('selectedDate').value;
+        const time = document.getElementById('selectedTime').value;
+        const registrationLink = document.getElementById('registrationLink').value.trim();
+        return date && time && registrationLink;
+      }
+      return false;
+    }
+
+    // Update step completion status
+    function updateStepCompletionStatus() {
+      for (let i = 1; i <= 3; i++) {
+        const stepElement = document.querySelector(`.step[data-step="${i}"]`);
+        if (isStepCompleted(i)) {
+          stepElement.classList.add('completed');
+        } else {
+          stepElement.classList.remove('completed');
+        }
+      }
+    }
+
+    // Step Navigation
+    function goToStep(step) {
+      // Hide current step
+      document.getElementById(`step${currentStep}`).classList.remove('active');
+      document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+
+      // Show target step
+      currentStep = step;
+      document.getElementById(`step${currentStep}`).classList.add('active');
+      document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+
+      // Update step completion status
+      updateStepCompletionStatus();
+
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Mock booked slots with venue information (in real app, fetch from database)
+    // Structure: { 'YYYY-MM-DD': [{ time: '09:00 - 10:00', venues: ['Seminar Hall (1st Floor)', 'Lab 503'] }] }
+    const bookedSlots = {
+      '2025-11-15': [
+        { time: '09:00 - 10:00', venues: ['Seminar Hall (1st Floor)'] },
+        { time: '14:00 - 15:00', venues: ['Lab 503', 'Lab 402'] }
+      ],
+      '2025-11-20': [
+        { time: '10:00 - 11:00', venues: ['Seminar Hall (4th Floor)'] },
+        { time: '11:00 - 12:00', venues: ['Lab 401'] },
+        { time: '15:00 - 16:00', venues: ['Seminar Hall (1st Floor)'] }
+      ],
+      '2025-11-25': [
+        { time: '08:00 - 09:00', venues: ['Lab 503', 'Lab 402'] }
+      ]
+    };
+
+    // Initialize calendar on page load
+    document.addEventListener('DOMContentLoaded', async function() {
+      await checkAuth(); // Verify user is authenticated
+      await loadClubs(); // Load clubs from database
+      renderCalendar();
+      updateVenueDisplay();
+      setupRealTimePreview();
+      
+      // Venue checkboxes handled by onchange attribute
+    });
+
+    // Setup real-time preview
+    function setupRealTimePreview() {
+      const formFields = [
+        'eventTitle', 'eventDescription', 'eventTags', 'learningOutcomes',
+        'keySpeakers', 'registrationLink', 'budget'
+      ];
+
+      formFields.forEach(fieldId => {
+        const element = document.getElementById(fieldId);
+        if (element) {
+          element.addEventListener('input', debounce(updatePreviewIfOpen, 500));
+          element.addEventListener('input', debounce(updateStepCompletionStatus, 300));
+        }
+      });
+
+      // Listen to checkboxes and radio buttons
+      document.querySelectorAll('input[name="audience"]').forEach(cb => {
+        cb.addEventListener('change', updatePreviewIfOpen);
+        cb.addEventListener('change', updateStepCompletionStatus);
+      });
+
+      document.querySelectorAll('input[name="externalAttendees"]').forEach(radio => {
+        radio.addEventListener('change', updatePreviewIfOpen);
+      });
+
+      document.querySelectorAll('input[name="certificatesProvided"]').forEach(radio => {
+        radio.addEventListener('change', updatePreviewIfOpen);
+      });
+
+      document.querySelectorAll('input[name="attendanceMarking"]').forEach(radio => {
+        radio.addEventListener('change', updatePreviewIfOpen);
+      });
+
+      // Listen to select changes
+      document.getElementById('hostingClub').addEventListener('change', updatePreviewIfOpen);
+      
+      // Venue checkboxes
+      document.querySelectorAll('input[name="venue"]').forEach(cb => {
+        cb.addEventListener('change', updatePreviewIfOpen);
+      });
+    }
+
+    // Debounce function for performance
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    // Update preview if modal is open
+    function updatePreviewIfOpen() {
+      const previewModal = document.getElementById('previewModal');
+      if (previewModal.classList.contains('show')) {
+        renderPreview();
+      }
+    }
+
+    // Toggle map display based on external attendees selection
+    function toggleMapDisplay() {
+      const externalYes = document.querySelector('input[name="externalAttendees"][value="yes"]').checked;
+      const mapContainer = document.getElementById('mapContainer');
+      
+      if (externalYes) {
+        mapContainer.style.display = 'block';
+      } else {
+        mapContainer.style.display = 'none';
+      }
+      
+      // Update preview if open
+      updatePreviewIfOpen();
+    }
+
+    function toggleCertificateInfo() {
+      const certificatesYes = document.querySelector('input[name="certificatesProvided"][value="yes"]').checked;
+      const certificateInfo = document.getElementById('certificateInfo');
+      
+      if (certificatesYes) {
+        certificateInfo.style.display = 'block';
+      } else {
+        certificateInfo.style.display = 'none';
+      }
+      
+      // Update preview if open
+      updatePreviewIfOpen();
+    }
+
+    function updateVenueDisplay() {
+      const selectedVenues = Array.from(document.querySelectorAll('input[name="venue"]:checked'))
+        .map(cb => cb.value);
+      
+      if (selectedVenues.length === 0) {
+        document.getElementById('displayVenue').textContent = 'No venue selected';
+      } else if (selectedVenues.length === 1) {
+        document.getElementById('displayVenue').textContent = selectedVenues[0];
+      } else {
+        document.getElementById('displayVenue').textContent = selectedVenues.join(', ');
+      }
+      
+      // Re-render calendar to update booking indicators based on selected venues
+      renderCalendar();
+    }
+
+    // Step Navigation
+    function nextStep(step) {
+      // Hide current step
+      document.getElementById(`step${currentStep}`).classList.remove('active');
+      document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+
+      // Show next step
+      currentStep = step;
+      document.getElementById(`step${currentStep}`).classList.add('active');
+      document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+
+      // Update step completion status
+      updateStepCompletionStatus();
+
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function prevStep(step) {
+      // Hide current step
+      document.getElementById(`step${currentStep}`).classList.remove('active');
+      document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+
+      // Show previous step
+      currentStep = step;
+      document.getElementById(`step${currentStep}`).classList.add('active');
+      document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+
+      // Update step completion status
+      updateStepCompletionStatus();
+
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Validation (only used on final submit)
+    function validateForSubmission() {
+      const errors = [];
+      
+      // Step 1 validation
+      const title = document.getElementById('eventTitle').value.trim();
+      const description = document.getElementById('eventDescription').value.trim();
+      const category = document.getElementById('eventCategory').value;
+
+      if (!title) errors.push('• Event title is required');
+      if (!description) errors.push('• Event description is required');
+      if (!category) errors.push('• Event category is required');
+
+      // Step 2 validation
+      const outcomes = document.getElementById('learningOutcomes').value.trim();
+      const audience = document.querySelectorAll('input[name="audience"]:checked');
+
+      if (audience.length === 0) errors.push('• At least one target audience is required');
+      if (!outcomes) errors.push('• Learning outcomes are required');
+
+      // Step 3 validation
+      const date = document.getElementById('selectedDate').value;
+      const time = document.getElementById('selectedTime').value;
+      const registrationLink = document.getElementById('registrationLink').value.trim();
+
+      if (!date || !time) errors.push('• Date and time selection is required');
+      if (!registrationLink) errors.push('• Registration link is required');
+
+      if (errors.length > 0) {
+        alert('Please complete the following required fields:\n\n' + errors.join('\n'));
+        return false;
+      }
+      
+      return true;
+    }
+
+    // Category Selection
+    function selectCategory(element, category) {
+      document.querySelectorAll('.category-pill').forEach(pill => {
+        pill.classList.remove('selected');
+      });
+      element.classList.add('selected');
+      document.getElementById('eventCategory').value = category;
+      selectedCategory = category;
+      updateStepCompletionStatus();
+    }
+
+    // Counter Controls
+    function updateCounter(id, change) {
+      const element = document.getElementById(id);
+      let currentValue = parseInt(element.textContent);
+      let newValue = currentValue + change;
+
+      // Set max limits
+      const limits = {
+        wirelessMics: 2,
+        collarMics: 2,
+        chairs: 5,
+        table: 1,
+        waterBottles: 1000
+      };
+
+      if (newValue < 0) newValue = 0;
+      if (limits[id] && newValue > limits[id]) newValue = limits[id];
+
+      element.textContent = newValue;
+    }
+
+    function clearCounter(id) {
+      document.getElementById(id).textContent = '0';
+    }
+
+    // Calendar Functions
+    function renderCalendar() {
+      const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+      
+      document.getElementById('calendarMonth').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const today = new Date();
+
+      // Get the calendar grid and remove all days (keep headers)
+      const calendarGrid = document.getElementById('calendarGrid');
+      const headers = calendarGrid.querySelectorAll('.calendar-day-header');
+      calendarGrid.innerHTML = '';
+      
+      // Re-add headers
+      headers.forEach(header => calendarGrid.appendChild(header));
+
+      // Empty cells for days before month starts
+      for (let i = 0; i < firstDay; i++) {
+        const emptyDay = document.createElement('div');
+        emptyDay.className = 'calendar-day empty';
+        calendarGrid.appendChild(emptyDay);
+      }
+
+      // Days of the month
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isToday = today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+        const hasBookings = hasBookingsForSelectedVenues(dateStr);
+        const isSelected = selectedDate === dateStr;
+
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day';
+        if (isToday) dayDiv.classList.add('today');
+        if (hasBookings) dayDiv.classList.add('has-bookings');
+        if (isSelected) dayDiv.classList.add('selected');
+        dayDiv.textContent = day;
+        dayDiv.onclick = () => openTimeSlots(dateStr);
+        
+        calendarGrid.appendChild(dayDiv);
+      }
+    }
+
+    function changeMonth(direction) {
+      currentMonth += direction;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      } else if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar();
+    }
+
+    // Helper function to check if date has bookings for selected venues
+    function hasBookingsForSelectedVenues(dateStr) {
+      const selectedVenues = getSelectedVenues();
+      
+      // If no venues selected, don't show any bookings
+      if (selectedVenues.length === 0) {
+        return false;
+      }
+      
+      // Check if any bookings match selected venues
+      const dayBookings = bookedSlots[dateStr];
+      if (!dayBookings || dayBookings.length === 0) {
+        return false;
+      }
+      
+      // Check if any booking conflicts with selected venues
+      return dayBookings.some(booking => 
+        booking.venues.some(venue => selectedVenues.includes(venue))
+      );
+    }
+
+    // Helper function to get currently selected venues
+    function getSelectedVenues() {
+      return Array.from(document.querySelectorAll('input[name="venue"]:checked'))
+        .map(cb => cb.value);
+    }
+
+    // Helper function to check if specific time slot is booked for selected venues
+    function isTimeSlotBookedForSelectedVenues(dateStr, timeRange) {
+      const selectedVenues = getSelectedVenues();
+      
+      // If no venues selected, no slots are booked
+      if (selectedVenues.length === 0) {
+        return false;
+      }
+      
+      const dayBookings = bookedSlots[dateStr];
+      if (!dayBookings || dayBookings.length === 0) {
+        return false;
+      }
+      
+      // Check if this time slot is booked for any selected venue
+      const booking = dayBookings.find(b => b.time === timeRange);
+      if (!booking) {
+        return false;
+      }
+      
+      return booking.venues.some(venue => selectedVenues.includes(venue));
+    }
+
+    // Time Slots Modal
+    function openTimeSlots(dateStr) {
+      selectedDate = dateStr;
+      selectedTimeSlots = []; // Reset selections when opening new date
+      const date = new Date(dateStr);
+      const formattedDate = date.toLocaleDateString('en-US', { 
+        weekday: 'long',
+        month: 'long', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+
+      document.getElementById('modalTitle').textContent = `Select Time for ${formattedDate}`;
+
+      // Generate time slots from 8 AM to 6 PM
+      const timeSlots = [];
+      for (let hour = 8; hour < 18; hour++) {
+        const startTime = `${String(hour).padStart(2, '0')}:00`;
+        const endTime = `${String(hour + 1).padStart(2, '0')}:00`;
+        const timeRange = `${startTime} - ${endTime}`;
+        
+        const isBooked = isTimeSlotBookedForSelectedVenues(dateStr, timeRange);
+        
+        timeSlots.push({
+          time: timeRange,
+          start: startTime,
+          end: endTime,
+          available: !isBooked
+        });
+      }
+
+      // Render time slots
+      let slotsHTML = '';
+      timeSlots.forEach(slot => {
+        const statusClass = slot.available ? 'available' : 'booked';
+        const slotClass = slot.available ? '' : 'booked';
+        const statusIcon = slot.available ? '✓' : '✕';
+        const statusText = slot.available ? 'Available' : 'Booked';
+
+        slotsHTML += `
+          <div class="time-slot ${slotClass}" data-time="${slot.time}" data-available="${slot.available}">
+            <span class="time-slot-time">${slot.time}</span>
+            <span class="time-slot-status ${statusClass}">
+              <span>${statusIcon}</span>
+              <span>${statusText}</span>
+            </span>
+          </div>
+        `;
+      });
+
+      document.getElementById('timeSlotsList').innerHTML = slotsHTML;
+      
+      // Add click event listeners to time slots
+      document.querySelectorAll('.time-slot').forEach(slotElement => {
+        slotElement.addEventListener('click', function() {
+          if (this.dataset.available === 'true') {
+            selectTimeSlot(this.dataset.time, this);
+          }
+        });
+      });
+      
+      document.getElementById('timeSlotsModal').classList.add('show');
+    }
+
+    function selectTimeSlot(time, element) {
+      // Toggle selection for multiple slots
+      if (element.classList.contains('selected')) {
+        // Deselect
+        element.classList.remove('selected');
+        selectedTimeSlots = selectedTimeSlots.filter(t => t !== time);
+      } else {
+        // Select
+        element.classList.add('selected');
+        selectedTimeSlots.push(time);
+      }
+      
+      // Update display immediately without closing modal
+      updateTimeSelectionDisplay();
+    }
+
+    function closeTimeSlots() {
+      document.getElementById('timeSlotsModal').classList.remove('show');
+    }
+
+    function updateTimeSelectionDisplay() {
+      if (selectedTimeSlots.length === 0) {
+        return;
+      }
+
+      // Save selection
+      document.getElementById('selectedDate').value = selectedDate;
+      document.getElementById('selectedTime').value = selectedTimeSlots.join(', ');
+
+      // Update display
+      const date = new Date(selectedDate);
+      const formattedDate = date.toLocaleDateString('en-US', { 
+        weekday: 'short',
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+
+      document.getElementById('displayDate').textContent = formattedDate;
+      
+      // Display all selected time slots
+      if (selectedTimeSlots.length > 0) {
+        document.getElementById('displayTime').textContent = selectedTimeSlots.join(', ');
+      } else {
+        document.getElementById('displayTime').textContent = 'No time selected';
+      }
+      
+      document.getElementById('selectedInfo').style.display = 'block';
+
+      // Update calendar
+      renderCalendar();
+    }
+
+    function confirmTimeSelection() {
+      if (selectedTimeSlots.length === 0) {
+        alert('Please select at least one time slot');
+        return;
+      }
+
+      updateTimeSelectionDisplay();
+      updateStepCompletionStatus();
+      closeTimeSlots();
+    }
+
+    // Generate Event Details with Gemini AI
+    async function generateEventDetails() {
+      const title = document.getElementById('eventTitle').value.trim();
+      if (!title) {
+        alert('Please enter an event title first');
+        return;
+      }
+
+      const button = event.target;
+      const originalText = button.innerHTML;
+      button.disabled = true;
+      button.innerHTML = '<div class="loading-spinner"></div> Generating...';
+
+      try {
+        const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: `Generate comprehensive details for a university event titled "${title}". 
+                
+                Format the response as JSON:
+                {
+                  "description": "A comprehensive event description (2-3 paragraphs). Make it engaging and professional for a university audience.",
+                  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+                  "learningOutcomes": "Detailed description of what attendees will learn, key skills they'll gain, and knowledge they'll acquire from this event. Write 2-3 sentences highlighting the educational value and practical takeaways."
+                }
+                
+                Make all content relevant to the event title, engaging, professional, and tailored to a university event context. Focus on educational value and practical benefits for students.`
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 1500,
+            }
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`API request failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const generatedText = data.candidates[0].content.parts[0].text;
+        
+        // Try to parse JSON from response
+        let result;
+        try {
+          // Remove markdown code blocks if present
+          const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            result = JSON.parse(jsonMatch[0]);
+          } else {
+            throw new Error('No JSON found in response');
+          }
+        } catch (parseError) {
+          // Fallback: use the text as description
+          result = {
+            description: generatedText,
+            tags: [],
+            learningOutcomes: ''
+          };
+        }
+
+        // Populate form fields in Step 1
+        document.getElementById('eventDescription').value = result.description || '';
+        if (result.tags && result.tags.length > 0) {
+          document.getElementById('eventTags').value = result.tags.join(', ');
+        }
+
+        // Populate learning outcomes in Step 2
+        if (result.learningOutcomes) {
+          document.getElementById('learningOutcomes').value = result.learningOutcomes;
+        }
+
+        // Update preview if open
+        updatePreviewIfOpen();
+
+        alert('✨ Event details generated successfully!\n\n📝 Description, Tags, and Learning Outcomes have been filled automatically.');
+
+      } catch (error) {
+        console.error('Error generating event details:', error);
+        
+        // Fallback to mock data if API fails
+        const mockDescriptions = [
+          'Join us for an enlightening session exploring cutting-edge technologies and industry insights. This event brings together experts, students, and enthusiasts to discuss the latest trends and innovations. Network with professionals, engage in interactive discussions, and expand your knowledge horizons.',
+          'An immersive experience designed to challenge your thinking and broaden your perspective. Through engaging presentations, hands-on workshops, and collaborative activities, participants will gain practical skills and valuable insights into modern practices and emerging paradigms.',
+          'A dynamic gathering focused on fostering creativity, collaboration, and professional growth. This event features renowned speakers, interactive sessions, and networking opportunities that will inspire and empower attendees to reach new heights in their academic and professional journeys.'
+        ];
+
+        const mockTags = [
+          'Technology, Innovation, Networking',
+          'Workshop, Learning, Skills Development',
+          'Conference, Professional Growth, Industry Insights'
+        ];
+
+        const mockLearningOutcomes = [
+          'Participants will gain comprehensive understanding of emerging technologies and their practical applications. You will develop networking skills through interactions with industry experts and learn best practices for implementing innovative solutions in real-world scenarios.',
+          'Attendees will acquire hands-on experience with modern tools and techniques. You will enhance problem-solving abilities through collaborative activities and gain insights into industry standards and professional development strategies.',
+          'Students will learn essential skills for career advancement and personal growth. You will understand key industry trends, develop communication and leadership capabilities, and gain practical knowledge applicable to academic and professional pursuits.'
+        ];
+
+        const randomIndex = Math.floor(Math.random() * mockDescriptions.length);
+        document.getElementById('eventDescription').value = mockDescriptions[randomIndex];
+        document.getElementById('eventTags').value = mockTags[randomIndex];
+        document.getElementById('learningOutcomes').value = mockLearningOutcomes[randomIndex];
+
+        alert('⚠️ AI generation failed. Used fallback content.\n\n📝 Description, Tags, and Learning Outcomes have been filled with sample content.\n\nError: ' + error.message);
+      } finally {
+        button.disabled = false;
+        button.innerHTML = originalText;
+      }
+    }
+
+    // Save Draft (disabled - using Supabase autosave)
+    function saveDraft() {
+      // Draft saving disabled - form data will be saved to Supabase on submit
+      alert('💾 Form progress will be saved when you submit the event.');
+    }
+
+    // Preview Event
+    function previewEvent() {
+      renderPreview();
+      document.getElementById('previewModal').classList.add('show');
+    }
+
+    // Close Preview Modal
+    function closePreview() {
+      document.getElementById('previewModal').classList.remove('show');
+    }
+
+    // Render Preview Content
+    function renderPreview() {
+      const data = collectFormData();
+      
+      let audiencesHTML = '';
+      if (data.audiences && data.audiences.length > 0) {
+        audiencesHTML = data.audiences.map(aud => `<span class="preview-audience">${aud}</span>`).join('');
+      } else {
+        audiencesHTML = '<span class="preview-audience">Not specified</span>';
+      }
+
+      let tagsHTML = '';
+      if (data.tags) {
+        const tagList = data.tags.split(',').map(t => t.trim()).filter(t => t);
+        tagsHTML = tagList.map(tag => `<span class="preview-tag">${tag}</span>`).join('');
+      }
+
+      const previewHTML = `
+        <div class="preview-header">
+          <div class="preview-header-icon">🎯</div>
+          <div>
+            <h2 class="preview-event-title">${data.title || 'Untitled Event'}</h2>
+            <div class="preview-category">${data.category || 'No category'}</div>
+          </div>
+        </div>
+
+        <div class="preview-section">
+          <h3 class="preview-section-title">About This Event</h3>
+          <p>${data.description || 'No description provided.'}</p>
+        </div>
+
+        ${tagsHTML ? `
+        <div class="preview-section">
+          <h3 class="preview-section-title">Tags</h3>
+          <div class="preview-tags">${tagsHTML}</div>
+        </div>
+        ` : ''}
+
+        <div class="preview-section">
+          <h3 class="preview-section-title">Event Details</h3>
+          <div class="preview-info-grid">
+            <div class="preview-info-item">
+              <span class="preview-info-label">📅 Date & Time</span>
+              <span class="preview-info-value">${data.date && data.time ? `${data.date} at ${data.time}` : 'Not scheduled yet'}</span>
+            </div>
+            <div class="preview-info-item">
+              <span class="preview-info-label">📍 Venue</span>
+              <span class="preview-info-value">${data.venue || 'TBD'}</span>
+            </div>
+            <div class="preview-info-item">
+              <span class="preview-info-label">👥 Target Audience</span>
+              <span class="preview-info-value">
+                <div class="preview-audiences">${audiencesHTML}</div>
+              </span>
+            </div>
+            <div class="preview-info-item">
+              <span class="preview-info-label">🎤 Key Speakers</span>
+              <span class="preview-info-value">${data.keySpeakers || 'TBA'}</span>
+            </div>
+          </div>
+        </div>
+
+        ${data.learningOutcomes ? `
+        <div class="preview-section">
+          <h3 class="preview-section-title">What You'll Learn</h3>
+          <p>${data.learningOutcomes}</p>
+        </div>
+        ` : ''}
+
+        <div class="preview-section">
+          <h3 class="preview-section-title">Logistics</h3>
+          <div class="preview-info-grid">
+            <div class="preview-info-item">
+              <span class="preview-info-label">🎙️ Equipment</span>
+              <span class="preview-info-value">
+                Wireless Mics: ${data.equipment.wirelessMics}, 
+                Collar Mics: ${data.equipment.collarMics}, 
+                Chairs: ${data.equipment.chairs}, 
+                Tables: ${data.equipment.tables}, 
+                Water: ${data.equipment.waterBottles}
+              </span>
+            </div>
+            <div class="preview-info-item">
+              <span class="preview-info-label">🌐 External Attendees</span>
+              <span class="preview-info-value">${data.externalAttendees === 'yes' ? 'Allowed' : 'Not Allowed'}</span>
+            </div>
+            <div class="preview-info-item">
+              <span class="preview-info-label">📜 Certificates</span>
+              <span class="preview-info-value">${data.certificatesProvided === 'yes' ? '✅ Will be provided' : '❌ Not provided'}</span>
+            </div>
+            <div class="preview-info-item">
+              <span class="preview-info-label">📊 Attendance</span>
+              <span class="preview-info-value">${data.attendanceMarking === 'yes' ? '✅ Will be marked' : '❌ Not required'}</span>
+            </div>
+            <div class="preview-info-item">
+              <span class="preview-info-label">💰 Budget</span>
+              <span class="preview-info-value">${data.budget || 'Not specified'}</span>
+            </div>
+            <div class="preview-info-item">
+              <span class="preview-info-label">🔗 Registration</span>
+              <span class="preview-info-value">${data.registrationLink ? `<a href="${data.registrationLink}" target="_blank">Register Here</a>` : 'No link provided'}</span>
+            </div>
+            <div class="preview-info-item">
+              <span class="preview-info-label">🏛️ Hosting Club</span>
+              <span class="preview-info-value">${data.hostingClub || 'Not specified'}</span>
+            </div>
+          </div>
+        </div>
+
+        ${data.externalAttendees === 'yes' ? `
+        <div class="preview-section">
+          <h3 class="preview-section-title">📍 Campus Location</h3>
+          <div style="border-radius: 1rem; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); margin-top: 1rem;">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3782.6380848425937!2d73.05629587516476!3d19.031037553192967!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c3004632ef29%3A0xe747324bfb1a6836!2sBharati%20Vidyapeeth%20Department%20of%20Management%20Studies%20(Off%20Campus)!5e0!3m2!1sen!2sin!4v1731586745632!5m2!1sen!2sin" 
+              width="100%" 
+              height="250" 
+              style="border:0;" 
+              allowfullscreen="" 
+              loading="lazy" 
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+            <div style="padding: 1rem; background: rgba(66, 133, 244, 0.1); border-top: 1px solid rgba(255, 255, 255, 0.1);">
+              <p style="color: #4285F4; font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: 600;">Bharati Vidyapeeth Department of Management Studies</p>
+              <p style="color: #94A3B8; font-size: 0.85rem;">Sector 3, Sector 4, Kharghar, Navi Mumbai, Maharashtra 410210</p>
+              <a href="https://www.google.com/maps/place/Bharati+Vidyapeeth+Department+of+Management+Studies+(Off+Campus)/@19.0310375,73.0562959,17z" 
+                 target="_blank" 
+                 style="display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; color: #4285F4; font-size: 0.85rem; text-decoration: none; font-weight: 600;">
+                🗺️ View on Google Maps
+              </a>
+            </div>
+          </div>
+        </div>
+        ` : ''}
+      `;
+
+      document.getElementById('previewContent').innerHTML = previewHTML;
+    }
+
+    // Preview Flyer
+    function previewFlyer() {
+      const fileInput = document.getElementById('eventFlyer');
+      const preview = document.getElementById('flyerPreview');
+      const previewImg = document.getElementById('flyerPreviewImg');
+      
+      if (fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        
+        // Validate file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('File size must be less than 5MB');
+          fileInput.value = '';
+          preview.style.display = 'none';
+          return;
+        }
+        
+        // Preview the image
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImg.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        preview.style.display = 'none';
+      }
+    }
+
+    // Submit Event
+    async function submitEvent() {
+      if (!validateForSubmission()) {
+        return;
+      }
+
+      const eventData = collectFormData();
+      
+      // Validate flyer upload
+      const flyerInput = document.getElementById('eventFlyer');
+      if (!flyerInput.files || !flyerInput.files[0]) {
+        alert('⚠️ Please upload an event flyer before submitting.');
+        return;
+      }
+      
+      // Show loading
+      const submitBtn = document.querySelector('button[onclick="submitEvent()"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '⏳ Submitting...';
+      
+      try {
+        if (!supabaseClient) {
+          throw new Error('Database connection not available');
+        }
+
+        if (!currentUser) {
+          throw new Error('User not authenticated');
+        }
+
+        // Step 1: Check for time slot conflicts
+        console.log('Checking for time conflicts...');
+        const { data: conflictingEvents, error: conflictError } = await supabaseClient
+          .from('events')
+          .select('*')
+          .eq('event_date', eventData.date)
+          .eq('venue', eventData.venue);
+
+        if (conflictError) {
+          console.error('Error checking conflicts:', conflictError);
+        }
+
+        // Check for time overlap manually
+        const hasConflict = conflictingEvents?.some(event => {
+          const eventStart = event.start_time;
+          const eventEnd = event.end_time;
+          const newStart = eventData.startTime;
+          const newEnd = eventData.endTime;
+          
+          // Check if times overlap
+          return (newStart < eventEnd && newEnd > eventStart);
+        });
+
+        if (hasConflict && conflictingEvents && conflictingEvents.length > 0) {
+          const conflictDetails = conflictingEvents.map(e => 
+            `${e.event_name} (${e.start_time} - ${e.end_time})`
+          ).join('\n');
+          
+          throw new Error(`⚠️ Time slot conflict detected!\n\nVenue: ${eventData.venue}\nDate: ${eventData.date}\nTime: ${eventData.startTime} - ${eventData.endTime}\n\nConflicting events:\n${conflictDetails}\n\nPlease select a different time slot or venue.`);
+        }
+
+        // Step 2: Upload flyer to Supabase Storage
+        console.log('Uploading event flyer...');
+        const flyerFile = flyerInput.files[0];
+        const fileExt = flyerFile.name.split('.').pop();
+        const fileName = `${Date.now()}_${currentUser.id}.${fileExt}`;
+        const filePath = `event-flyers/${fileName}`;
+
+        const { data: uploadData, error: uploadError } = await supabaseClient.storage
+          .from('event-photos')
+          .upload(filePath, flyerFile, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (uploadError) {
+          console.error('Upload error:', uploadError);
+          throw new Error(`Failed to upload flyer: ${uploadError.message}`);
+        }
+
+        // Get public URL for the flyer
+        const { data: { publicUrl } } = supabaseClient.storage
+          .from('event-photos')
+          .getPublicUrl(filePath);
+
+        console.log('Flyer uploaded successfully:', publicUrl);
+
+        // Step 3: Prepare event data for database
+        const newEvent = {
+          event_name: eventData.title,
+          event_type: eventData.category,
+          event_category: eventData.category,
+          event_description: eventData.description,
+          event_date: eventData.date,
+          start_time: eventData.startTime,
+          end_time: eventData.endTime,
+          venue: eventData.venue,
+          photo_folder_url: publicUrl,
+          organizing_club: eventData.hostingClub || 'General',
+          event_leader_id: currentUser.id,
+          expected_participants: 100,
+          registered_participants: 0,
+          is_national: false,
+          is_university: true,
+          certificate_provided: eventData.certificatesProvided === 'yes',
+          certificates_provided: eventData.certificatesProvided === 'yes',
+          attendance_marking: true,
+          od_eligible: true,
+          external_attendees_allowed: eventData.externalAttendees === 'yes',
+          tags: eventData.tags ? [eventData.tags] : null,
+          target_audience: Array.isArray(eventData.audience) ? eventData.audience : [eventData.audience],
+          learning_outcomes: eventData.learningOutcomes || null,
+          key_speakers: eventData.keySpeakers || null,
+          equipment_needs: eventData.equipment ? { items: eventData.equipment } : null,
+          budget: eventData.budget || null,
+          registration_link: eventData.registrationLink,
+          status: 'pending'
+        };
+
+        // Insert event into Supabase
+        const { data, error } = await supabaseClient
+          .from('events')
+          .insert([newEvent])
+          .select();
+
+        if (error) {
+          console.error('Supabase error:', error);
+          throw new Error(error.message);
+        }
+
+        console.log('Event created successfully:', data);
+
+        alert('🎉 Event request submitted successfully!\n\nYour event has been sent to Faculty for approval. You can track its progress from My Events page.');
+        
+        // Redirect to My Events
+        window.location.href = 'my-events.html';
+
+      } catch (error) {
+        console.error('Error submitting event:', error);
+        alert(`❌ Failed to submit event: ${error.message}\n\nPlease try again or contact support.`);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      }
+    }
+
+    // Collect Form Data
+    function collectFormData() {
+      const audience = Array.from(document.querySelectorAll('input[name="audience"]:checked')).map(cb => cb.value);
+      const venues = Array.from(document.querySelectorAll('input[name="venue"]:checked')).map(cb => cb.value);
+      const timeSlot = document.getElementById('selectedTime').value;
+      
+      // If multiple time slots selected (comma-separated), use only the first one
+      const firstTimeSlot = timeSlot ? timeSlot.split(',')[0].trim() : '';
+      const [startTime, endTime] = firstTimeSlot ? firstTimeSlot.split(' - ') : ['', ''];
+
+      return {
+        title: document.getElementById('eventTitle').value,
+        description: document.getElementById('eventDescription').value,
+        tags: document.getElementById('eventTags').value,
+        category: document.getElementById('eventCategory').value,
+        audience: audience,
+        learningOutcomes: document.getElementById('learningOutcomes').value,
+        keySpeakers: document.getElementById('keySpeakers').value,
+        date: document.getElementById('selectedDate').value,
+        time: timeSlot,
+        startTime: startTime,
+        endTime: endTime,
+        venue: venues.length > 0 ? venues.join(', ') : 'Not selected',
+        equipment: {
+          wirelessMics: parseInt(document.getElementById('wirelessMics').textContent),
+          collarMics: parseInt(document.getElementById('collarMics').textContent),
+          chairs: parseInt(document.getElementById('chairs').textContent),
+          table: parseInt(document.getElementById('table').textContent),
+          waterBottles: parseInt(document.getElementById('waterBottles').textContent)
+        },
+        externalAttendees: document.querySelector('input[name="externalAttendees"]:checked').value,
+        certificatesProvided: document.querySelector('input[name="certificatesProvided"]:checked').value,
+        attendanceMarking: document.querySelector('input[name="attendanceMarking"]:checked').value,
+        budget: document.getElementById('budget').value,
+        registrationLink: document.getElementById('registrationLink').value,
+        hostingClub: document.getElementById('hostingClub').value
+      };
+    }
+
+    // Get Category Icon
+    function getCategoryIcon(category) {
+      const icons = {
+        'Guest Speaker': '🎤',
+        'Workshop': '🤖',
+        'Conference': '🎯',
+        'Cultural': '🎭',
+        'Competition': '💻',
+        'Seminar': '📚'
+      };
+      return icons[category] || '🎉';
+    }
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+      e.preventDefault();
+      if (confirm('Are you sure you want to logout?')) {
+        if (supabaseClient) {
+          await supabaseClient.auth.signOut();
+        }
+        sessionStorage.clear();
+        window.location.href = '../../login.html';
+      }
+    });
+  </script>
+</body>
+</html>

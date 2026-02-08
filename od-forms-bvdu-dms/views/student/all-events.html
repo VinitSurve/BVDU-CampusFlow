@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Events - BVDU CampusFlow</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Particles Animation -->
+  <script src="../../js/particles.js" defer></script>
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../../css/variables.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0E27;
+      color: #E2E8F0;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.08), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(52, 168, 83, 0.08), transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-link {
+      color: #94A3B8;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .nav-link:hover {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .nav-link.active {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.15);
+    }
+
+    .page-header {
+      padding: 3rem 0 2rem;
+      text-align: center;
+    }
+
+    .page-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: #94A3B8;
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .filter-btn {
+      padding: 0.75rem 1.5rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 2rem;
+      color: #94A3B8;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .filter-btn:hover {
+      border-color: rgba(66, 133, 244, 0.5);
+      color: #4285F4;
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      border-color: transparent;
+      color: white;
+    }
+
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .event-card {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.25rem;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .event-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(66, 133, 244, 0.3);
+      box-shadow: 0 12px 40px rgba(66, 133, 244, 0.2);
+    }
+
+    .event-header-img {
+      height: 180px;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      position: relative;
+    }
+
+    .event-type-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: white;
+      text-transform: uppercase;
+    }
+
+    .event-body {
+      padding: 1.5rem;
+    }
+
+    .event-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 0.75rem;
+    }
+
+    .event-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: #94A3B8;
+      font-size: 0.875rem;
+    }
+
+    .event-description {
+      color: #94A3B8;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      margin: 1rem 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .event-badges {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+
+    .badge {
+      padding: 0.375rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-national {
+      background: rgba(251, 188, 4, 0.15);
+      color: #FBBC04;
+      border: 1px solid rgba(251, 188, 4, 0.3);
+    }
+
+    .badge-university {
+      background: rgba(66, 133, 244, 0.15);
+      color: #4285F4;
+      border: 1px solid rgba(66, 133, 244, 0.3);
+    }
+
+    .badge-certificate {
+      background: rgba(52, 168, 83, 0.15);
+      color: #34A853;
+      border: 1px solid rgba(52, 168, 83, 0.3);
+    }
+
+    .badge-od {
+      background: rgba(234, 67, 53, 0.15);
+      color: #EA4335;
+      border: 1px solid rgba(234, 67, 53, 0.3);
+    }
+
+    .event-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .organizer-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .organizer-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+      font-size: 0.875rem;
+    }
+
+    .organizer-name {
+      font-size: 0.875rem;
+      color: #94A3B8;
+    }
+
+    .btn-apply {
+      padding: 0.625rem 1.25rem;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-apply:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .events-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <a href="dashboard.html" class="navbar-brand flex items-center gap-3">
+          <span class="text-3xl">🎓</span>
+          <span>BVDU Event Management</span>
+        </a>
+        <ul class="flex items-center gap-2">
+          <li><a href="dashboard.html" class="nav-link flex items-center gap-2">
+            <span>📊</span> Dashboard
+          </a></li>
+          <li><a href="all-events.html" class="nav-link active flex items-center gap-2">
+            <span>🎉</span> Events
+          </a></li>
+          <li><a href="submit-form.html" class="nav-link flex items-center gap-2">
+            <span>📝</span> Submit OD
+          </a></li>
+          <li><a href="my-forms.html" class="nav-link flex items-center gap-2">
+            <span>📋</span> My Forms
+          </a></li>
+          <li><a href="profile.html" class="nav-link flex items-center gap-2">
+            <span>👤</span> Profile
+          </a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container mx-auto px-6 py-8">
+    <div class="page-header">
+      <h1 class="page-title">🎉 Upcoming Events</h1>
+      <p class="page-subtitle">Browse verified events organized by clubs and event leaders</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterEvents('all')">All Events</button>
+      <button class="filter-btn" onclick="filterEvents('Workshop')">Workshops</button>
+      <button class="filter-btn" onclick="filterEvents('Conference')">Conferences</button>
+      <button class="filter-btn" onclick="filterEvents('Cultural')">Cultural</button>
+      <button class="filter-btn" onclick="filterEvents('Competition')">Competitions</button>
+      <button class="filter-btn" onclick="filterEvents('national')">National Level</button>
+    </div>
+
+    <div id="eventsContainer" class="events-grid">
+      <p style="color: #64748B;">Loading events...</p>
+    </div>
+  </div>
+
+  <script src="../../js/config.js"></script>
+  <script>
+    // Initialize Supabase
+    let supabaseClient = null;
+    try {
+      if (typeof supabase !== 'undefined') {
+        const { createClient } = supabase;
+        supabaseClient = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+      }
+    } catch (error) {
+      console.log('Supabase not initialized - using mock mode');
+    }
+
+    let allEvents = [];
+    let currentFilter = 'all';
+
+    // LocalStorage Helper Functions
+    const STORAGE_KEY = 'bvdu_events';
+
+    function getEventsFromStorage() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          return JSON.parse(stored);
+        }
+      } catch (error) {
+        console.error('Error loading from localStorage:', error);
+      }
+      return [];
+    }
+
+    // Mock events
+    const mockEvents = [
+      {
+        event_id: 'EVT-1710234567890',
+        event_name: 'Machine Learning Workshop',
+        event_type: 'Workshop',
+        event_category: 'Technical',
+        event_description: 'Comprehensive workshop on modern ML techniques and applications',
+        event_date: '2025-03-25',
+        start_time: '09:00',
+        end_time: '17:00',
+        venue: 'Computer Lab, Block A',
+        organizing_club: 'AI/ML Club',
+        event_leader_name: 'Dr. Rahul Sharma',
+        expected_participants: 50,
+        is_national: true,
+        is_university: false,
+        certificate_provided: true,
+        od_eligible: true,
+        icon: '🤖'
+      },
+      {
+        event_id: 'EVT-1710134567891',
+        event_name: 'IEEE Technical Symposium',
+        event_type: 'Conference',
+        event_category: 'Academic',
+        event_description: 'Annual technical symposium featuring latest research and innovations',
+        event_date: '2025-03-28',
+        start_time: '10:00',
+        end_time: '18:00',
+        venue: 'Main Auditorium',
+        organizing_club: 'IEEE Student Branch',
+        event_leader_name: 'Prof. Priya Patel',
+        expected_participants: 200,
+        is_national: true,
+        is_university: true,
+        certificate_provided: true,
+        od_eligible: true,
+        icon: '🎯'
+      },
+      {
+        event_id: 'EVT-1710034567892',
+        event_name: 'Cultural Fest - Verve 2025',
+        event_type: 'Cultural',
+        event_category: 'Extra-Curricular',
+        event_description: 'Annual cultural festival with music, dance, and drama competitions',
+        event_date: '2025-04-05',
+        start_time: '09:00',
+        end_time: '20:00',
+        venue: 'Open Ground',
+        organizing_club: 'Cultural Committee',
+        event_leader_name: 'Amit Kumar',
+        expected_participants: 500,
+        is_national: false,
+        is_university: true,
+        certificate_provided: false,
+        od_eligible: true,
+        icon: '🎭'
+      },
+      {
+        event_id: 'EVT-1709934567893',
+        event_name: 'Hackathon 2025',
+        event_type: 'Competition',
+        event_category: 'Technical',
+        event_description: '48-hour coding marathon to build innovative solutions',
+        event_date: '2025-04-12',
+        start_time: '08:00',
+        end_time: '20:00',
+        venue: 'Innovation Lab',
+        organizing_club: 'Coding Club',
+        event_leader_name: 'Dr. Sneha Reddy',
+        expected_participants: 100,
+        is_national: true,
+        is_university: false,
+        certificate_provided: true,
+        od_eligible: true,
+        icon: '💻'
+      }
+    ];
+
+    // Load Events
+    async function loadEvents() {
+      try {
+        let events = [];
+        
+        if (!supabaseClient) {
+          // Load from localStorage first
+          const storedEvents = getEventsFromStorage();
+          events = storedEvents.length > 0 ? storedEvents : mockEvents;
+        } else {
+          const { data, error } = await supabaseClient
+            .from('events')
+            .select(`
+              *,
+              event_leader:event_leader_id(full_name)
+            `)
+            .eq('status', 'approved')
+            .eq('od_eligible', true)
+            .gte('event_date', new Date().toISOString().split('T')[0])
+            .order('event_date', { ascending: true });
+
+          if (error) throw error;
+          events = data || mockEvents;
+        }
+
+        allEvents = events;
+        renderEvents(events);
+      } catch (error) {
+        console.error('Error loading events:', error);
+        const storedEvents = getEventsFromStorage();
+        allEvents = storedEvents.length > 0 ? storedEvents : mockEvents;
+        renderEvents(allEvents);
+      }
+    }
+
+    // Filter Events
+    function filterEvents(filter) {
+      currentFilter = filter;
+      
+      // Update active button
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      let filtered = allEvents;
+      
+      if (filter !== 'all') {
+        if (filter === 'national') {
+          filtered = allEvents.filter(e => e.is_national === true);
+        } else {
+          filtered = allEvents.filter(e => e.event_type === filter);
+        }
+      }
+      
+      renderEvents(filtered);
+    }
+
+    // Render Events
+    function renderEvents(events) {
+      const container = document.getElementById('eventsContainer');
+
+      if (events.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; background: rgba(15, 23, 42, 0.6); border-radius: 1rem; border: 1px solid rgba(255, 255, 255, 0.1);">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">📅</div>
+            <h3 style="font-size: 1.5rem; font-weight: 700; color: #E2E8F0; margin-bottom: 0.5rem;">No Events Found</h3>
+            <p style="color: #64748B;">Check back later for upcoming events</p>
+          </div>
+        `;
+        return;
+      }
+
+      const eventsHTML = events.map(event => `
+        <div class="event-card">
+          <div class="event-header-img">
+            <div style="font-size: 5rem;">${event.icon || '🎉'}</div>
+            <div class="event-type-badge">${event.event_type}</div>
+          </div>
+
+          <div class="event-body">
+            <h3 class="event-title">${event.event_name}</h3>
+
+            <div class="event-meta">
+              <div class="meta-item">
+                <span>📅</span>
+                <span><strong>${formatDate(event.event_date)}</strong></span>
+              </div>
+              <div class="meta-item">
+                <span>⏰</span>
+                <span>${event.start_time} - ${event.end_time}</span>
+              </div>
+              <div class="meta-item">
+                <span>📍</span>
+                <span>${event.venue}</span>
+              </div>
+              <div class="meta-item">
+                <span>👥</span>
+                <span>${event.expected_participants} participants expected</span>
+              </div>
+            </div>
+
+            <p class="event-description">${event.event_description}</p>
+
+            <div class="event-badges">
+              ${event.is_national ? '<span class="badge badge-national">🌏 National</span>' : ''}
+              ${event.is_university ? '<span class="badge badge-university">🎓 University</span>' : ''}
+              ${event.certificate_provided ? '<span class="badge badge-certificate">📜 Certificate</span>' : ''}
+              ${event.od_eligible ? '<span class="badge badge-od">✅ OD Eligible</span>' : ''}
+            </div>
+          </div>
+
+          <div class="event-footer">
+            <div class="organizer-info">
+              <div class="organizer-avatar">${event.event_leader?.full_name ? getInitials(event.event_leader.full_name) : 'EL'}</div>
+              <div>
+                <div class="organizer-name">${event.organizing_club}</div>
+                <div style="font-size: 0.75rem; color: #64748B;">${event.event_leader?.full_name || 'Event Leader'}</div>
+              </div>
+            </div>
+            <a href="event-details.html?id=${event.event_id}" class="btn-apply">
+              View Details →
+            </a>
+          </div>
+        </div>
+      `).join('');
+
+      container.innerHTML = eventsHTML;
+    }
+
+    // Format Date
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-IN', { 
+        day: '2-digit', 
+        month: 'short', 
+        year: 'numeric' 
+      });
+    }
+
+    // Get Initials
+    function getInitials(name) {
+      if (!name) return 'N/A';
+      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+
+    // Initialize
+    loadEvents();
+  </script>
+</body>
+</html>
