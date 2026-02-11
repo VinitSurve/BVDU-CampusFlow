@@ -1634,33 +1634,250 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Mock booked slots with venue information (in real app, fetch from database)
+    // Booked slots from database
     // Structure: { 'YYYY-MM-DD': [{ time: '09:00 - 10:00', venues: ['Seminar Hall (1st Floor)', 'Lab 503'] }] }
-    const bookedSlots = {
-      '2025-11-15': [
-        { time: '09:00 - 10:00', venues: ['Seminar Hall (1st Floor)'] },
-        { time: '14:00 - 15:00', venues: ['Lab 503', 'Lab 402'] }
-      ],
-      '2025-11-20': [
-        { time: '10:00 - 11:00', venues: ['Seminar Hall (4th Floor)'] },
-        { time: '11:00 - 12:00', venues: ['Lab 401'] },
-        { time: '15:00 - 16:00', venues: ['Seminar Hall (1st Floor)'] }
-      ],
-      '2025-11-25': [
-        { time: '08:00 - 09:00', venues: ['Lab 503', 'Lab 402'] }
-      ]
-    };
+    let bookedSlots = {};
+
+    // Load booked slots from Supabase
+    async function loadBookedSlots() {
+      try {
+        if (!supabaseClient) {
+          console.warn('No Supabase client, skipping booked slots load');
+          return;
+        }
+
+        // Get current date to only load upcoming events
+        const today = new Date().toISOString().split('T')[0];
+
+        // Fetch all approved and pending events (exclude rejected)
+        const { data: events, error } = await supabaseClient
+          .from('events')
+          .select('event_date, start_time, end_time, venue, event_id, status')
+          .gte('event_date', today)
+          .in('status', ['approved', 'pending']);
+
+        if (error) {
+          console.error('Error loading booked slots:', error);
+          return;
+        }
+
+        if (!events || events.length === 0) {
+          bookedSlots = {};
+          return;
+        }
+
+        // Build bookedSlots structure
+        const slots = {};
+        events.forEach(event => {
+          // Skip if it's the current event being edited
+          if (isEditMode && editEventId && event.event_id === editEventId) {
+            return;
+          }
+
+          const date = event.event_date;
+          const timeRange = `${event.start_time} - ${event.end_time}`;
+          const venues = event.venue.split(', '); // venue might be comma-separated
+
+          if (!slots[date]) {
+            slots[date] = [];
+          }
+
+          // Find if this time slot already exists for this date
+          const existingSlot = slots[date].find(s => s.time === timeRange);
+          if (existingSlot) {
+            // Add venues to existing slot
+            venues.forEach(v => {
+              if (!existingSlot.venues.includes(v)) {
+                existingSlot.venues.push(v);
+              }
+            });
+          } else {
+            // Create new slot
+            slots[date].push({ time: timeRange, venues: [...venues] });
+          }
+        });
+
+        bookedSlots = slots;
+        console.log('✅ Loaded booked slots:', Object.keys(bookedSlots).length, 'dates');
+
+      } catch (error) {
+        console.error('Error in loadBookedSlots:', error);
+        bookedSlots = {};
+      }
+    }
 
     // Initialize calendar on page load
+    // Edit mode flag
+    let isEditMode = false;
+    let editEventId = null;
+    let existingEvent = null;
+
     document.addEventListener('DOMContentLoaded', async function() {
       await checkAuth(); // Verify user is authenticated
       await loadClubs(); // Load clubs from database
+      
+      // Check for edit mode first
+      const urlParams = new URLSearchParams(window.location.search);
+      const editId = urlParams.get('edit');
+      
+      if (editId) {
+        isEditMode = true;
+        editEventId = editId;
+        await loadEventForEdit(editId);
+      }
+      
+      // Load booked slots from database (must be after edit mode check)
+      await loadBookedSlots();
+      
       renderCalendar();
       updateVenueDisplay();
       setupRealTimePreview();
       
       // Venue checkboxes handled by onchange attribute
     });
+
+    // Load existing event for editing
+    async function loadEventForEdit(eventId) {
+      try {
+        if (!supabaseClient) {
+          throw new Error('Database connection not available');
+        }
+
+        const { data: event, error } = await supabaseClient
+          .from('events')
+          .select('*')
+          .eq('event_id', eventId)
+          .single();
+
+        if (error || !event) {
+          console.error('Error loading event:', error);
+          alert('Failed to load event for editing');
+          window.location.href = 'my-events.html';
+          return;
+        }
+
+        // Verify user owns this event
+        if (event.event_leader_id !== currentUser.id) {
+          alert('You can only edit your own events');
+          window.location.href = 'my-events.html';
+          return;
+        }
+
+        existingEvent = event;
+        
+        // Update page title
+        document.querySelector('.back-btn + .progress-steps')?.previousElementSibling?.textContent || '';
+        const pageTitle = document.querySelector('title');
+        if (pageTitle) pageTitle.textContent = 'Edit Event - BVDU CampusFlow';
+        
+        // Update submit button
+        const submitBtn = document.querySelector('button[onclick="submitEvent()"]');
+        if (submitBtn) {
+          submitBtn.innerHTML = 'Update Event 🚀';
+        }
+
+        // Prefill form fields
+        document.getElementById('eventTitle').value = event.event_name || '';
+        document.getElementById('eventDescription').value = event.event_description || '';
+        document.getElementById('eventTags').value = Array.isArray(event.tags) ? event.tags.join(', ') : (event.tags || '');
+        document.getElementById('learningOutcomes').value = event.learning_outcomes || '';
+        document.getElementById('keySpeakers').value = event.key_speakers || '';
+        document.getElementById('registrationLink').value = event.registration_link || '';
+        document.getElementById('budget').value = event.budget || '';
+
+        // Select category
+        const categorySelect = document.getElementById('eventCategory');
+        if (categorySelect && event.event_category) {
+          categorySelect.value = event.event_category;
+        }
+
+        // Select hosting club
+        const clubSelect = document.getElementById('hostingClub');
+        if (clubSelect && event.organizing_club) {
+          // Wait a bit for clubs to load
+          setTimeout(() => {
+            clubSelect.value = event.organizing_club;
+          }, 500);
+        }
+
+        // Set date and time
+        if (event.event_date) {
+          selectedDate = event.event_date;
+          document.getElementById('selectedDate').value = event.event_date;
+          
+          const date = new Date(event.event_date);
+          const formattedDate = date.toLocaleDateString('en-US', { 
+            weekday: 'short',
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric' 
+          });
+          document.getElementById('displayDate').textContent = formattedDate;
+        }
+
+        if (event.start_time && event.end_time) {
+          const timeSlot = `${event.start_time} - ${event.end_time}`;
+          selectedTimeSlots = [timeSlot];
+          document.getElementById('selectedTime').value = timeSlot;
+          document.getElementById('displayTime').textContent = timeSlot;
+          document.getElementById('selectedInfo').style.display = 'block';
+        }
+
+        // Set venues
+        if (event.venue) {
+          const venues = event.venue.split(', ');
+          venues.forEach(venue => {
+            const checkbox = document.querySelector(`input[name="venue"][value="${venue}"]`);
+            if (checkbox) checkbox.checked = true;
+          });
+          updateVenueDisplay();
+        }
+
+        // Set target audience
+        if (event.target_audience && Array.isArray(event.target_audience)) {
+          event.target_audience.forEach(aud => {
+            const checkbox = document.querySelector(`input[name="audience"][value="${aud}"]`);
+            if (checkbox) checkbox.checked = true;
+          });
+        }
+
+        // Set external attendees
+        if (event.external_attendees_allowed !== undefined) {
+          const value = event.external_attendees_allowed ? 'yes' : 'no';
+          const radio = document.querySelector(`input[name="externalAttendees"][value="${value}"]`);
+          if (radio) radio.checked = true;
+          toggleMapDisplay();
+        }
+
+        // Set certificates
+        if (event.certificate_provided !== undefined) {
+          const value = event.certificate_provided ? 'yes' : 'no';
+          const radio = document.querySelector(`input[name="certificatesProvided"][value="${value}"]`);
+          if (radio) radio.checked = true;
+        }
+
+        // Set equipment needs
+        if (event.equipment_needs) {
+          const eq = event.equipment_needs.items || event.equipment_needs;
+          if (eq.wirelessMics !== undefined) document.getElementById('wirelessMics').textContent = eq.wirelessMics;
+          if (eq.collarMics !== undefined) document.getElementById('collarMics').textContent = eq.collarMics;
+          if (eq.chairs !== undefined) document.getElementById('chairs').textContent = eq.chairs;
+          if (eq.table !== undefined) document.getElementById('table').textContent = eq.table;
+          if (eq.waterBottles !== undefined) document.getElementById('waterBottles').textContent = eq.waterBottles;
+        }
+
+        // Update calendar to show selected date
+        renderCalendar();
+        updateStepCompletionStatus();
+
+        console.log('✅ Event loaded for editing:', event.event_name);
+
+      } catch (error) {
+        console.error('Error loading event for edit:', error);
+        alert('Failed to load event');
+        window.location.href = 'my-events.html';
+      }
+    }
 
     // Setup real-time preview
     function setupRealTimePreview() {
@@ -2424,9 +2641,11 @@
 
       const eventData = collectFormData();
       
-      // Validate flyer upload
+      // Validate flyer upload (only required for new events)
       const flyerInput = document.getElementById('eventFlyer');
-      if (!flyerInput.files || !flyerInput.files[0]) {
+      const hasNewFlyer = flyerInput.files && flyerInput.files[0];
+      
+      if (!isEditMode && !hasNewFlyer) {
         alert('⚠️ Please upload an event flyer before submitting.');
         return;
       }
@@ -2435,7 +2654,7 @@
       const submitBtn = document.querySelector('button[onclick="submitEvent()"]');
       const originalText = submitBtn.innerHTML;
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '⏳ Submitting...';
+      submitBtn.innerHTML = isEditMode ? '⏳ Updating...' : '⏳ Submitting...';
       
       try {
         if (!supabaseClient) {
@@ -2446,13 +2665,20 @@
           throw new Error('User not authenticated');
         }
 
-        // Step 1: Check for time slot conflicts
+        // Step 1: Check for time slot conflicts (exclude rejected and current event)
         console.log('Checking for time conflicts...');
-        const { data: conflictingEvents, error: conflictError } = await supabaseClient
+        let conflictQuery = supabaseClient
           .from('events')
           .select('*')
           .eq('event_date', eventData.date)
-          .eq('venue', eventData.venue);
+          .eq('venue', eventData.venue)
+          .in('status', ['approved', 'pending']); // Only check approved and pending events
+        
+        if (isEditMode && editEventId) {
+          conflictQuery = conflictQuery.neq('event_id', editEventId);
+        }
+        
+        const { data: conflictingEvents, error: conflictError } = await conflictQuery;
 
         if (conflictError) {
           console.error('Error checking conflicts:', conflictError);
@@ -2471,40 +2697,45 @@
 
         if (hasConflict && conflictingEvents && conflictingEvents.length > 0) {
           const conflictDetails = conflictingEvents.map(e => 
-            `${e.event_name} (${e.start_time} - ${e.end_time})`
+            `${e.event_name} (${e.start_time} - ${e.end_time}) - Status: ${e.status}`
           ).join('\n');
           
           throw new Error(`⚠️ Time slot conflict detected!\n\nVenue: ${eventData.venue}\nDate: ${eventData.date}\nTime: ${eventData.startTime} - ${eventData.endTime}\n\nConflicting events:\n${conflictDetails}\n\nPlease select a different time slot or venue.`);
         }
 
-        // Step 2: Upload flyer to Supabase Storage
-        console.log('Uploading event flyer...');
-        const flyerFile = flyerInput.files[0];
-        const fileExt = flyerFile.name.split('.').pop();
-        const fileName = `${Date.now()}_${currentUser.id}.${fileExt}`;
-        const filePath = `event-flyers/${fileName}`;
+        // Step 2: Upload flyer to Supabase Storage (if new flyer selected)
+        let flyerUrl = isEditMode && existingEvent ? existingEvent.photo_folder_url : null;
+        
+        if (hasNewFlyer) {
+          console.log('Uploading event flyer...');
+          const flyerFile = flyerInput.files[0];
+          const fileExt = flyerFile.name.split('.').pop();
+          const fileName = `${Date.now()}_${currentUser.id}.${fileExt}`;
+          const filePath = `event-flyers/${fileName}`;
 
-        const { data: uploadData, error: uploadError } = await supabaseClient.storage
-          .from('event-photos')
-          .upload(filePath, flyerFile, {
-            cacheControl: '3600',
-            upsert: false
-          });
+          const { data: uploadData, error: uploadError } = await supabaseClient.storage
+            .from('event-photos')
+            .upload(filePath, flyerFile, {
+              cacheControl: '3600',
+              upsert: false
+            });
 
-        if (uploadError) {
-          console.error('Upload error:', uploadError);
-          throw new Error(`Failed to upload flyer: ${uploadError.message}`);
+          if (uploadError) {
+            console.error('Upload error:', uploadError);
+            throw new Error(`Failed to upload flyer: ${uploadError.message}`);
+          }
+
+          // Get public URL for the flyer
+          const { data: { publicUrl } } = supabaseClient.storage
+            .from('event-photos')
+            .getPublicUrl(filePath);
+
+          flyerUrl = publicUrl;
+          console.log('Flyer uploaded successfully:', publicUrl);
         }
 
-        // Get public URL for the flyer
-        const { data: { publicUrl } } = supabaseClient.storage
-          .from('event-photos')
-          .getPublicUrl(filePath);
-
-        console.log('Flyer uploaded successfully:', publicUrl);
-
         // Step 3: Prepare event data for database
-        const newEvent = {
+        const eventPayload = {
           event_name: eventData.title,
           event_type: eventData.category,
           event_category: eventData.category,
@@ -2513,16 +2744,10 @@
           start_time: eventData.startTime,
           end_time: eventData.endTime,
           venue: eventData.venue,
-          photo_folder_url: publicUrl,
+          photo_folder_url: flyerUrl,
           organizing_club: eventData.hostingClub || 'General',
-          event_leader_id: currentUser.id,
-          expected_participants: 100,
-          registered_participants: 0,
-          is_national: false,
-          is_university: true,
           certificate_provided: eventData.certificatesProvided === 'yes',
           certificates_provided: eventData.certificatesProvided === 'yes',
-          attendance_marking: true,
           od_eligible: true,
           external_attendees_allowed: eventData.externalAttendees === 'yes',
           tags: eventData.tags ? [eventData.tags] : null,
@@ -2532,30 +2757,67 @@
           equipment_needs: eventData.equipment ? { items: eventData.equipment } : null,
           budget: eventData.budget || null,
           registration_link: eventData.registrationLink,
-          status: 'pending'
+          updated_at: new Date().toISOString()
         };
 
-        // Insert event into Supabase
-        const { data, error } = await supabaseClient
-          .from('events')
-          .insert([newEvent])
-          .select();
+        let result;
+        
+        if (isEditMode && editEventId) {
+          // Update existing event
+          const { data, error } = await supabaseClient
+            .from('events')
+            .update(eventPayload)
+            .eq('event_id', editEventId)
+            .select();
 
-        if (error) {
-          console.error('Supabase error:', error);
-          throw new Error(error.message);
+          if (error) {
+            // If edit_history column doesn't exist, show helpful message
+            if (error.code === 'PGRST204' && error.message && error.message.includes('edit_history')) {
+              console.error('Edit history column not found in database');
+              alert('⚠️ Database update needed!\n\nPlease add the edit_history column to your Supabase events table:\n\nGo to SQL Editor and run:\nALTER TABLE events ADD COLUMN edit_history JSONB DEFAULT \'[]\'::jsonb;\n\nThen try updating the event again.');
+              throw new Error('Database schema needs update - edit_history column missing');
+            }
+            
+            console.error('Supabase error:', error);
+            throw new Error(error.message);
+          }
+
+          result = data;
+          console.log('Event updated successfully:', data);
+
+          alert('✅ Event updated successfully!\n\nYour changes have been saved.');
+        } else {
+          // Create new event
+          eventPayload.event_leader_id = currentUser.id;
+          eventPayload.expected_participants = 100;
+          eventPayload.registered_participants = 0;
+          eventPayload.is_national = false;
+          eventPayload.is_university = true;
+          eventPayload.attendance_marking = true;
+          eventPayload.status = 'pending';
+
+          const { data, error } = await supabaseClient
+            .from('events')
+            .insert([eventPayload])
+            .select();
+
+          if (error) {
+            console.error('Supabase error:', error);
+            throw new Error(error.message);
+          }
+
+          result = data;
+          console.log('Event created successfully:', data);
+
+          alert('🎉 Event request submitted successfully!\n\nYour event has been sent to Faculty for approval. You can track its progress from My Events page.');
         }
-
-        console.log('Event created successfully:', data);
-
-        alert('🎉 Event request submitted successfully!\n\nYour event has been sent to Faculty for approval. You can track its progress from My Events page.');
         
         // Redirect to My Events
         window.location.href = 'my-events.html';
 
       } catch (error) {
         console.error('Error submitting event:', error);
-        alert(`❌ Failed to submit event: ${error.message}\n\nPlease try again or contact support.`);
+        alert(`❌ Failed to ${isEditMode ? 'update' : 'submit'} event: ${error.message}\n\nPlease try again or contact support.`);
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
       }
@@ -2567,9 +2829,30 @@
       const venues = Array.from(document.querySelectorAll('input[name="venue"]:checked')).map(cb => cb.value);
       const timeSlot = document.getElementById('selectedTime').value;
       
-      // If multiple time slots selected (comma-separated), use only the first one
-      const firstTimeSlot = timeSlot ? timeSlot.split(',')[0].trim() : '';
-      const [startTime, endTime] = firstTimeSlot ? firstTimeSlot.split(' - ') : ['', ''];
+      // Handle multiple time slots - extract earliest start and latest end
+      let startTime = '';
+      let endTime = '';
+      
+      if (timeSlot) {
+        const slots = timeSlot.split(',').map(s => s.trim());
+        const times = [];
+        
+        slots.forEach(slot => {
+          const parts = slot.split(' - ');
+          if (parts.length === 2) {
+            times.push({ start: parts[0], end: parts[1] });
+          }
+        });
+        
+        if (times.length > 0) {
+          // Sort by start time and get earliest start
+          times.sort((a, b) => a.start.localeCompare(b.start));
+          startTime = times[0].start;
+          // Get latest end time
+          times.sort((a, b) => b.end.localeCompare(a.end));
+          endTime = times[0].end;
+        }
+      }
 
       return {
         title: document.getElementById('eventTitle').value,

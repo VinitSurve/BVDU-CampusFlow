@@ -555,6 +555,25 @@
     // Load user profile
     async function loadProfile() {
       try {
+        // Check sessionStorage for role-based redirect
+        const sessionUser = sessionStorage.getItem('currentUser');
+        if (sessionUser) {
+          const userData = JSON.parse(sessionUser);
+          if (userData && userData.role && userData.role !== 'faculty') {
+            // User has wrong role - redirect to their correct profile
+            const roleProfileMap = {
+              'student': '../student/profile.html',
+              'hod': '../hod/profile.html',
+              'event-leader': '../event-leader/profile.html'
+            };
+            const correctProfile = roleProfileMap[userData.role];
+            if (correctProfile) {
+              window.location.href = correctProfile;
+              return;
+            }
+          }
+        }
+
         const { data: { session } } = await supabaseClient.auth.getSession();
         
         if (!session) {
@@ -573,7 +592,24 @@
           return;
         }
 
+        // Check if user has the correct role for this page
+        if (user.role !== 'faculty') {
+          const roleProfileMap = {
+            'student': '../student/profile.html',
+            'hod': '../hod/profile.html',
+            'event-leader': '../event-leader/profile.html'
+          };
+          const correctProfile = roleProfileMap[user.role];
+          if (correctProfile) {
+            sessionStorage.setItem('currentUser', JSON.stringify(user));
+            window.location.href = correctProfile;
+            return;
+          }
+        }
+
         currentUser = user;
+        // Store in sessionStorage for future checks
+        sessionStorage.setItem('currentUser', JSON.stringify(user));
 
         // Update sidebar
         const initial = user.full_name.charAt(0).toUpperCase();

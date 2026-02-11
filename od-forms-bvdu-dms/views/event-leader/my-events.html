@@ -233,6 +233,24 @@
       border: 1px solid rgba(100, 116, 139, 0.3);
     }
 
+    .status-pending {
+      background: rgba(251, 191, 36, 0.15);
+      color: #FBBF24;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .status-approved {
+      background: rgba(52, 168, 83, 0.15);
+      color: #34A853;
+      border: 1px solid rgba(52, 168, 83, 0.3);
+    }
+
+    .status-rejected {
+      background: rgba(234, 67, 53, 0.15);
+      color: #EA4335;
+      border: 1px solid rgba(234, 67, 53, 0.3);
+    }
+
     .event-meta {
       display: flex;
       flex-direction: column;
@@ -499,14 +517,16 @@
         return;
       }
 
-      const eventsHTML = events.map(event => `
+      const eventsHTML = events.map(event => {
+        const statusDisplay = getStatusDisplay(event.status);
+        return `
         <div class="event-card">
           <div class="event-header">
             <div>
               <h3 class="event-title">${event.event_name}</h3>
               <p class="event-id">${event.event_id}</p>
             </div>
-            <span class="status-badge status-${event.status}">${event.status}</span>
+            <span class="status-badge status-${event.status}">${statusDisplay}</span>
           </div>
 
           <div class="event-meta">
@@ -545,7 +565,7 @@
             <button class="btn btn-secondary" onclick="viewEvent('${event.event_id}')">
               👁️ View
             </button>
-            <button class="btn btn-secondary" onclick="editEvent('${event.event_id}')">
+            <button class="btn btn-secondary" onclick="editEvent('${event.event_id}')" ${event.status === 'approved' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
               ✏️ Edit
             </button>
             <button class="btn btn-secondary" onclick="viewParticipants('${event.event_id}')">
@@ -553,9 +573,19 @@
             </button>
           </div>
         </div>
-      `).join('');
+      `}).join('');
 
       container.innerHTML = eventsHTML;
+    }
+
+    // Get user-friendly status display
+    function getStatusDisplay(status) {
+      const statusMap = {
+        'pending': 'Pending Approval',
+        'approved': 'Approved',
+        'rejected': 'Rejected'
+      };
+      return statusMap[status] || status.charAt(0).toUpperCase() + status.slice(1);
     }
 
     // Format Date

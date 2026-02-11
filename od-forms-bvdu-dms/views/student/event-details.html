@@ -676,6 +676,7 @@
   <script>
     // Initialize Supabase
     let supabaseClient = null;
+    let currentEvent = null; // Store current event for access in handlers
     try {
       if (typeof supabase !== 'undefined') {
         const { createClient } = supabase;
@@ -910,6 +911,9 @@
     function renderEventDetails(event) {
       console.log('Rendering event:', event);
       
+      // Store event globally for handlers
+      currentEvent = event;
+      
       // Set gradient colors
       const gradients = {
         'Workshop': '#4285F4, #34A853',
@@ -1050,7 +1054,14 @@
 
     // Handle Register
     function handleRegister() {
-      alert('✅ Registration Successful!\n\nYou have successfully registered for this event.\n\nYou will receive further details via email.');
+      // Check if event has a registration link
+      if (currentEvent && currentEvent.registration_link) {
+        // Open registration link in new tab
+        window.open(currentEvent.registration_link, '_blank');
+      } else {
+        // Show message if no registration link is provided
+        alert('ℹ️ No Registration Link\n\nThis event does not have an external registration link.\nPlease contact the event organizer for registration details.');
+      }
     }
 
     // Handle Apply OD

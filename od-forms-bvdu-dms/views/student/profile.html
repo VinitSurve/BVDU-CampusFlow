@@ -611,6 +611,18 @@
             loadUserProfile(userData);
             await loadStats();
             return userData;
+          } else if (userData && userData.role) {
+            // User has wrong role - redirect to their correct profile
+            const roleProfileMap = {
+              'faculty': '../faculty/profile.html',
+              'hod': '../hod/profile.html',
+              'event-leader': '../event-leader/profile.html'
+            };
+            const correctProfile = roleProfileMap[userData.role];
+            if (correctProfile) {
+              window.location.href = correctProfile;
+              return null;
+            }
           }
         }
 
@@ -636,6 +648,21 @@
           console.error('Profile error:', profileError);
           window.location.href = '../../login.html?from=profile';
           return null;
+        }
+
+        // Check if profile has the correct role for this page
+        if (profile.role !== 'student') {
+          const roleProfileMap = {
+            'faculty': '../faculty/profile.html',
+            'hod': '../hod/profile.html',
+            'event-leader': '../event-leader/profile.html'
+          };
+          const correctProfile = roleProfileMap[profile.role];
+          if (correctProfile) {
+            sessionStorage.setItem('currentUser', JSON.stringify(profile));
+            window.location.href = correctProfile;
+            return null;
+          }
         }
 
         currentUser = profile;

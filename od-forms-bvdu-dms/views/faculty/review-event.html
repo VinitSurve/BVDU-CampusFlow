@@ -941,17 +941,20 @@
         return;
       }
 
+      // Store action before closing modal (since closeConfirmModal sets currentAction to null)
+      const action = currentAction;
+
       try {
         if (!supabaseClient) {
           throw new Error('Database connection not available');
         }
 
         // Update event in Supabase
-        const newStatus = currentAction === 'approve' ? 'approved' : 'rejected';
+        const newStatus = action === 'approve' ? 'approved' : 'rejected';
         const updateData = {
           status: newStatus,
-          approved_by_faculty: currentAction === 'approve' ? currentUser.id : null,
-          rejection_reason: currentAction === 'reject' ? comments : null,
+          approved_by_faculty: action === 'approve' ? currentUser.id : null,
+          rejection_reason: action === 'reject' ? comments : null,
           updated_at: new Date().toISOString()
         };
 
@@ -968,10 +971,10 @@
 
         console.log('Event updated successfully:', data);
 
-        // Show success message
+        // Close modal
         closeConfirmModal();
         
-        if (currentAction === 'approve') {
+        if (action === 'approve') {
           alert('✅ Event approved successfully!\n\nEvent is now visible to all students.');
         } else {
           alert('❌ Event rejected successfully!\n\nEvent has been rejected and will not be visible to students.');
@@ -981,7 +984,7 @@
 
       } catch (error) {
         console.error('Error updating event:', error);
-        alert(`❌ Failed to ${currentAction} event: ${error.message}\n\nPlease try again.`);
+        alert(`❌ Failed to ${action} event: ${error.message}\n\nPlease try again.`);
       }
     }
 
