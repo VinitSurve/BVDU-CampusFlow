@@ -476,6 +476,58 @@
       border: 1px solid rgba(234, 67, 53, 0.3);
     }
 
+    .badge-media {
+      background: rgba(138, 43, 226, 0.15);
+      color: #A855F7;
+      border: 1px solid rgba(138, 43, 226, 0.3);
+    }
+
+    /* Event Status Badges */
+    .event-status-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      z-index: 2;
+      backdrop-filter: blur(10px);
+    }
+
+    .event-status-badge.ongoing {
+      background: rgba(16, 185, 129, 0.95);
+      color: white;
+      animation: pulse-green 2s infinite;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .event-status-badge.past {
+      background: rgba(100, 116, 139, 0.95);
+      color: white;
+    }
+
+    @keyframes pulse-green {
+      0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+      50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.7); }
+    }
+
+    /* Past Event Card Styling */
+    .event-card.past-event {
+      opacity: 0.85;
+    }
+
+    .event-card.past-event .event-image::after {
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(15, 23, 42, 0.95) 100%);
+    }
+
+    /* Ongoing Event Card Styling */
+    .event-card.ongoing-event {
+      border: 2px solid rgba(16, 185, 129, 0.5);
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
+    }
+
     .event-attendees {
       display: flex;
       align-items: center;
@@ -597,6 +649,7 @@
         </a>
         <div class="flex items-center gap-4">
           <a href="#events" class="nav-link">Events</a>
+          <a href="views/student/clubs.html" class="nav-link">Clubs</a>
           <a href="#about" class="nav-link">About</a>
           <a href="login.html" class="btn-login">Log in</a>
           <a href="register.html" class="btn-signup">Sign up</a>
@@ -656,6 +709,15 @@
     </div>
   </div>
 
+  <!-- Ongoing Events -->
+  <div class="container mx-auto px-6" id="ongoing" style="display: none;">
+    <div class="section-header">
+      <h2 class="section-title">🟢 Happening Now</h2>
+    </div>
+    <div class="events-grid" id="ongoingEventsGrid">
+    </div>
+  </div>
+
   <!-- Upcoming Events -->
   <div class="container mx-auto px-6" id="events">
     <div class="section-header">
@@ -666,6 +728,16 @@
     <div class="events-grid" id="eventsGrid">
       <!-- Events will be loaded here -->
       <p style="color: #64748B;">Loading events...</p>
+    </div>
+  </div>
+
+  <!-- Past Events -->
+  <div class="container mx-auto px-6" id="past" style="margin-top: 3rem;">
+    <div class="section-header">
+      <h2 class="section-title">📅 Past Events</h2>
+      <a href="views/student/all-events.html?filter=past" class="view-all">View all →</a>
+    </div>
+    <div class="events-grid" id="pastEventsGrid">
     </div>
   </div>
 
@@ -888,26 +960,107 @@
             events = initializeStorage();
           }
         } else {
-          // Load only APPROVED events from Supabase
+          // Load ALL APPROVED events from Supabase (we'll filter client-side for proper status)
           const { data, error } = await supabaseClient
             .from('events')
             .select('*')
             .eq('status', 'approved')
-            .gte('event_date', new Date().toISOString().split('T')[0])
-            .order('event_date', { ascending: true })
-            .limit(6);
+            .order('event_date', { ascending: false })
+            .limit(50);
 
           if (error) throw error;
           events = data || [];
         }
 
-        allEvents = events;
-        renderEvents(events);
+        // Categorize events
+        const now = new Date();
+        const ongoingEvents = [];
+        const upcomingEvents = [];
+        const pastEvents = [];
+
+        events.forEach(event => {
+          const eventStatus = getEventStatus(event);
+          if (eventStatus === 'ongoing') {
+            ongoingEvents.push(event);
+          } else if (eventStatus === 'upcoming') {
+            upcomingEvents.push(event);
+          } else {
+            pastEvents.push(event);
+          }
+        });
+
+        // Sort: upcoming by date ascending, past by date descending
+        upcomingEvents.sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
+        pastEvents.sort((a, b) => new Date(b.event_date) - new Date(a.event_date));
+
+        allEvents = [...ongoingEvents, ...upcomingEvents];
+        
+        // Render each section
+        renderOngoingEvents(ongoingEvents);
+        renderEvents(upcomingEvents.slice(0, 6));
+        renderPastEvents(pastEvents.slice(0, 3));
       } catch (error) {
         console.error('Error loading events:', error);
         allEvents = [];
-        renderEvents(allEvents);
+        renderEvents([]);
       }
+    }
+
+    // Get Event Status based on current time
+    function getEventStatus(event) {
+      const now = new Date();
+      const eventDate = new Date(event.event_date);
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const eventDay = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+      
+      // Parse times
+      const [startHour, startMin] = (event.start_time || '00:00').split(':').map(Number);
+      const [endHour, endMin] = (event.end_time || '23:59').split(':').map(Number);
+      
+      const eventStart = new Date(eventDay);
+      eventStart.setHours(startHour, startMin, 0);
+      
+      const eventEnd = new Date(eventDay);
+      eventEnd.setHours(endHour, endMin, 0);
+      
+      if (now >= eventStart && now <= eventEnd) {
+        return 'ongoing';
+      } else if (now < eventStart) {
+        return 'upcoming';
+      } else {
+        return 'past';
+      }
+    }
+
+    // Render Ongoing Events
+    function renderOngoingEvents(events) {
+      const container = document.getElementById('ongoing');
+      const grid = document.getElementById('ongoingEventsGrid');
+      
+      if (events.length === 0) {
+        container.style.display = 'none';
+        return;
+      }
+      
+      container.style.display = 'block';
+      grid.innerHTML = events.map(event => renderEventCard(event, true)).join('');
+    }
+
+    // Render Past Events
+    function renderPastEvents(events) {
+      const container = document.getElementById('past');
+      const grid = document.getElementById('pastEventsGrid');
+      
+      if (events.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+            <p style="color: #64748B;">No past events yet</p>
+          </div>
+        `;
+        return;
+      }
+      
+      grid.innerHTML = events.map(event => renderEventCard(event, false, true)).join('');
     }
 
     // Render Events
@@ -918,76 +1071,87 @@
         grid.innerHTML = `
           <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem;">
             <div style="font-size: 4rem; margin-bottom: 1rem;">📅</div>
-            <h3 style="font-size: 1.5rem; font-weight: 700; color: #E2E8F0; margin-bottom: 0.5rem;">No Events Found</h3>
+            <h3 style="font-size: 1.5rem; font-weight: 700; color: #E2E8F0; margin-bottom: 0.5rem;">No Upcoming Events</h3>
             <p style="color: #64748B;">Check back later for upcoming events</p>
           </div>
         `;
         return;
       }
 
-      const eventsHTML = events.map(event => {
-        const date = new Date(event.event_date);
-        const day = date.getDate();
-        const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
-        const attendeeCount = event.registered_participants || 0;
-        
-        // Use photo_folder_url (event flyer) if available, otherwise use gradient background with icon
-        const backgroundStyle = event.photo_folder_url 
-          ? `background-image: url('${event.photo_folder_url}'); background-size: cover; background-position: center;`
-          : `background: linear-gradient(135deg, ${getGradientColors(event.event_type)});`;
-        
-        return `
-          <a href="views/student/event-details.html?id=${event.event_id}" class="event-card">
-            <div class="event-image" style="${backgroundStyle}">
-              ${!event.photo_folder_url ? `<div style="font-size: 5rem; position: relative; z-index: 1;">${event.icon || '🎉'}</div>` : ''}
-              <div class="event-badge">${event.event_type}</div>
-              <div class="event-date-badge">
-                <span class="event-date-day">${day}</span>
-                <span class="event-date-month">${month}</span>
+      grid.innerHTML = events.map(event => renderEventCard(event)).join('');
+    }
+
+    // Render Single Event Card
+    function renderEventCard(event, isOngoing = false, isPast = false) {
+      const date = new Date(event.event_date);
+      const day = date.getDate();
+      const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+      const attendeeCount = event.registered_participants || 0;
+      
+      // Use photo_folder_url (event flyer) if available, otherwise use gradient background with icon
+      const backgroundStyle = event.photo_folder_url 
+        ? `background-image: url('${event.photo_folder_url}'); background-size: cover; background-position: center;`
+        : `background: linear-gradient(135deg, ${getGradientColors(event.event_type)});`;
+      
+      // Status badge for ongoing/past
+      let statusBadge = '';
+      if (isOngoing) {
+        statusBadge = '<div class="event-status-badge ongoing">🟢 LIVE NOW</div>';
+      } else if (isPast) {
+        statusBadge = '<div class="event-status-badge past">✅ Completed</div>';
+      }
+      
+      return `
+        <a href="views/student/event-details.html?id=${event.event_id}" class="event-card ${isPast ? 'past-event' : ''} ${isOngoing ? 'ongoing-event' : ''}">
+          <div class="event-image" style="${backgroundStyle}">
+            ${!event.photo_folder_url ? `<div style="font-size: 5rem; position: relative; z-index: 1;">${event.icon || '🎉'}</div>` : ''}
+            <div class="event-badge">${event.event_type}</div>
+            ${statusBadge}
+            <div class="event-date-badge">
+              <span class="event-date-day">${day}</span>
+              <span class="event-date-month">${month}</span>
+            </div>
+          </div>
+
+          <div class="event-content">
+            <div class="event-time">
+              <span>⏰</span>
+              <span>${event.start_time} - ${event.end_time}</span>
+            </div>
+
+            <h3 class="event-title">${event.event_name}</h3>
+
+            <div class="event-organizer">
+              <div class="organizer-avatar">${getInitials(event.event_leader_name || 'Event Leader')}</div>
+              <div class="organizer-info">
+                <div class="organizer-name">${event.organizing_club}</div>
+                <div class="organizer-club">by ${event.event_leader_name || 'Event Leader'}</div>
               </div>
             </div>
 
-            <div class="event-content">
-              <div class="event-time">
-                <span>⏰</span>
-                <span>${event.start_time} - ${event.end_time}</span>
-              </div>
-
-              <h3 class="event-title">${event.event_name}</h3>
-
-              <div class="event-organizer">
-                <div class="organizer-avatar">${getInitials(event.event_leader_name || 'Event Leader')}</div>
-                <div class="organizer-info">
-                  <div class="organizer-name">${event.organizing_club}</div>
-                  <div class="organizer-club">by ${event.event_leader_name || 'Event Leader'}</div>
-                </div>
-              </div>
-
-              <div class="event-meta">
-                <div class="meta-item">
-                  <span>📍</span>
-                  <span>${event.venue}</span>
-                </div>
-              </div>
-
-              <div class="event-badges">
-                ${event.is_national ? '<span class="mini-badge badge-national">🌏 National</span>' : ''}
-                ${event.certificate_provided ? '<span class="mini-badge badge-certificate">📜 Certificate</span>' : ''}
-                ${event.od_eligible ? '<span class="mini-badge badge-od">✅ OD Eligible</span>' : ''}
-              </div>
-
-              <div class="event-attendees">
-                <div class="attendee-avatars">
-                  ${generateAttendeeAvatars(Math.min(attendeeCount, 3))}
-                </div>
-                <span class="attendee-count">${attendeeCount} attending</span>
+            <div class="event-meta">
+              <div class="meta-item">
+                <span>📍</span>
+                <span>${event.venue}</span>
               </div>
             </div>
-          </a>
-        `;
-      }).join('');
 
-      grid.innerHTML = eventsHTML;
+            <div class="event-badges">
+              ${event.is_national ? '<span class="mini-badge badge-national">🌏 National</span>' : ''}
+              ${event.certificate_provided ? '<span class="mini-badge badge-certificate">📜 Certificate</span>' : ''}
+              ${event.od_eligible ? '<span class="mini-badge badge-od">✅ OD Eligible</span>' : ''}
+              ${isPast && event.event_media && event.event_media.length > 0 ? '<span class="mini-badge badge-media">📁 Media Available</span>' : ''}
+            </div>
+
+            <div class="event-attendees">
+              <div class="attendee-avatars">
+                ${generateAttendeeAvatars(Math.min(attendeeCount, 3))}
+              </div>
+              <span class="attendee-count">${attendeeCount} attending</span>
+            </div>
+          </div>
+        </a>
+      `;
     }
 
     // Generate Attendee Avatars

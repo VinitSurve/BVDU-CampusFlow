@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clubs - BVDU CampusFlow</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Particles Animation -->
+  <script src="../../js/particles.js" defer></script>
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../../css/variables.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0E27;
+      color: #E2E8F0;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(66, 133, 244, 0.08), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(52, 168, 83, 0.08), transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-link {
+      color: #94A3B8;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .nav-link:hover {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.1);
+    }
+
+    .nav-link.active {
+      color: #4285F4;
+      background: rgba(66, 133, 244, 0.15);
+    }
+
+    .page-header {
+      padding: 3rem 0 2rem;
+      text-align: center;
+    }
+
+    .page-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: #94A3B8;
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Category Filters */
+    .filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .filter-btn {
+      padding: 0.75rem 1.5rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 2rem;
+      color: #94A3B8;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .filter-btn:hover {
+      border-color: rgba(66, 133, 244, 0.5);
+      color: #E2E8F0;
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      color: white;
+      border-color: transparent;
+    }
+
+    /* Search Bar */
+    .search-container {
+      max-width: 500px;
+      margin: 0 auto 2rem;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      color: #E2E8F0;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      border-color: rgba(66, 133, 244, 0.5);
+      box-shadow: 0 0 20px rgba(66, 133, 244, 0.1);
+    }
+
+    .search-input::placeholder {
+      color: #64748B;
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+      padding: 0 2rem;
+    }
+
+    .stat-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(66, 133, 244, 0.3);
+    }
+
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      color: #94A3B8;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    /* Clubs Grid */
+    .clubs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 2rem;
+      padding: 0 2rem 4rem;
+    }
+
+    .club-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .club-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(66, 133, 244, 0.4);
+      box-shadow: 0 20px 40px rgba(66, 133, 244, 0.15);
+    }
+
+    .club-banner {
+      height: 120px;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .club-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .club-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .club-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 1rem;
+      background: rgba(15, 23, 42, 0.9);
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      position: absolute;
+      bottom: -40px;
+      left: 1.5rem;
+      z-index: 2;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .club-logo img {
+      width: 100%;
+      height: 100%;
+      border-radius: 0.75rem;
+      object-fit: cover;
+    }
+
+    .club-content {
+      padding: 3rem 1.5rem 1.5rem;
+    }
+
+    .club-category {
+      display: inline-block;
+      padding: 0.375rem 0.875rem;
+      background: rgba(66, 133, 244, 0.15);
+      color: #4285F4;
+      border-radius: 2rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .club-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 0.5rem;
+    }
+
+    .club-description {
+      color: #94A3B8;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .club-stats {
+      display: flex;
+      gap: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .club-stat {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: #94A3B8;
+    }
+
+    .club-stat span:first-child {
+      font-size: 1rem;
+    }
+
+    .club-lead {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .lead-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+
+    .lead-info {
+      flex: 1;
+    }
+
+    .lead-name {
+      color: #E2E8F0;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .lead-label {
+      color: #64748B;
+      font-size: 0.75rem;
+    }
+
+    .club-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 2rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+    }
+
+    .club-status.active {
+      background: rgba(52, 168, 83, 0.9);
+      color: white;
+    }
+
+    .club-status.inactive {
+      background: rgba(100, 116, 139, 0.9);
+      color: white;
+    }
+
+    /* Club Detail Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #0F172A;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      width: 100%;
+      max-width: 900px;
+      margin: 2rem 0;
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      position: relative;
+      height: 200px;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      border-radius: 1.5rem 1.5rem 0 0;
+      overflow: hidden;
+    }
+
+    .modal-header img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      color: white;
+      font-size: 1.25rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: rgba(0, 0, 0, 0.8);
+      transform: scale(1.1);
+    }
+
+    .modal-logo {
+      position: absolute;
+      bottom: -50px;
+      left: 2rem;
+      width: 100px;
+      height: 100px;
+      border-radius: 1.25rem;
+      background: #0F172A;
+      border: 4px solid #0F172A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-logo img {
+      width: 100%;
+      height: 100%;
+      border-radius: 1rem;
+      object-fit: cover;
+    }
+
+    .modal-body {
+      padding: 4rem 2rem 2rem;
+    }
+
+    .modal-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #E2E8F0;
+      margin-bottom: 0.25rem;
+    }
+
+    .modal-category {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: rgba(66, 133, 244, 0.15);
+      color: #4285F4;
+      border-radius: 2rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .modal-description {
+      color: #94A3B8;
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+
+    .modal-section {
+      margin-bottom: 2rem;
+    }
+
+    .modal-section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .modal-stat {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .modal-stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #4285F4;
+    }
+
+    .modal-stat-label {
+      color: #94A3B8;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* Events in Modal */
+    .modal-events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .modal-event-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1rem;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .modal-event-card:hover {
+      border-color: rgba(66, 133, 244, 0.4);
+      transform: translateY(-3px);
+    }
+
+    .modal-event-date {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #64748B;
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-event-name {
+      font-weight: 600;
+      color: #E2E8F0;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-event-status {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .modal-event-status.upcoming {
+      background: rgba(66, 133, 244, 0.15);
+      color: #4285F4;
+    }
+
+    .modal-event-status.ongoing {
+      background: rgba(52, 168, 83, 0.15);
+      color: #34A853;
+    }
+
+    .modal-event-status.past {
+      background: rgba(100, 116, 139, 0.15);
+      color: #94A3B8;
+    }
+
+    /* Gallery in Modal */
+    .modal-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .modal-gallery-item {
+      aspect-ratio: 1;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .modal-gallery-item:hover {
+      transform: scale(1.05);
+    }
+
+    .modal-gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .modal-gallery-item::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-gallery-item:hover::after {
+      opacity: 1;
+    }
+
+    /* Lead Card */
+    .lead-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1rem;
+    }
+
+    .lead-card-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4285F4, #34A853);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 1.5rem;
+    }
+
+    .lead-card-info h4 {
+      color: #E2E8F0;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .lead-card-info p {
+      color: #64748B;
+      font-size: 0.9rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      grid-column: 1 / -1;
+    }
+
+    .empty-state-icon {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state-text {
+      color: #94A3B8;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 4rem;
+      color: #94A3B8;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(66, 133, 244, 0.2);
+      border-top-color: #4285F4;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      padding: 1rem 1.5rem;
+      border-radius: 1rem;
+      font-weight: 600;
+      z-index: 2000;
+      animation: slideIn 0.3s ease;
+      max-width: 400px;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .notification.success {
+      background: rgba(52, 168, 83, 0.95);
+      color: white;
+    }
+
+    .notification.error {
+      background: rgba(234, 67, 53, 0.95);
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .page-title {
+        font-size: 2rem;
+      }
+
+      .clubs-grid {
+        grid-template-columns: 1fr;
+        padding: 0 1rem 2rem;
+      }
+
+      .modal-content {
+        margin: 1rem;
+      }
+
+      .modal-body {
+        padding: 3rem 1rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="../../index.html" class="navbar-brand">🎓 BVDU CampusFlow</a>
+      <div class="flex gap-4 items-center">
+        <a href="dashboard.html" class="nav-link">📊 Dashboard</a>
+        <a href="all-events.html" class="nav-link">🎫 Events</a>
+        <a href="clubs.html" class="nav-link active">🎪 Clubs</a>
+        <a href="my-forms.html" class="nav-link">📋 My Forms</a>
+        <a href="profile.html" class="nav-link">👤 Profile</a>
+        <a href="#" class="nav-link" id="logoutBtn" onclick="logout()">🚪 Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container mx-auto">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">🎪 Campus Clubs</h1>
+      <p class="page-subtitle">Discover and explore clubs organizing amazing events at BVDU</p>
+    </div>
+
+    <!-- Search -->
+    <div class="search-container">
+      <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search clubs by name or category...">
+    </div>
+
+    <!-- Category Filters -->
+    <div class="filters" id="categoryFilters">
+      <button class="filter-btn active" data-category="all">All Clubs</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="totalClubs">0</div>
+        <div class="stat-label">Total Clubs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="activeClubs">0</div>
+        <div class="stat-label">Active Clubs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalEvents">0</div>
+        <div class="stat-label">Events Organized</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalCategories">0</div>
+        <div class="stat-label">Categories</div>
+      </div>
+    </div>
+
+    <!-- Clubs Grid -->
+    <div class="clubs-grid" id="clubsGrid">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Loading clubs...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Club Detail Modal -->
+  <div class="modal-overlay" id="clubModal">
+    <div class="modal-content">
+      <div class="modal-header" id="modalHeader">
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <div class="modal-logo" id="modalLogo">🎪</div>
+      </div>
+      <div class="modal-body">
+        <span class="modal-category" id="modalCategory">Category</span>
+        <h2 class="modal-title" id="modalTitle">Club Name</h2>
+        <p class="modal-description" id="modalDescription">Club description will appear here.</p>
+
+        <!-- Club Stats -->
+        <div class="modal-section">
+          <h3 class="modal-section-title">📊 Club Statistics</h3>
+          <div class="modal-stats">
+            <div class="modal-stat">
+              <div class="modal-stat-value" id="modalEventCount">0</div>
+              <div class="modal-stat-label">Events Organized</div>
+            </div>
+            <div class="modal-stat">
+              <div class="modal-stat-value" id="modalUpcoming">0</div>
+              <div class="modal-stat-label">Upcoming Events</div>
+            </div>
+            <div class="modal-stat">
+              <div class="modal-stat-value" id="modalFoundedYear">-</div>
+              <div class="modal-stat-label">Founded Year</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Club Lead -->
+        <div class="modal-section" id="leadSection" style="display: none;">
+          <h3 class="modal-section-title">👤 Club Lead</h3>
+          <div class="lead-card" id="leadCard">
+            <div class="lead-card-avatar" id="leadAvatar">?</div>
+            <div class="lead-card-info">
+              <h4 id="leadName">Club Lead</h4>
+              <p id="leadEmail">email@example.com</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Events -->
+        <div class="modal-section" id="upcomingEventsSection" style="display: none;">
+          <h3 class="modal-section-title">🚀 Upcoming Events</h3>
+          <div class="modal-events-grid" id="upcomingEventsGrid"></div>
+        </div>
+
+        <!-- Past Events -->
+        <div class="modal-section" id="pastEventsSection" style="display: none;">
+          <h3 class="modal-section-title">📅 Past Events</h3>
+          <div class="modal-events-grid" id="pastEventsGrid"></div>
+        </div>
+
+        <!-- Gallery -->
+        <div class="modal-section" id="gallerySection" style="display: none;">
+          <h3 class="modal-section-title">📸 Event Gallery</h3>
+          <div class="modal-gallery" id="galleryGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../js/config.js"></script>
+
+  <script>
+    let supabaseClient = null;
+    let allClubs = [];
+    let allEvents = [];
+    let currentCategory = 'all';
+
+    // Initialize Supabase
+    async function initSupabase() {
+      try {
+        if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
+          supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+          console.log('✅ Supabase initialized');
+        }
+      } catch (error) {
+        console.error('Error initializing Supabase:', error);
+      }
+    }
+
+    // Load Clubs
+    async function loadClubs() {
+      try {
+        if (!supabaseClient) {
+          showNotification('Database not connected', 'error');
+          return;
+        }
+
+        const { data: clubs, error } = await supabaseClient
+          .from('clubs')
+          .select(`
+            *,
+            lead:club_lead_id(full_name, email)
+          `)
+          .order('name', { ascending: true });
+
+        if (error) throw error;
+
+        allClubs = clubs || [];
+        
+        // Also load all approved events for the clubs
+        await loadAllEvents();
+        
+        updateStats();
+        renderCategories();
+        renderClubs();
+
+      } catch (error) {
+        console.error('Error loading clubs:', error);
+        showNotification('Failed to load clubs', 'error');
+        document.getElementById('clubsGrid').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">⚠️</div>
+            <h3 class="empty-state-title">Failed to Load Clubs</h3>
+            <p class="empty-state-text">Please check your connection and try again</p>
+          </div>
+        `;
+      }
+    }
+
+    // Load All Events
+    async function loadAllEvents() {
+      try {
+        const { data: events, error } = await supabaseClient
+          .from('events')
+          .select('*')
+          .eq('status', 'approved')
+          .order('event_date', { ascending: false });
+
+        if (error) throw error;
+        allEvents = events || [];
+      } catch (error) {
+        console.error('Error loading events:', error);
+        allEvents = [];
+      }
+    }
+
+    // Get events for a specific club
+    function getClubEvents(clubName) {
+      return allEvents.filter(e => e.organizing_club === clubName);
+    }
+
+    // Get event status
+    function getEventStatus(event) {
+      const now = new Date();
+      const eventDate = new Date(event.event_date);
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const eventDay = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+      
+      const [startHour, startMin] = (event.start_time || '00:00').split(':').map(Number);
+      const [endHour, endMin] = (event.end_time || '23:59').split(':').map(Number);
+      
+      const eventStart = new Date(eventDay);
+      eventStart.setHours(startHour, startMin, 0);
+      
+      const eventEnd = new Date(eventDay);
+      eventEnd.setHours(endHour, endMin, 0);
+      
+      if (now >= eventStart && now <= eventEnd) {
+        return 'ongoing';
+      } else if (now < eventStart) {
+        return 'upcoming';
+      } else {
+        return 'past';
+      }
+    }
+
+    // Update Stats
+    function updateStats() {
+      const total = allClubs.length;
+      const active = allClubs.filter(c => c.is_active).length;
+      const categories = new Set(allClubs.map(c => c.category).filter(Boolean)).size;
+
+      document.getElementById('totalClubs').textContent = total;
+      document.getElementById('activeClubs').textContent = active;
+      document.getElementById('totalEvents').textContent = allEvents.length;
+      document.getElementById('totalCategories').textContent = categories;
+    }
+
+    // Render Category Filters
+    function renderCategories() {
+      const categories = [...new Set(allClubs.map(c => c.category).filter(Boolean))];
+      const container = document.getElementById('categoryFilters');
+      
+      container.innerHTML = `
+        <button class="filter-btn active" data-category="all">All Clubs</button>
+        ${categories.map(cat => `
+          <button class="filter-btn" data-category="${cat}">${cat}</button>
+        `).join('')}
+      `;
+
+      // Add click handlers
+      container.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentCategory = btn.dataset.category;
+          renderClubs();
+        });
+      });
+    }
+
+    // Render Clubs
+    function renderClubs() {
+      const grid = document.getElementById('clubsGrid');
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+      
+      let filtered = allClubs;
+      
+      // Filter by category
+      if (currentCategory !== 'all') {
+        filtered = filtered.filter(c => c.category === currentCategory);
+      }
+      
+      // Filter by search
+      if (searchQuery) {
+        filtered = filtered.filter(c => 
+          c.name.toLowerCase().includes(searchQuery) ||
+          (c.category && c.category.toLowerCase().includes(searchQuery)) ||
+          (c.description && c.description.toLowerCase().includes(searchQuery))
+        );
+      }
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <h3 class="empty-state-title">No Clubs Found</h3>
+            <p class="empty-state-text">Try adjusting your search or filters</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(club => {
+        const clubEvents = getClubEvents(club.name);
+        const upcomingCount = clubEvents.filter(e => getEventStatus(e) === 'upcoming' || getEventStatus(e) === 'ongoing').length;
+        const leadInitials = club.lead?.full_name ? getInitials(club.lead.full_name) : '?';
+        
+        return `
+          <div class="club-card" onclick="openClubModal(${club.id})">
+            <div class="club-banner">
+              ${club.logo_url ? `<img src="${club.logo_url}" alt="${club.name}">` : ''}
+              <div class="club-logo">
+                ${club.logo_url ? `<img src="${club.logo_url}" alt="${club.name}">` : '🎪'}
+              </div>
+              <span class="club-status ${club.is_active ? 'active' : 'inactive'}">
+                ${club.is_active ? '✅ Active' : '❌ Inactive'}
+              </span>
+            </div>
+            <div class="club-content">
+              <span class="club-category">${club.category || 'General'}</span>
+              <h3 class="club-name">${club.name}</h3>
+              <p class="club-description">${club.description || 'No description available'}</p>
+              
+              <div class="club-stats">
+                <div class="club-stat">
+                  <span>📅</span>
+                  <span>${clubEvents.length} Events</span>
+                </div>
+                <div class="club-stat">
+                  <span>🚀</span>
+                  <span>${upcomingCount} Upcoming</span>
+                </div>
+              </div>
+
+              ${club.lead ? `
+                <div class="club-lead">
+                  <div class="lead-avatar">${leadInitials}</div>
+                  <div class="lead-info">
+                    <div class="lead-name">${club.lead.full_name}</div>
+                    <div class="lead-label">Club Lead</div>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Open Club Modal
+    function openClubModal(clubId) {
+      const club = allClubs.find(c => c.id === clubId);
+      if (!club) return;
+
+      const modal = document.getElementById('clubModal');
+      const clubEvents = getClubEvents(club.name);
+      
+      // Set header
+      if (club.logo_url) {
+        document.getElementById('modalHeader').style.background = 'none';
+        document.getElementById('modalHeader').innerHTML = `
+          <img src="${club.logo_url}" alt="${club.name}" style="position: absolute; width: 100%; height: 100%; object-fit: cover;">
+          <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(15,23,42,0.9));"></div>
+          <button class="modal-close" onclick="closeModal()">×</button>
+          <div class="modal-logo">${club.logo_url ? `<img src="${club.logo_url}" alt="${club.name}">` : '🎪'}</div>
+        `;
+      } else {
+        document.getElementById('modalHeader').style.background = 'linear-gradient(135deg, #4285F4, #34A853)';
+        document.getElementById('modalHeader').innerHTML = `
+          <button class="modal-close" onclick="closeModal()">×</button>
+          <div class="modal-logo">🎪</div>
+        `;
+      }
+
+      // Set basic info
+      document.getElementById('modalCategory').textContent = club.category || 'General';
+      document.getElementById('modalTitle').textContent = club.name;
+      document.getElementById('modalDescription').textContent = club.description || 'No description available for this club.';
+
+      // Set stats
+      const upcomingEvents = clubEvents.filter(e => getEventStatus(e) === 'upcoming' || getEventStatus(e) === 'ongoing');
+      const pastEvents = clubEvents.filter(e => getEventStatus(e) === 'past');
+      
+      document.getElementById('modalEventCount').textContent = clubEvents.length;
+      document.getElementById('modalUpcoming').textContent = upcomingEvents.length;
+      document.getElementById('modalFoundedYear').textContent = club.founded_year || '-';
+
+      // Set lead
+      const leadSection = document.getElementById('leadSection');
+      if (club.lead) {
+        leadSection.style.display = 'block';
+        document.getElementById('leadAvatar').textContent = getInitials(club.lead.full_name);
+        document.getElementById('leadName').textContent = club.lead.full_name;
+        document.getElementById('leadEmail').textContent = club.lead.email;
+      } else {
+        leadSection.style.display = 'none';
+      }
+
+      // Set upcoming events
+      const upcomingSection = document.getElementById('upcomingEventsSection');
+      if (upcomingEvents.length > 0) {
+        upcomingSection.style.display = 'block';
+        document.getElementById('upcomingEventsGrid').innerHTML = upcomingEvents.map(event => `
+          <a href="event-details.html?id=${event.event_id}" class="modal-event-card">
+            <div class="modal-event-date">
+              <span>📅</span>
+              <span>${formatDate(event.event_date)}</span>
+            </div>
+            <div class="modal-event-name">${event.event_name}</div>
+            <span class="modal-event-status ${getEventStatus(event)}">${getEventStatus(event).toUpperCase()}</span>
+          </a>
+        `).join('');
+      } else {
+        upcomingSection.style.display = 'none';
+      }
+
+      // Set past events
+      const pastSection = document.getElementById('pastEventsSection');
+      if (pastEvents.length > 0) {
+        pastSection.style.display = 'block';
+        document.getElementById('pastEventsGrid').innerHTML = pastEvents.slice(0, 6).map(event => `
+          <a href="event-details.html?id=${event.event_id}" class="modal-event-card">
+            <div class="modal-event-date">
+              <span>📅</span>
+              <span>${formatDate(event.event_date)}</span>
+            </div>
+            <div class="modal-event-name">${event.event_name}</div>
+            <span class="modal-event-status past">COMPLETED</span>
+          </a>
+        `).join('');
+      } else {
+        pastSection.style.display = 'none';
+      }
+
+      // Set gallery from events with media
+      const eventsWithMedia = clubEvents.filter(e => e.event_media && e.event_media.length > 0);
+      const gallerySection = document.getElementById('gallerySection');
+      if (eventsWithMedia.length > 0) {
+        gallerySection.style.display = 'block';
+        let allMedia = [];
+        eventsWithMedia.forEach(event => {
+          if (event.event_media) {
+            allMedia = allMedia.concat(event.event_media.slice(0, 4));
+          }
+        });
+        document.getElementById('galleryGrid').innerHTML = allMedia.slice(0, 8).map(media => `
+          <div class="modal-gallery-item" onclick="window.open('${media.url}', '_blank')">
+            <img src="${media.url}" alt="${media.name || 'Event photo'}" loading="lazy">
+          </div>
+        `).join('');
+      } else {
+        gallerySection.style.display = 'none';
+      }
+
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close Modal
+    function closeModal() {
+      document.getElementById('clubModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Format Date
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+    }
+
+    // Get Initials
+    function getInitials(name) {
+      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+
+    // Show Notification
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // Logout
+    async function logout() {
+      try {
+        if (supabaseClient) {
+          await supabaseClient.auth.signOut();
+        }
+        localStorage.removeItem('supabase.auth.token');
+        window.location.href = '../../index.html';
+      } catch (error) {
+        console.error('Logout error:', error);
+        window.location.href = '../../index.html';
+      }
+    }
+
+    // Event Listeners
+    document.getElementById('searchInput').addEventListener('input', () => {
+      renderClubs();
+    });
+
+    // Close modal on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('clubModal').addEventListener('click', (e) => {
+      if (e.target.id === 'clubModal') {
+        closeModal();
+      }
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      await initSupabase();
+      await loadClubs();
+    });
+  </script>
+</body>
+</html>
