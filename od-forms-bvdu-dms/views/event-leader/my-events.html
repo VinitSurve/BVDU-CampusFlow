@@ -326,6 +326,235 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
+    .btn-media {
+      background: linear-gradient(135deg, #9C27B0 0%, #E91E63 100%);
+      color: white;
+      border: none;
+    }
+
+    .btn-media:hover {
+      filter: brightness(1.1);
+    }
+
+    /* Media Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .media-modal {
+      background: #1E293B;
+      border-radius: 1rem;
+      width: 100%;
+      max-width: 900px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #E2E8F0;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #94A3B8;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #E2E8F0;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .upload-zone {
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+
+    .upload-zone:hover {
+      border-color: #4285F4;
+      background: rgba(66, 133, 244, 0.05);
+    }
+
+    .upload-zone.dragover {
+      border-color: #34A853;
+      background: rgba(52, 168, 83, 0.1);
+    }
+
+    .upload-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .upload-text {
+      color: #E2E8F0;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-hint {
+      color: #64748B;
+      font-size: 0.875rem;
+    }
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .media-item {
+      position: relative;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      aspect-ratio: 1;
+    }
+
+    .media-item img,
+    .media-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .media-item .file-preview {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .media-item .file-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .media-item .file-name {
+      font-size: 0.7rem;
+      color: #94A3B8;
+      text-align: center;
+      word-break: break-all;
+      max-height: 40px;
+      overflow: hidden;
+    }
+
+    .media-item .media-actions {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .media-item .action-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      transition: all 0.3s ease;
+    }
+
+    .media-item .action-btn.delete {
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+    }
+
+    .media-item .action-btn.delete:hover {
+      background: #EF4444;
+    }
+
+    .upload-progress {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .upload-progress.active {
+      display: block;
+    }
+
+    .progress-bar {
+      background: rgba(255, 255, 255, 0.1);
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      color: #94A3B8;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+
+    .empty-media {
+      text-align: center;
+      padding: 2rem;
+      color: #64748B;
+    }
+
+    .empty-media .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
     @media (max-width: 768px) {
       .page-header {
         flex-direction: column;
@@ -382,6 +611,39 @@
 
     <div id="eventsContainer" class="events-grid">
       <p style="color: #64748B;">Loading events...</p>
+    </div>
+  </div>
+
+  <!-- Media Upload Modal -->
+  <div class="modal-overlay" id="mediaModal">
+    <div class="media-modal">
+      <div class="modal-header">
+        <h2>📁 <span id="modalEventName">Event Media</span></h2>
+        <button class="modal-close" onclick="closeMediaModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('mediaInput').click()">
+          <div class="upload-icon">📤</div>
+          <div class="upload-text">Click or drag files to upload</div>
+          <div class="upload-hint">Images, Videos, PDFs, PPTs (Max 50MB each)</div>
+          <input type="file" id="mediaInput" multiple accept="image/*,video/*,.pdf,.ppt,.pptx,.doc,.docx" style="display: none;" onchange="handleFileSelect(event)">
+        </div>
+
+        <div class="upload-progress" id="uploadProgress">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-text" id="progressText">Uploading...</div>
+        </div>
+
+        <h3 style="color: #E2E8F0; margin-bottom: 1rem; font-size: 1.1rem;">📂 Uploaded Media</h3>
+        <div class="media-grid" id="mediaGrid">
+          <div class="empty-media">
+            <div class="empty-icon">📭</div>
+            <p>No media uploaded yet</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -571,6 +833,7 @@
             <button class="btn btn-secondary" onclick="viewParticipants('${event.event_id}')">
               👥 Participants
             </button>
+            ${isEventCompleted(event) ? `<button class="btn btn-media" onclick="openMediaModal('${event.event_id}', '${event.event_name.replace(/'/g, "\\'")}')">📁 Media</button>` : ''}
           </div>
         </div>
       `}).join('');
@@ -620,6 +883,425 @@
       sessionStorage.setItem('participantsEventId', eventId);
       // Navigate to participants page (create if doesn't exist)
       window.location.href = `participants.html?event=${eventId}`;
+    }
+
+    // Check if event is completed (date has passed)
+    function isEventCompleted(event) {
+      const now = new Date();
+      const eventDate = new Date(event.event_date);
+      const endTime = event.end_time ? event.end_time.split(':') : ['23', '59'];
+      eventDate.setHours(parseInt(endTime[0]), parseInt(endTime[1]));
+      return now > eventDate;
+    }
+
+    // Media Modal Variables
+    let currentMediaEventId = null;
+    let currentMediaEventName = null;
+
+    // Open Media Modal
+    window.openMediaModal = async function(eventId, eventName) {
+      currentMediaEventId = eventId;
+      currentMediaEventName = eventName;
+      document.getElementById('modalEventName').textContent = eventName + ' Media';
+      document.getElementById('mediaModal').classList.add('active');
+      await loadEventMedia(eventId);
+      setupDragDrop();
+    }
+
+    // Close Media Modal
+    window.closeMediaModal = function() {
+      document.getElementById('mediaModal').classList.remove('active');
+      currentMediaEventId = null;
+      currentMediaEventName = null;
+    }
+
+    // Setup Drag and Drop
+    function setupDragDrop() {
+      const uploadZone = document.getElementById('uploadZone');
+      
+      uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('dragover');
+      });
+      
+      uploadZone.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('dragover');
+      });
+      
+      uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          uploadFiles(files);
+        }
+      });
+    }
+
+    // Handle File Select
+    window.handleFileSelect = function(event) {
+      const files = event.target.files;
+      if (files.length > 0) {
+        uploadFiles(files);
+      }
+    }
+
+    // Upload Files
+    async function uploadFiles(files) {
+      if (!supabaseClient || !currentMediaEventId) {
+        alert('Unable to upload. Please try again.');
+        return;
+      }
+
+      const progressDiv = document.getElementById('uploadProgress');
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      
+      progressDiv.classList.add('active');
+      
+      const totalFiles = files.length;
+      let uploadedCount = 0;
+      let successCount = 0;
+      // Collect all uploaded media items first (to avoid race condition)
+      const uploadedMedia = [];
+      
+      for (const file of files) {
+        // Check file size (50MB max)
+        if (file.size > 50 * 1024 * 1024) {
+          alert(`File "${file.name}" exceeds 50MB limit. Skipping.`);
+          uploadedCount++;
+          continue;
+        }
+
+        progressText.textContent = `Uploading ${file.name} (${uploadedCount + 1}/${totalFiles})...`;
+        progressFill.style.width = `${(uploadedCount / totalFiles) * 100}%`;
+
+        try {
+          // Generate unique filename with event-media folder structure
+          const timestamp = Date.now();
+          const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+          const filePath = `event-media/${currentMediaEventId}/${timestamp}_${sanitizedName}`;
+
+          // Upload to Supabase Storage (event-photos bucket, event-media folder)
+          const { data, error } = await supabaseClient.storage
+            .from('event-photos')
+            .upload(filePath, file);
+
+          if (error) {
+            console.error('Upload error:', error);
+            if (error.message.includes('mime') || error.message.includes('type')) {
+              alert(`File type not allowed: ${file.type}\n\nPlease upload images, videos, PDFs, or documents.`);
+              continue;
+            }
+            if (error.message.includes('size')) {
+              alert(`File too large: ${file.name}\n\nMax size is 50MB.`);
+              continue;
+            }
+          } else {
+            successCount++;
+            
+            // Get public URL
+            const { data: { publicUrl } } = supabaseClient.storage
+              .from('event-photos')
+              .getPublicUrl(filePath);
+
+            // Collect media item for batch save
+            uploadedMedia.push({
+              id: `media_${timestamp}`,
+              name: file.name,
+              path: filePath,
+              url: publicUrl,
+              type: getFileType(file.type),
+              size: file.size,
+              uploaded_at: new Date().toISOString()
+            });
+          }
+        } catch (err) {
+          console.error('Error uploading file:', err);
+        }
+
+        uploadedCount++;
+        progressFill.style.width = `${(uploadedCount / totalFiles) * 100}%`;
+      }
+
+      // Batch save all media metadata at once (fixes race condition)
+      if (uploadedMedia.length > 0) {
+        progressText.textContent = `Saving metadata...`;
+        const saved = await saveMediaMetadataBatch(currentMediaEventId, uploadedMedia);
+        if (!saved) {
+          alert('⚠️ Files uploaded to storage but metadata save failed.\n\nCheck if you have UPDATE permission on events table.');
+        }
+      }
+
+      progressText.textContent = `Uploaded ${successCount} of ${totalFiles} files`;
+      
+      setTimeout(() => {
+        progressDiv.classList.remove('active');
+        progressFill.style.width = '0%';
+        document.getElementById('mediaInput').value = '';
+      }, 2000);
+
+      // Reload media grid
+      await loadEventMedia(currentMediaEventId);
+    }
+
+    // Get File Type Category
+    function getFileType(mimeType) {
+      if (mimeType.startsWith('image/')) return 'image';
+      if (mimeType.startsWith('video/')) return 'video';
+      if (mimeType.includes('pdf')) return 'pdf';
+      if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) return 'ppt';
+      if (mimeType.includes('document') || mimeType.includes('word')) return 'doc';
+      return 'file';
+    }
+
+    // Save Media Metadata Batch - saves all at once to avoid race condition
+    async function saveMediaMetadataBatch(eventId, newMediaItems) {
+      try {
+        console.log('Batch saving media metadata for event:', eventId);
+        console.log('New media items:', newMediaItems);
+
+        // First get existing media
+        const { data: event, error: fetchError } = await supabaseClient
+          .from('events')
+          .select('event_media')
+          .eq('event_id', eventId)
+          .single();
+
+        if (fetchError) {
+          console.error('Error fetching event:', fetchError);
+          if (fetchError.message && (fetchError.message.includes('event_media') || fetchError.code === 'PGRST116')) {
+            alert('⚠️ Database column missing!\n\nPlease run this SQL in Supabase SQL Editor:\n\nALTER TABLE events ADD COLUMN event_media JSONB DEFAULT \'[]\'::jsonb;');
+          }
+          return false;
+        }
+
+        const existingMedia = event.event_media || [];
+        const updatedMedia = [...existingMedia, ...newMediaItems];
+        console.log('Updated media array (batch):', updatedMedia);
+
+        // Update with all new media at once
+        const { data: updateData, error: updateError } = await supabaseClient
+          .from('events')
+          .update({ event_media: updatedMedia })
+          .eq('event_id', eventId)
+          .select('event_media');
+
+        if (updateError) {
+          console.error('Error updating event_media:', updateError);
+          if (updateError.code === '42501' || updateError.message.includes('permission') || updateError.message.includes('policy')) {
+            alert('⚠️ Permission denied!\n\nEvent leaders need UPDATE permission on events table.\n\nRun this SQL:\n\nCREATE POLICY "Event leaders can update own events"\nON events FOR UPDATE TO authenticated\nUSING (event_leader_id = auth.uid())\nWITH CHECK (event_leader_id = auth.uid());');
+          } else if (updateError.message && updateError.message.includes('event_media')) {
+            alert('⚠️ Database column missing!\n\nPlease run this SQL:\n\nALTER TABLE events ADD COLUMN event_media JSONB DEFAULT \'[]\'::jsonb;');
+          } else {
+            alert('Error saving media: ' + updateError.message);
+          }
+          return false;
+        }
+
+        // Verify the update actually worked
+        console.log('Update response:', updateData);
+        if (updateData && updateData[0] && updateData[0].event_media) {
+          console.log('Verified saved media count:', updateData[0].event_media.length);
+          if (updateData[0].event_media.length === updatedMedia.length) {
+            console.log('✅ Media metadata saved and verified successfully!');
+            return true;
+          } else {
+            console.warn('⚠️ Media count mismatch after save');
+          }
+        }
+
+        // Double-check by re-fetching
+        const { data: verifyData } = await supabaseClient
+          .from('events')
+          .select('event_media')
+          .eq('event_id', eventId)
+          .single();
+
+        console.log('Verification fetch:', verifyData?.event_media?.length, 'items');
+        
+        if (!verifyData?.event_media || verifyData.event_media.length === 0) {
+          console.error('❌ UPDATE did not persist! This is likely an RLS policy issue.');
+          alert('⚠️ Update failed to persist!\n\nThis is likely an RLS (Row Level Security) policy issue.\n\nRun this SQL in Supabase:\n\nCREATE POLICY "Event leaders can update own events"\nON events FOR UPDATE TO authenticated\nUSING (event_leader_id = auth.uid())\nWITH CHECK (event_leader_id = auth.uid());');
+          return false;
+        }
+
+        return true;
+      } catch (err) {
+        console.error('Error saving media metadata:', err);
+        alert('Error saving media metadata. Check console for details.');
+        return false;
+      }
+    }
+
+    // Save Media Metadata to Database (single item - kept for delete operations)
+    async function saveMediaMetadata(eventId, mediaItem) {
+      try {
+        console.log('Saving media metadata for event:', eventId);
+        console.log('Media item:', mediaItem);
+
+        // First get existing media
+        const { data: event, error: fetchError } = await supabaseClient
+          .from('events')
+          .select('event_media')
+          .eq('event_id', eventId)
+          .single();
+
+        if (fetchError) {
+          console.error('Error fetching event:', fetchError);
+          // Check if column doesn't exist
+          if (fetchError.message && (fetchError.message.includes('event_media') || fetchError.code === 'PGRST116')) {
+            alert('⚠️ Database column missing!\n\nPlease run this SQL in Supabase SQL Editor:\n\nALTER TABLE events ADD COLUMN event_media JSONB DEFAULT \'[]\'::jsonb;');
+          }
+          return false;
+        }
+
+        const existingMedia = event.event_media || [];
+        existingMedia.push(mediaItem);
+        console.log('Updated media array:', existingMedia);
+
+        // Update with new media
+        const { error: updateError } = await supabaseClient
+          .from('events')
+          .update({ event_media: existingMedia })
+          .eq('event_id', eventId);
+
+        if (updateError) {
+          console.error('Error updating event_media:', updateError);
+          // If column doesn't exist, show helpful message
+          if (updateError.message && updateError.message.includes('event_media')) {
+            alert('⚠️ Database column missing!\n\nPlease run this SQL in Supabase SQL Editor:\n\nALTER TABLE events ADD COLUMN event_media JSONB DEFAULT \'[]\'::jsonb;');
+          } else {
+            alert('Error saving media metadata: ' + updateError.message);
+          }
+          return false;
+        }
+
+        console.log('Media metadata saved successfully!');
+        return true;
+      } catch (err) {
+        console.error('Error saving media metadata:', err);
+        alert('Error saving media metadata. Check console for details.');
+        return false;
+      }
+    }
+
+    // Load Event Media
+    async function loadEventMedia(eventId) {
+      const mediaGrid = document.getElementById('mediaGrid');
+      console.log('Loading media for event:', eventId);
+      
+      if (!supabaseClient) {
+        mediaGrid.innerHTML = '<div class="empty-media"><div class="empty-icon">⚠️</div><p>Unable to load media</p></div>';
+        return;
+      }
+
+      try {
+        const { data: event, error } = await supabaseClient
+          .from('events')
+          .select('event_media')
+          .eq('event_id', eventId)
+          .single();
+
+        console.log('Loaded event data:', event);
+        console.log('Event media:', event?.event_media);
+
+        if (error) {
+          console.error('Error loading media:', error);
+          if (error.message && error.message.includes('event_media')) {
+            mediaGrid.innerHTML = '<div class="empty-media"><div class="empty-icon">⚠️</div><p>Column "event_media" not found.<br><small>Run SQL: ALTER TABLE events ADD COLUMN event_media JSONB DEFAULT \'[]\'::jsonb;</small></p></div>';
+          } else {
+            mediaGrid.innerHTML = '<div class="empty-media"><div class="empty-icon">⚠️</div><p>Error loading media</p></div>';
+          }
+          return;
+        }
+
+        const media = event.event_media || [];
+        console.log('Media items to display:', media.length);
+
+        if (media.length === 0) {
+          mediaGrid.innerHTML = '<div class="empty-media"><div class="empty-icon">📭</div><p>No media uploaded yet</p></div>';
+          return;
+        }
+
+        mediaGrid.innerHTML = media.map(item => renderMediaItem(item)).join('');
+      } catch (err) {
+        console.error('Error:', err);
+        mediaGrid.innerHTML = '<div class="empty-media"><div class="empty-icon">⚠️</div><p>Error loading media</p></div>';
+      }
+    }
+
+    // Render Media Item
+    function renderMediaItem(item) {
+      const fileIcons = {
+        'image': '🖼️',
+        'video': '🎬',
+        'pdf': '📄',
+        'ppt': '📊',
+        'doc': '📝',
+        'file': '📁'
+      };
+
+      let previewHTML = '';
+      if (item.type === 'image') {
+        previewHTML = `<img src="${item.url}" alt="${item.name}" loading="lazy">`;
+      } else if (item.type === 'video') {
+        previewHTML = `<video src="${item.url}" muted></video>`;
+      } else {
+        previewHTML = `
+          <div class="file-preview">
+            <div class="file-icon">${fileIcons[item.type] || '📁'}</div>
+            <div class="file-name">${item.name}</div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="media-item" data-id="${item.id}">
+          ${previewHTML}
+          <div class="media-actions">
+            <button class="action-btn delete" onclick="deleteMedia('${item.id}', '${item.path}')" title="Delete">🗑️</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Delete Media
+    window.deleteMedia = async function(mediaId, filePath) {
+      if (!confirm('Are you sure you want to delete this file?')) return;
+
+      try {
+        // Delete from storage (event-photos bucket)
+        const { error: storageError } = await supabaseClient.storage
+          .from('event-photos')
+          .remove([filePath]);
+
+        if (storageError) {
+          console.error('Storage delete error:', storageError);
+        }
+
+        // Remove from metadata
+        const { data: event, error: fetchError } = await supabaseClient
+          .from('events')
+          .select('event_media')
+          .eq('event_id', currentMediaEventId)
+          .single();
+
+        if (!fetchError && event) {
+          const updatedMedia = (event.event_media || []).filter(m => m.id !== mediaId);
+          
+          await supabaseClient
+            .from('events')
+            .update({ event_media: updatedMedia })
+            .eq('event_id', currentMediaEventId);
+        }
+
+        // Reload grid
+        await loadEventMedia(currentMediaEventId);
+      } catch (err) {
+        console.error('Error deleting media:', err);
+        alert('Error deleting media. Please try again.');
+      }
     }
 
     // Logout

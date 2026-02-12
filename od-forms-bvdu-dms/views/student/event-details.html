@@ -416,7 +416,237 @@
       margin-top: 0.25rem;
     }
 
-    /* Photos Section */
+    /* Media Gallery Section */
+    .media-section {
+      margin-top: 1.5rem;
+    }
+
+    .media-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .download-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+    }
+
+    .btn-download.single {
+      background: rgba(66, 133, 244, 0.1);
+      color: #4285F4;
+      border: 1px solid rgba(66, 133, 244, 0.3);
+    }
+
+    .btn-download.single:hover {
+      background: rgba(66, 133, 244, 0.2);
+    }
+
+    .btn-download.bulk {
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      color: white;
+    }
+
+    .btn-download.bulk:hover {
+      filter: brightness(1.1);
+    }
+
+    .btn-download:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .media-item {
+      position: relative;
+      aspect-ratio: 1;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .media-item:hover {
+      border-color: rgba(66, 133, 244, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .media-item img,
+    .media-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .media-item .file-preview {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .media-item .file-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .media-item .file-name {
+      font-size: 0.7rem;
+      color: #94A3B8;
+      text-align: center;
+      word-break: break-all;
+      max-height: 40px;
+      overflow: hidden;
+    }
+
+    .media-item .item-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      padding: 0.75rem 0.5rem 0.5rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .media-item:hover .item-overlay {
+      opacity: 1;
+    }
+
+    .media-item .download-single {
+      width: 100%;
+      padding: 0.4rem;
+      background: rgba(66, 133, 244, 0.9);
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .media-item .download-single:hover {
+      background: #4285F4;
+    }
+
+    .media-item input[type="checkbox"] {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #4285F4;
+    }
+
+    .media-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem;
+      color: #64748B;
+    }
+
+    .media-empty .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .media-loading {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 2rem;
+      color: #94A3B8;
+    }
+
+    /* Lightbox Modal */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .lightbox-content {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      font-size: 2rem;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .lightbox-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .lightbox-download {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .lightbox-download:hover {
+      filter: brightness(1.1);
+    }
+
+    /* Photos Section (Legacy - kept for compatibility) */
     .photos-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -617,19 +847,23 @@
             </div>
 
             <!-- Event Photos -->
-            <div class="info-card">
-              <h2 class="info-card-title">
-                <span>📸</span> Event Photos
-              </h2>
-              <div class="photos-grid">
-                <div class="photo-placeholder">📷</div>
-                <div class="photo-placeholder">🖼️</div>
-                <div class="photo-placeholder">📸</div>
-                <div class="photo-placeholder">🎨</div>
+            <!-- Event Media Gallery -->
+            <div class="info-card" id="mediaGalleryCard">
+              <div class="media-section-header">
+                <h2 class="info-card-title" style="margin-bottom: 0;">
+                  <span>📁</span> Event Media
+                </h2>
+                <div class="download-actions" id="downloadActions" style="display: none;">
+                  <button class="btn-download bulk" id="downloadBulkBtn" onclick="downloadBulkMedia()">
+                    📦 Download All (ZIP)
+                  </button>
+                </div>
               </div>
-              <p style="color: #64748B; margin-top: 1rem; text-align: center; font-size: 0.875rem;">
-                Photos will be uploaded after the event
-              </p>
+              <div class="media-section">
+                <div class="media-grid" id="eventMediaGrid">
+                  <div class="media-loading">⏳ Loading media...</div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -671,6 +905,17 @@
       </div>
     </div>
   </div>
+
+  <!-- Lightbox Modal for Media Preview -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+    <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+    <img src="" alt="Preview" class="lightbox-content" id="lightboxImage" style="display: none;">
+    <video src="" class="lightbox-content" id="lightboxVideo" controls style="display: none;"></video>
+    <button class="lightbox-download" id="lightboxDownload" onclick="downloadCurrentMedia()">⬇️ Download</button>
+  </div>
+
+  <!-- JSZip Library for Bulk Download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
   <script src="../../js/config.js"></script>
   <script>
@@ -1034,6 +1279,9 @@
         document.getElementById('registerBtn').style.display = 'flex';
         document.getElementById('applyODBtn').style.display = 'none';
       }
+
+      // Load event media gallery
+      loadEventMedia();
     }
 
     // Check if event is completed
@@ -1067,6 +1315,189 @@
     // Handle Apply OD
     function handleApplyOD() {
       window.location.href = `submit-form.html?event=${eventId}`;
+    }
+
+    // Media Gallery Variables
+    let eventMedia = [];
+    let currentLightboxMedia = null;
+
+    // Load Event Media
+    async function loadEventMedia() {
+      const mediaGrid = document.getElementById('eventMediaGrid');
+      const downloadActions = document.getElementById('downloadActions');
+      
+      if (!currentEvent) {
+        mediaGrid.innerHTML = '<div class="media-empty"><div class="empty-icon">📭</div><p>Event not loaded</p></div>';
+        return;
+      }
+
+      // Only show media for completed events
+      if (!isEventCompleted(currentEvent)) {
+        mediaGrid.innerHTML = '<div class="media-empty"><div class="empty-icon">⏳</div><p>Media will be available after the event</p></div>';
+        return;
+      }
+
+      try {
+        // Get media from event data
+        eventMedia = currentEvent.event_media || [];
+
+        if (eventMedia.length === 0) {
+          mediaGrid.innerHTML = '<div class="media-empty"><div class="empty-icon">📭</div><p>No media uploaded yet for this event</p></div>';
+          return;
+        }
+
+        // Show download actions
+        downloadActions.style.display = 'flex';
+
+        // Render media items
+        mediaGrid.innerHTML = eventMedia.map((item, index) => renderMediaItem(item, index)).join('');
+      } catch (err) {
+        console.error('Error loading media:', err);
+        mediaGrid.innerHTML = '<div class="media-empty"><div class="empty-icon">⚠️</div><p>Error loading media</p></div>';
+      }
+    }
+
+    // Render Media Item
+    function renderMediaItem(item, index) {
+      const fileIcons = {
+        'image': '🖼️',
+        'video': '🎬',
+        'pdf': '📄',
+        'ppt': '📊',
+        'doc': '📝',
+        'file': '📁'
+      };
+
+      let previewHTML = '';
+      if (item.type === 'image') {
+        previewHTML = `<img src="${item.url}" alt="${item.name}" loading="lazy" onclick="openLightbox(${index}, 'image')">`;
+      } else if (item.type === 'video') {
+        previewHTML = `<video src="${item.url}" muted onclick="openLightbox(${index}, 'video')"></video>`;
+      } else {
+        previewHTML = `
+          <div class="file-preview" onclick="downloadSingleFile('${item.url}', '${item.name}')">
+            <div class="file-icon">${fileIcons[item.type] || '📁'}</div>
+            <div class="file-name">${item.name}</div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="media-item" data-index="${index}">
+          ${previewHTML}
+          <div class="item-overlay">
+            <button class="download-single" onclick="event.stopPropagation(); downloadSingleFile('${item.url}', '${item.name}')">⬇️ Download</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Open Lightbox
+    window.openLightbox = function(index, type) {
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImage = document.getElementById('lightboxImage');
+      const lightboxVideo = document.getElementById('lightboxVideo');
+      
+      currentLightboxMedia = eventMedia[index];
+      
+      if (type === 'image') {
+        lightboxImage.src = currentLightboxMedia.url;
+        lightboxImage.style.display = 'block';
+        lightboxVideo.style.display = 'none';
+        lightboxVideo.pause();
+      } else if (type === 'video') {
+        lightboxVideo.src = currentLightboxMedia.url;
+        lightboxVideo.style.display = 'block';
+        lightboxImage.style.display = 'none';
+      }
+      
+      lightbox.classList.add('active');
+    }
+
+    // Close Lightbox
+    window.closeLightbox = function(event) {
+      if (event && event.target !== event.currentTarget && !event.target.classList.contains('lightbox-close')) {
+        return;
+      }
+      const lightbox = document.getElementById('lightbox');
+      const lightboxVideo = document.getElementById('lightboxVideo');
+      lightboxVideo.pause();
+      lightbox.classList.remove('active');
+      currentLightboxMedia = null;
+    }
+
+    // Download Current Media (from lightbox)
+    window.downloadCurrentMedia = function() {
+      if (currentLightboxMedia) {
+        downloadSingleFile(currentLightboxMedia.url, currentLightboxMedia.name);
+      }
+    }
+
+    // Download Single File
+    window.downloadSingleFile = async function(url, filename) {
+      try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+      } catch (error) {
+        console.error('Download error:', error);
+        // Fallback: open in new tab
+        window.open(url, '_blank');
+      }
+    }
+
+    // Download Bulk Media as ZIP
+    window.downloadBulkMedia = async function() {
+      if (eventMedia.length === 0) {
+        alert('No media to download');
+        return;
+      }
+
+      const downloadBtn = document.getElementById('downloadBulkBtn');
+      const originalText = downloadBtn.innerHTML;
+      downloadBtn.innerHTML = '⏳ Preparing ZIP...';
+      downloadBtn.disabled = true;
+
+      try {
+        const zip = new JSZip();
+        let downloadedCount = 0;
+        const totalFiles = eventMedia.length;
+
+        for (const item of eventMedia) {
+          try {
+            downloadBtn.innerHTML = `⏳ Downloading ${++downloadedCount}/${totalFiles}...`;
+            const response = await fetch(item.url);
+            const blob = await response.blob();
+            zip.file(item.name, blob);
+          } catch (err) {
+            console.error(`Failed to download ${item.name}:`, err);
+          }
+        }
+
+        downloadBtn.innerHTML = '⏳ Creating ZIP...';
+
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        const eventName = currentEvent.event_name.replace(/[^a-zA-Z0-9]/g, '_');
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(zipBlob);
+        link.download = `${eventName}_media.zip`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+      } catch (error) {
+        console.error('Bulk download error:', error);
+        alert('Error creating ZIP file. Please try downloading files individually.');
+      } finally {
+        downloadBtn.innerHTML = originalText;
+        downloadBtn.disabled = false;
+      }
     }
 
     // Initialize
