@@ -431,7 +431,7 @@
       <div class="profile-sidebar">
         <div class="profile-avatar" id="profileAvatar">👨‍🎓</div>
         <h2 class="profile-name" id="profileName">Loading...</h2>
-        <p class="profile-role">Student • B.Tech Computer Science</p>
+        <p class="profile-role" id="profileRole">Student • Loading...</p>
 
         <div class="profile-stats">
           <div class="stat-item">
@@ -677,24 +677,58 @@
       }
     }
     
-    // Calculate current semester from various sources
+    // Parse year value - handles both Roman numerals (I, II, III, IV) and numbers (1, 2, 3, 4)
+    function parseYear(yearValue) {
+      if (!yearValue) return null;
+      
+      const yearStr = String(yearValue).trim().toUpperCase();
+      
+      // Handle Roman numerals
+      const romanNumerals = { 'I': 1, 'II': 2, 'III': 3, 'IV': 4 };
+      if (romanNumerals[yearStr]) {
+        return romanNumerals[yearStr];
+      }
+      
+      // Handle numeric strings or numbers
+      const num = parseInt(yearStr);
+      if (!isNaN(num) && num >= 1 && num <= 4) {
+        return num;
+      }
+      
+      return null;
+    }
+
+    // Calculate current semester from stored semester or year + current month
     function calculateSemester(user) {
       console.log('=== SEMESTER CALCULATION DEBUG ===');
+      console.log('User semester:', user.semester);
       console.log('User year:', user.year, 'Type:', typeof user.year);
       console.log('User admission_date:', user.admission_date);
       
-      // First, try to use stored year field (handle both string and number)
-      const yearNum = user.year ? parseInt(user.year) : null;
-      if (yearNum && !isNaN(yearNum) && yearNum >= 1 && yearNum <= 3) {
+      // First priority: Use stored semester if available
+      if (user.semester && !isNaN(parseInt(user.semester))) {
+        const storedSemester = parseInt(user.semester);
+        console.log(`Using stored semester: ${storedSemester}`);
+        return storedSemester;
+      }
+      
+      // Second: Calculate from year field using parseYear helper
+      const yearNum = parseYear(user.year);
+      if (yearNum && yearNum >= 1 && yearNum <= 4) {
         // Year 1 = Sem 1-2, Year 2 = Sem 3-4, Year 3 = Sem 5-6
         const baseSemester = (yearNum - 1) * 2 + 1;
         
         // Check current month to determine odd/even semester
+        // July-Dec = Odd semesters (1, 3, 5), Jan-June = Even semesters (2, 4, 6)
         const currentMonth = new Date().getMonth() + 1;
         const currentSemester = (currentMonth >= 7) ? baseSemester : baseSemester + 1;
         
-        console.log(`Using year field: year=${yearNum}, baseSemester=${baseSemester}, currentMonth=${currentMonth}, currentSemester=${currentSemester}`);
-        return currentSemester;
+        // Cap at max semesters for course
+        const maxSemesters = (user.course === 'MBA') ? 4 : 6;
+        const finalSemester = Math.min(currentSemester, maxSemesters);
+        
+        console.log(`Using year field: year=${yearNum} (${user.year}), baseSemester=${baseSemester}, currentMonth=${currentMonth}, currentSemester=${finalSemester}`);
+        return finalSemester;
       }
       
       // Fallback: Calculate from admission_date if available
@@ -727,7 +761,7 @@
         return finalSemester;
       }
       
-      console.log('No year or admission_date found, returning N/A');
+      console.log('No semester, year, or admission_date found, returning N/A');
       return 'N/A';
     }
 
@@ -739,6 +773,7 @@
       const semester = calculateSemester(user);
       
       document.getElementById('profileName').textContent = fullName;
+      document.getElementById('profileRole').textContent = `Student • ${user.course || 'Unknown Course'}`;
       document.getElementById('fullName').textContent = fullName;
       document.getElementById('rollNumber').textContent = user.roll_number || 'N/A';
       document.getElementById('email').textContent = user.email;

@@ -9,6 +9,7 @@
 docs/ *.md
 *.txt
 sql/
+migrations/
 
 # Dependencies
 node_modules/
